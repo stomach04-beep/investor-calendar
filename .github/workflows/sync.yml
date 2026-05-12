@@ -1,0 +1,110 @@
+name: Investor Calendar Sync
+
+# 投資家カレンダー（経済イベント）の Notion DB を自動更新し、
+# data/investor_events.json を再生成・auto-commit する。
+#
+# 朝ブリーフ統一スケジュール 06:35 JST 枠（5分刻み分散）。
+# UTC = JST - 9h → 21:35 UTC = 06:35 JST 翌朝。
+#
+# パイプライン:
+#   1. build_events.py  : seed JSON をもとに events を構築（必要なら年シフト）
+#   2. fetch_fomc.py    : FRB公式から FOMC 会合日を取得（ベストエフォート）
+#   3. fetch_boj.py     : 日銀公式から MPM 日を取得（ベストエフォート）
+#   4. notion_upsert.py : Notion DB に upsert（is_estimated=false 行は保護）
+#   5. notion_to_json.py: Notion → data/investor_events.json 再生成
+#   6. git auto-commit  : data/ の差分があればコミット
+
+on:
+  schedule:
+    - cron: "35 21 * * *"   # 毎日 06:35 JST
+  workflow_dispatch:
+    inputs:
+      shift_to_year:
+        description: "追加で生成する対象年（カンマ区切り、例: 2027,2028）"
+        required: false
+        default: ""
+
+permissions:
+  contents: write   # data/investor_events.json を auto-commit するため必要
+
+concurrency:
+  group: investor-calendar-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: チェックアウト
+        uses: actions/checkout@v4
+
+      - name: Python セットアップ
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: 依存パッケージのインストール
+        run: pip install -r requirements.txt
+
+      - name: build_events.py 実行
+        env:
+          SHIFT_TO_YEAR: ${{ github.event.inputs.shift_to_year || '' }}
+        run: |
+          ARGS=""
+          if [ -n "$SHIFT_TO_YEAR" ]; then
+            for y in $(echo "$SHIFT_TO_YEAR" | tr ',' ' '); do
+              ARGS="$ARGS --shift-to-year $y"
+            done
+          fi
+          python scripts/build_events.py $ARGS
+
+      - name: fetch_fomc.py 実行（FRB公式 - ベストエフォート）
+        continue-on-error: true
+        run: python scripts/fetch_fomc.py
+
+      - name: fetch_boj.py 実行（日銀公式 - ベストエフォート）
+        continue-on-error: true
+        run: python scripts/fetch_boj.py
+
+      - name: notion_upsert.py 実行
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_DB_ID: ${{ secrets.NOTION_DB_ID }}
+        run: |
+          if [ -z "$NOTION_TOKEN" ]; then
+            echo "::error::NOTION_TOKEN が未設定"
+            exit 1
+          fi
+          python scripts/notion_upsert.py
+
+      - name: notion_to_json.py 実行
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_DB_ID: ${{ secrets.NOTION_DB_ID }}
+        run: python scripts/notion_to_json.py
+
+      - name: 差分を auto-commit
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet -- data/investor_events.json; then
+            echo "差分なし、コミットなし"
+            exit 0
+          fi
+          git add data/investor_events.json
+          git commit -m "chore: investor_events.json 自動更新 (run #${{ github.run_number }})"
+          git push
+
+      - name: 結果サマリー出力
+        if: always()
+        run: |
+          echo "## Investor Calendar Sync 完了" >> $GITHUB_STEP_SUMMARY
+          if [ -f data/investor_events.json ]; then
+            COUNT=$(python -c "import json; print(len(json.load(open('data/investor_events.json'))['events']))")
+            YEARS=$(python -c "import json; print(json.load(open('data/investor_events.json'))['covered_years'])")
+            echo "- events 件数: $COUNT" >> $GITHUB_STEP_SUMMARY
+            echo "- covered_years: $YEARS" >> $GITHUB_STEP_SUMMARY
+          fi

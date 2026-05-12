@@ -211,10 +211,21 @@ def prop_url(value: str | None) -> dict:
 
 
 def prop_date_with_time(iso_local: str | None, timezone_str: str | None = None) -> dict:
-    """日付プロパティ。datetime_local（オフセット付き）を渡せばタイムゾーン情報込みで設定される。"""
+    """
+    日付プロパティ。datetime_local（オフセット付き）+ timezone_str を渡すと
+    Notion 側で TZ 込みで保持される。
+
+    Notion API 仕様：`time_zone` を明示するなら、`start` の末尾オフセット（+HH:MM/-HH:MM/Z）は
+    取り除いて「naive ISO 形式」で送る必要がある。
+    （400 "if time zone is explicitly provided, start and end can't have non-zero time offsets from UTC"）
+    """
     if not iso_local:
         return {"date": None}
-    payload: dict[str, Any] = {"date": {"start": iso_local}}
+    start = iso_local
+    if timezone_str:
+        import re as _re
+        start = _re.sub(r"([+-]\d{2}:\d{2}|Z)$", "", start)
+    payload: dict[str, Any] = {"date": {"start": start}}
     if timezone_str:
         payload["date"]["time_zone"] = timezone_str
     return payload

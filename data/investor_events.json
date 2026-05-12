@@ -1,6 +1,6 @@
 {
   "schema_version": "2.0",
-  "generated_at": "2026-05-12T12:38:30Z",
+  "generated_at": "2026-05-12T12:47:19Z",
   "covered_years": [
     2026
   ],
@@ -313,6 +313,19 @@
       "source_url": "https://www.bls.gov/cpi/"
     },
     {
+      "id": "jp_majorsq_2026-03-13",
+      "title": "日メジャーSQ (3月)",
+      "category": "MARKET",
+      "country": "JP",
+      "datetime_utc": "2026-03-13T00:00:00Z",
+      "datetime_local": "2026-03-13T09:00:00+09:00",
+      "timezone": "Asia/Tokyo",
+      "importance": 2,
+      "is_estimated": false,
+      "description": "日経225先物・TOPIX先物・指数オプションの特別清算指数（SQ）算出日（第2金曜日 09:00 寄り付き）。算出値は寄り付きの板で決まる。",
+      "source_url": null
+    },
+    {
       "id": "jp_cpi_2026-03-19",
       "title": "全国CPI (2月分)",
       "category": "CPI",
@@ -353,7 +366,7 @@
     },
     {
       "id": "us_quadwitch_2026-03-20",
-      "title": "クアドラプル・ウィッチング (3月SQ)",
+      "title": "米クアドラプル・ウィッチング (3月SQ)",
       "category": "MARKET",
       "country": "US",
       "datetime_utc": "2026-03-21T00:00:00Z",
@@ -599,6 +612,19 @@
       "source_url": "https://www.bls.gov/cpi/"
     },
     {
+      "id": "jp_majorsq_2026-06-12",
+      "title": "日メジャーSQ (6月)",
+      "category": "MARKET",
+      "country": "JP",
+      "datetime_utc": "2026-06-12T00:00:00Z",
+      "datetime_local": "2026-06-12T09:00:00+09:00",
+      "timezone": "Asia/Tokyo",
+      "importance": 2,
+      "is_estimated": false,
+      "description": "日経225先物・TOPIX先物・指数オプションの特別清算指数（SQ）算出日（第2金曜日 09:00 寄り付き）。算出値は寄り付きの板で決まる。",
+      "source_url": null
+    },
+    {
       "id": "jp_boj_2026-06-16",
       "title": "日銀金融政策決定会合 (6月会合)",
       "category": "BOJ",
@@ -626,7 +652,7 @@
     },
     {
       "id": "us_quadwitch_2026-06-19",
-      "title": "クアドラプル・ウィッチング (6月SQ)",
+      "title": "米クアドラプル・ウィッチング (6月SQ)",
       "category": "MARKET",
       "country": "US",
       "datetime_utc": "2026-06-20T00:00:00Z",
@@ -885,6 +911,19 @@
       "source_url": "https://www.esri.cao.go.jp/jp/sna/menu.html"
     },
     {
+      "id": "jp_majorsq_2026-09-11",
+      "title": "日メジャーSQ (9月)",
+      "category": "MARKET",
+      "country": "JP",
+      "datetime_utc": "2026-09-11T00:00:00Z",
+      "datetime_local": "2026-09-11T09:00:00+09:00",
+      "timezone": "Asia/Tokyo",
+      "importance": 2,
+      "is_estimated": false,
+      "description": "日経225先物・TOPIX先物・指数オプションの特別清算指数（SQ）算出日（第2金曜日 09:00 寄り付き）。算出値は寄り付きの板で決まる。",
+      "source_url": null
+    },
+    {
       "id": "us_cpi_2026-09-11",
       "title": "米CPI (8月分)",
       "category": "CPI",
@@ -925,7 +964,7 @@
     },
     {
       "id": "us_quadwitch_2026-09-18",
-      "title": "クアドラプル・ウィッチング (9月SQ)",
+      "title": "米クアドラプル・ウィッチング (9月SQ)",
       "category": "MARKET",
       "country": "US",
       "datetime_utc": "2026-09-19T00:00:00Z",
@@ -1197,6 +1236,19 @@
       "source_url": "https://www.boj.or.jp/statistics/tk/"
     },
     {
+      "id": "jp_majorsq_2026-12-11",
+      "title": "日メジャーSQ (12月)",
+      "category": "MARKET",
+      "country": "JP",
+      "datetime_utc": "2026-12-11T00:00:00Z",
+      "datetime_local": "2026-12-11T09:00:00+09:00",
+      "timezone": "Asia/Tokyo",
+      "importance": 2,
+      "is_estimated": false,
+      "description": "日経225先物・TOPIX先物・指数オプションの特別清算指数（SQ）算出日（第2金曜日 09:00 寄り付き）。算出値は寄り付きの板で決まる。",
+      "source_url": null
+    },
+    {
       "id": "us_cpi_2026-12-11",
       "title": "米CPI (11月分)",
       "category": "CPI",
@@ -1237,7 +1289,7 @@
     },
     {
       "id": "us_quadwitch_2026-12-18",
-      "title": "クアドラプル・ウィッチング (12月SQ)",
+      "title": "米クアドラプル・ウィッチング (12月SQ)",
       "category": "MARKET",
       "country": "US",
       "datetime_utc": "2026-12-19T02:00:00Z",

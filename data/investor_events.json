@@ -1,6 +1,6 @@
 {
   "schema_version": "2.0",
-  "generated_at": "2026-04-27T08:50:18Z",
+  "generated_at": "2026-05-12T12:22:21Z",
   "covered_years": [
     2026
   ],
@@ -352,6 +352,19 @@
       "source_url": "https://www.boj.or.jp/mopo/mpmsche_minu/index.htm"
     },
     {
+      "id": "us_quadwitch_2026-03-20",
+      "title": "クアドラプル・ウィッチング (3月SQ)",
+      "category": "MARKET",
+      "country": "US",
+      "datetime_utc": "2026-03-20T20:00:00Z",
+      "datetime_local": "2026-03-20T16:00:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": false,
+      "description": "米国株価指数先物・指数オプション・個別株先物・個別株オプションが同時満期（第3金曜日）。引け前後のボラティリティ上昇と出来高急増に注意。",
+      "source_url": null
+    },
+    {
       "id": "us_pce_2026-03-26",
       "title": "米PCEデフレーター (2月分)",
       "category": "PCE",
@@ -610,6 +623,19 @@
       "is_estimated": false,
       "description": "2日目14:00 ET発表、議長会見14:30 ET。経済見通し(SEP)・ドットチャート同時公表。",
       "source_url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm"
+    },
+    {
+      "id": "us_quadwitch_2026-06-19",
+      "title": "クアドラプル・ウィッチング (6月SQ)",
+      "category": "MARKET",
+      "country": "US",
+      "datetime_utc": "2026-06-19T20:00:00Z",
+      "datetime_local": "2026-06-19T16:00:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": false,
+      "description": "米国株価指数先物・指数オプション・個別株先物・個別株オプションが同時満期（第3金曜日）。引け前後のボラティリティ上昇と出来高急増に注意。",
+      "source_url": null
     },
     {
       "id": "jp_cpi_2026-06-26",
@@ -896,6 +922,19 @@
       "is_estimated": false,
       "description": "結果発表は最終日の正午頃、総裁会見は15:30頃。",
       "source_url": "https://www.boj.or.jp/mopo/mpmsche_minu/index.htm"
+    },
+    {
+      "id": "us_quadwitch_2026-09-18",
+      "title": "クアドラプル・ウィッチング (9月SQ)",
+      "category": "MARKET",
+      "country": "US",
+      "datetime_utc": "2026-09-18T20:00:00Z",
+      "datetime_local": "2026-09-18T16:00:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": false,
+      "description": "米国株価指数先物・指数オプション・個別株先物・個別株オプションが同時満期（第3金曜日）。引け前後のボラティリティ上昇と出来高急増に注意。",
+      "source_url": null
     },
     {
       "id": "jp_cpi_2026-09-25",
@@ -1195,6 +1234,19 @@
       "is_estimated": false,
       "description": "結果発表は最終日の正午頃、総裁会見は15:30頃。",
       "source_url": "https://www.boj.or.jp/mopo/mpmsche_minu/index.htm"
+    },
+    {
+      "id": "us_quadwitch_2026-12-18",
+      "title": "クアドラプル・ウィッチング (12月SQ)",
+      "category": "MARKET",
+      "country": "US",
+      "datetime_utc": "2026-12-18T21:00:00Z",
+      "datetime_local": "2026-12-18T16:00:00-05:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": false,
+      "description": "米国株価指数先物・指数オプション・個別株先物・個別株オプションが同時満期（第3金曜日）。引け前後のボラティリティ上昇と出来高急増に注意。",
+      "source_url": null
     },
     {
       "id": "us_pce_2026-12-24",

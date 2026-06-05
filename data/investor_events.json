@@ -1,6 +1,6 @@
 {
   "schema_version": "2.0",
-  "generated_at": "2026-06-04T22:54:38Z",
+  "generated_at": "2026-06-05T22:44:58Z",
   "covered_years": [
     2026
   ],
@@ -1301,19 +1301,6 @@
       "source_url": null
     },
     {
-      "id": "jp_cpi_2026-12-25",
-      "title": "全国CPI (11月分)",
-      "category": "CPI",
-      "country": "JP",
-      "datetime_utc": "2026-12-24T14:30:00Z",
-      "datetime_local": "2026-12-24T23:30:00+09:00",
-      "timezone": "Asia/Tokyo",
-      "importance": 2,
-      "is_estimated": true,
-      "description": "総務省統計局発表。日銀の利上げ判断材料。",
-      "source_url": "https://www.stat.go.jp/data/cpi/"
-    },
-    {
       "id": "us_pce_2026-12-24",
       "title": "米PCEデフレーター (11月分)",
       "category": "PCE",
@@ -1325,6 +1312,19 @@
       "is_estimated": true,
       "description": "個人消費支出物価指数。FRBが最重視するインフレ指標。",
       "source_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index"
+    },
+    {
+      "id": "jp_cpi_2026-12-25",
+      "title": "全国CPI (11月分)",
+      "category": "CPI",
+      "country": "JP",
+      "datetime_utc": "2026-12-24T14:30:00Z",
+      "datetime_local": "2026-12-24T23:30:00+09:00",
+      "timezone": "Asia/Tokyo",
+      "importance": 2,
+      "is_estimated": true,
+      "description": "総務省統計局発表。日銀の利上げ判断材料。",
+      "source_url": "https://www.stat.go.jp/data/cpi/"
     },
     {
       "id": "jp_exdiv_2026-12-29",

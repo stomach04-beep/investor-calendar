@@ -84,6 +84,13 @@ jobs:
           fi
           python scripts/notion_upsert.py
 
+      - name: fetch_results.py 実行（終了イベントの実績値をFREDから結果欄へ・ベストエフォート）
+        continue-on-error: true
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_DB_ID: ${{ secrets.NOTION_DB_ID }}
+        run: python scripts/fetch_results.py
+
       - name: notion_to_json.py 実行
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}

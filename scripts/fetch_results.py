@@ -221,6 +221,7 @@ def resolve_props(client: NotionClient, db_id: str) -> dict[str, str]:
     return {
         "id": id_name,
         "category": find("カテゴリ", "select"),
+        "country": find("国", "select"),
         "datetime": find("発表日時", "date"),
         "result": find("結果", "rich_text"),
     }
@@ -274,6 +275,10 @@ def main() -> int:
         props = page.get("properties", {})
         category = read_select(props.get(name_map["category"], {}))
         if category not in CATEGORY_SERIES:
+            continue
+        # FRED は米国指標のみ。日本の CPI/GDP 等に米国値を入れないよう国=US に限定
+        country = read_select(props.get(name_map["country"], {}))
+        if country != "US":
             continue
         existing_result = read_rich_text(props.get(name_map["result"], {}))
         if existing_result and existing_result.strip():

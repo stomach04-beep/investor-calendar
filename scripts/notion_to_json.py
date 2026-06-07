@@ -42,6 +42,15 @@ def find_property_names(client: NotionClient, db_id: str) -> dict[str, str]:
                 return name
         raise RuntimeError(f"プロパティ '{jp_name}' (type={expected_type}) が見つかりません")
 
+    def find_optional(jp_name: str, expected_type: str) -> str | None:
+        """任意プロパティ。DBに無ければ None を返す（落とさない）。結果欄など後付けプロパティ用。"""
+        if jp_name in props and props[jp_name].get("type") == expected_type:
+            return jp_name
+        for name, meta in props.items():
+            if name.strip() == jp_name and meta.get("type") == expected_type:
+                return name
+        return None
+
     # ID は "ID" or "userDefined:ID"
     id_name = "ID"
     if id_name not in props:
@@ -62,6 +71,7 @@ def find_property_names(client: NotionClient, db_id: str) -> dict[str, str]:
         "timezone": find("タイムゾーン", "rich_text"),
         "description": find("説明", "rich_text"),
         "source_url": find("ソースURL", "url"),
+        "result": find_optional("結果", "rich_text"),
     }
 
 
@@ -82,6 +92,8 @@ def page_to_event(page: dict, name_map: dict[str, str]) -> dict | None:
     local_time_str = read_rich_text(props.get(name_map["local_time"], {})) or None
     description = read_rich_text(props.get(name_map["description"], {})) or None
     source_url = read_url(props.get(name_map["source_url"], {}))
+    result_name = name_map.get("result")
+    result = (read_rich_text(props.get(result_name, {})) or None) if result_name else None
 
     if not datetime_local:
         log(f"  skip (no datetime): {ev_id}")
@@ -123,6 +135,7 @@ def page_to_event(page: dict, name_map: dict[str, str]) -> dict | None:
         "is_estimated": is_estimated,
         "description": description,
         "source_url": source_url,
+        "result": result,
     }
 
 

@@ -1,6 +1,6 @@
 {
   "schema_version": "2.0",
-  "generated_at": "2026-06-07T06:13:25Z",
+  "generated_at": "2026-06-07T22:40:26Z",
   "covered_years": [
     2026
   ],
@@ -177,7 +177,7 @@
       "is_estimated": true,
       "description": "総務省統計局発表。日銀の利上げ判断材料。",
       "source_url": "https://www.stat.go.jp/data/cpi/",
-      "result": "CPI 前年比+2.7% / コア+2.6%（2025年12月分）"
+      "result": null
     },
     {
       "id": "jp_boj_2026-01-23",
@@ -261,7 +261,7 @@
       "is_estimated": true,
       "description": "内閣府発表。",
       "source_url": "https://www.esri.cao.go.jp/jp/sna/menu.html",
-      "result": "実質GDP +1.6%（2026年Q1・年率）"
+      "result": null
     },
     {
       "id": "jp_cpi_2026-02-20",
@@ -275,7 +275,7 @@
       "is_estimated": true,
       "description": "総務省統計局発表。日銀の利上げ判断材料。",
       "source_url": "https://www.stat.go.jp/data/cpi/",
-      "result": "CPI 前年比+2.4% / コア+2.5%（2026年1月分）"
+      "result": null
     },
     {
       "id": "us_pce_2026-02-26",
@@ -331,7 +331,7 @@
       "is_estimated": true,
       "description": "内閣府発表。",
       "source_url": "https://www.esri.cao.go.jp/jp/sna/menu.html",
-      "result": "実質GDP +1.6%（2026年Q1・年率）"
+      "result": null
     },
     {
       "id": "jp_shunto_2026",
@@ -387,7 +387,7 @@
       "is_estimated": true,
       "description": "総務省統計局発表。日銀の利上げ判断材料。",
       "source_url": "https://www.stat.go.jp/data/cpi/",
-      "result": "CPI 前年比+2.4% / コア+2.5%（2026年2月分）"
+      "result": null
     },
     {
       "id": "us_fomc_2026-03-18",
@@ -541,7 +541,7 @@
       "is_estimated": true,
       "description": "総務省統計局発表。日銀の利上げ判断材料。",
       "source_url": "https://www.stat.go.jp/data/cpi/",
-      "result": "CPI 前年比+3.3% / コア+2.6%（2026年3月分）"
+      "result": null
     },
     {
       "id": "us_pce_2026-04-24",
@@ -625,7 +625,7 @@
       "is_estimated": true,
       "description": "内閣府発表。",
       "source_url": "https://www.esri.cao.go.jp/jp/sna/menu.html",
-      "result": "実質GDP +1.6%（2026年Q1・年率）"
+      "result": null
     },
     {
       "id": "jp_cpi_2026-05-22",
@@ -639,7 +639,7 @@
       "is_estimated": true,
       "description": "総務省統計局発表。日銀の利上げ判断材料。",
       "source_url": "https://www.stat.go.jp/data/cpi/",
-      "result": "CPI 前年比+3.8% / コア+2.7%（2026年4月分）"
+      "result": null
     },
     {
       "id": "us_pce_2026-05-26",

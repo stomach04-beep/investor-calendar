@@ -47,6 +47,7 @@ CATEGORY_TO_NOTION = {
     "DIVIDEND": "配当・権利",
     "EARNINGS": "決算",
     "MARKET": "市場",
+    "BEIGE": "ベージュブック",
     "EVENT": "その他イベント",
 }
 NOTION_TO_CATEGORY = {v: k for k, v in CATEGORY_TO_NOTION.items()}

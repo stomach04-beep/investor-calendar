@@ -65,6 +65,10 @@ jobs:
         continue-on-error: true
         run: python scripts/fetch_fomc.py
 
+      - name: fetch_beige.py 実行（FOMC日程から14日逆算 - ベストエフォート）
+        continue-on-error: true
+        run: python scripts/fetch_beige.py
+
       - name: fetch_boj.py 実行（日銀公式 - ベストエフォート）
         continue-on-error: true
         run: python scripts/fetch_boj.py

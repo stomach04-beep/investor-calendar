@@ -1,6 +1,6 @@
 {
   "schema_version": "2.0",
-  "generated_at": "2026-06-04T22:54:38Z",
+  "generated_at": "2026-06-07T00:32:32Z",
   "covered_years": [
     2026
   ],
@@ -88,6 +88,10 @@
     "EVENT": {
       "label": "その他イベント",
       "color": "#616161"
+    },
+    "BEIGE": {
+      "label": "ベージュブック",
+      "color": "#6D4C41"
     }
   },
   "events": [
@@ -129,6 +133,19 @@
       "is_estimated": true,
       "description": "消費者物価指数。FRB利下げ織り込みに直結。",
       "source_url": "https://www.bls.gov/cpi/"
+    },
+    {
+      "id": "us_beige_2026-01-14",
+      "title": "ベージュブック (1月FOMC前)",
+      "category": "BEIGE",
+      "country": "US",
+      "datetime_utc": "2026-01-14T19:00:00Z",
+      "datetime_local": "2026-01-14T14:00:00-05:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": false,
+      "description": "地区連銀経済報告（Beige Book）。FOMC会合の2週間前(水)14:00 ET公表。全12地区の景況感まとめで、利上げ/利下げ判断の地ならし材料。",
+      "source_url": "https://www.federalreserve.gov/monetarypolicy/publications/beige-book-default.htm"
     },
     {
       "id": "us_earnings_2026-01-14",
@@ -259,6 +276,19 @@
       "is_estimated": true,
       "description": "個人消費支出物価指数。FRBが最重視するインフレ指標。",
       "source_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index"
+    },
+    {
+      "id": "us_beige_2026-03-04",
+      "title": "ベージュブック (3月FOMC前)",
+      "category": "BEIGE",
+      "country": "US",
+      "datetime_utc": "2026-03-04T19:00:00Z",
+      "datetime_local": "2026-03-04T14:00:00-05:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": false,
+      "description": "地区連銀経済報告（Beige Book）。FOMC会合の2週間前(水)14:00 ET公表。全12地区の景況感まとめで、利上げ/利下げ判断の地ならし材料。",
+      "source_url": "https://www.federalreserve.gov/monetarypolicy/publications/beige-book-default.htm"
     },
     {
       "id": "us_nfp_2026-03-06",
@@ -456,6 +486,19 @@
       "source_url": null
     },
     {
+      "id": "us_beige_2026-04-15",
+      "title": "ベージュブック (4月FOMC前)",
+      "category": "BEIGE",
+      "country": "US",
+      "datetime_utc": "2026-04-15T18:00:00Z",
+      "datetime_local": "2026-04-15T14:00:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": false,
+      "description": "地区連銀経済報告（Beige Book）。FOMC会合の2週間前(水)14:00 ET公表。全12地区の景況感まとめで、利上げ/利下げ判断の地ならし材料。",
+      "source_url": "https://www.federalreserve.gov/monetarypolicy/publications/beige-book-default.htm"
+    },
+    {
       "id": "jp_cpi_2026-04-24",
       "title": "全国CPI (3月分)",
       "category": "CPI",
@@ -571,6 +614,19 @@
       "is_estimated": true,
       "description": "個人消費支出物価指数。FRBが最重視するインフレ指標。",
       "source_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index"
+    },
+    {
+      "id": "us_beige_2026-06-03",
+      "title": "ベージュブック (6月FOMC前)",
+      "category": "BEIGE",
+      "country": "US",
+      "datetime_utc": "2026-06-03T18:00:00Z",
+      "datetime_local": "2026-06-03T14:00:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": false,
+      "description": "地区連銀経済報告（Beige Book）。FOMC会合の2週間前(水)14:00 ET公表。全12地区の景況感まとめで、利上げ/利下げ判断の地ならし材料。",
+      "source_url": "https://www.federalreserve.gov/monetarypolicy/publications/beige-book-default.htm"
     },
     {
       "id": "us_nfp_2026-06-05",
@@ -755,6 +811,19 @@
       "source_url": null
     },
     {
+      "id": "us_beige_2026-07-15",
+      "title": "ベージュブック (7月FOMC前)",
+      "category": "BEIGE",
+      "country": "US",
+      "datetime_utc": "2026-07-15T18:00:00Z",
+      "datetime_local": "2026-07-15T14:00:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": false,
+      "description": "地区連銀経済報告（Beige Book）。FOMC会合の2週間前(水)14:00 ET公表。全12地区の景況感まとめで、利上げ/利下げ判断の地ならし材料。",
+      "source_url": "https://www.federalreserve.gov/monetarypolicy/publications/beige-book-default.htm"
+    },
+    {
       "id": "jp_cpi_2026-07-24",
       "title": "全国CPI (6月分)",
       "category": "CPI",
@@ -883,6 +952,19 @@
       "is_estimated": true,
       "description": "カンザスシティ連銀主催。FRB議長講演で金融政策の方向性が示されることが多い。",
       "source_url": "https://www.kansascityfed.org/research/jackson-hole-economic-symposium/"
+    },
+    {
+      "id": "us_beige_2026-09-02",
+      "title": "ベージュブック (9月FOMC前)",
+      "category": "BEIGE",
+      "country": "US",
+      "datetime_utc": "2026-09-02T18:00:00Z",
+      "datetime_local": "2026-09-02T14:00:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": false,
+      "description": "地区連銀経済報告（Beige Book）。FOMC会合の2週間前(水)14:00 ET公表。全12地区の景況感まとめで、利上げ/利下げ判断の地ならし材料。",
+      "source_url": "https://www.federalreserve.gov/monetarypolicy/publications/beige-book-default.htm"
     },
     {
       "id": "us_nfp_2026-09-04",
@@ -1067,6 +1149,19 @@
       "source_url": null
     },
     {
+      "id": "us_beige_2026-10-14",
+      "title": "ベージュブック (10月FOMC前)",
+      "category": "BEIGE",
+      "country": "US",
+      "datetime_utc": "2026-10-14T18:00:00Z",
+      "datetime_local": "2026-10-14T14:00:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": false,
+      "description": "地区連銀経済報告（Beige Book）。FOMC会合の2週間前(水)14:00 ET公表。全12地区の景況感まとめで、利上げ/利下げ判断の地ならし材料。",
+      "source_url": "https://www.federalreserve.gov/monetarypolicy/publications/beige-book-default.htm"
+    },
+    {
       "id": "jp_cpi_2026-10-23",
       "title": "全国CPI (9月分)",
       "category": "CPI",
@@ -1182,6 +1277,19 @@
       "is_estimated": true,
       "description": "個人消費支出物価指数。FRBが最重視するインフレ指標。",
       "source_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index"
+    },
+    {
+      "id": "us_beige_2026-11-25",
+      "title": "ベージュブック (12月FOMC前)",
+      "category": "BEIGE",
+      "country": "US",
+      "datetime_utc": "2026-11-25T19:00:00Z",
+      "datetime_local": "2026-11-25T14:00:00-05:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": false,
+      "description": "地区連銀経済報告（Beige Book）。FOMC会合の2週間前(水)14:00 ET公表。全12地区の景況感まとめで、利上げ/利下げ判断の地ならし材料。",
+      "source_url": "https://www.federalreserve.gov/monetarypolicy/publications/beige-book-default.htm"
     },
     {
       "id": "us_nfp_2026-12-04",
@@ -1301,19 +1409,6 @@
       "source_url": null
     },
     {
-      "id": "jp_cpi_2026-12-25",
-      "title": "全国CPI (11月分)",
-      "category": "CPI",
-      "country": "JP",
-      "datetime_utc": "2026-12-24T14:30:00Z",
-      "datetime_local": "2026-12-24T23:30:00+09:00",
-      "timezone": "Asia/Tokyo",
-      "importance": 2,
-      "is_estimated": true,
-      "description": "総務省統計局発表。日銀の利上げ判断材料。",
-      "source_url": "https://www.stat.go.jp/data/cpi/"
-    },
-    {
       "id": "us_pce_2026-12-24",
       "title": "米PCEデフレーター (11月分)",
       "category": "PCE",
@@ -1325,6 +1420,19 @@
       "is_estimated": true,
       "description": "個人消費支出物価指数。FRBが最重視するインフレ指標。",
       "source_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index"
+    },
+    {
+      "id": "jp_cpi_2026-12-25",
+      "title": "全国CPI (11月分)",
+      "category": "CPI",
+      "country": "JP",
+      "datetime_utc": "2026-12-24T14:30:00Z",
+      "datetime_local": "2026-12-24T23:30:00+09:00",
+      "timezone": "Asia/Tokyo",
+      "importance": 2,
+      "is_estimated": true,
+      "description": "総務省統計局発表。日銀の利上げ判断材料。",
+      "source_url": "https://www.stat.go.jp/data/cpi/"
     },
     {
       "id": "jp_exdiv_2026-12-29",

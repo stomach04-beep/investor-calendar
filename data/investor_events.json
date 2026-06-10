@@ -1,6 +1,6 @@
 {
   "schema_version": "2.0",
-  "generated_at": "2026-06-09T23:02:31Z",
+  "generated_at": "2026-06-10T23:10:45Z",
   "covered_years": [
     2026
   ],
@@ -709,7 +709,7 @@
       "is_estimated": true,
       "description": "消費者物価指数。FRB利下げ織り込みに直結。",
       "source_url": "https://www.bls.gov/cpi/",
-      "result": null
+      "result": "CPI 前年比+4.2% / コア+2.8%（2026年5月分）"
     },
     {
       "id": "jp_majorsq_2026-06-12",

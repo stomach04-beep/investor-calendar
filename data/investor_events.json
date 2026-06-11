@@ -65,6 +65,10 @@
       "label": "PCE",
       "color": "#FB8C00"
     },
+    "PPI": {
+      "label": "PPI",
+      "color": "#FF7043"
+    },
     "GDP": {
       "label": "GDP",
       "color": "#388E3C"
@@ -136,6 +140,20 @@
       "description": "消費者物価指数。FRB利下げ織り込みに直結。",
       "source_url": "https://www.bls.gov/cpi/",
       "result": "CPI 前年比+2.7% / コア+2.6%（2025年12月分）"
+    },
+    {
+      "id": "us_ppi_2026-01-14",
+      "title": "米PPI (2025年12月分)",
+      "category": "PPI",
+      "country": "US",
+      "datetime_utc": "2026-01-14T13:30:00Z",
+      "datetime_local": "2026-01-14T08:30:00-05:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": true,
+      "description": "生産者物価指数。卸売段階のインフレ先行指標。",
+      "source_url": "https://www.bls.gov/ppi/",
+      "result": null
     },
     {
       "id": "us_beige_2026-01-14",
@@ -250,6 +268,20 @@
       "result": "CPI 前年比+2.4% / コア+2.5%（2026年1月分）"
     },
     {
+      "id": "us_ppi_2026-02-27",
+      "title": "米PPI (1月分)",
+      "category": "PPI",
+      "country": "US",
+      "datetime_utc": "2026-02-27T13:30:00Z",
+      "datetime_local": "2026-02-27T08:30:00-05:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": false,
+      "description": "生産者物価指数。卸売段階のインフレ先行指標。",
+      "source_url": "https://www.bls.gov/ppi/",
+      "result": null
+    },
+    {
       "id": "jp_gdp_2026-02-16",
       "title": "2025年10-12月期GDP速報値",
       "category": "GDP",
@@ -360,6 +392,20 @@
       "description": "消費者物価指数。FRB利下げ織り込みに直結。",
       "source_url": "https://www.bls.gov/cpi/",
       "result": "CPI 前年比+2.4% / コア+2.5%（2026年2月分）"
+    },
+    {
+      "id": "us_ppi_2026-03-12",
+      "title": "米PPI (2月分)",
+      "category": "PPI",
+      "country": "US",
+      "datetime_utc": "2026-03-12T12:30:00Z",
+      "datetime_local": "2026-03-12T08:30:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": true,
+      "description": "生産者物価指数。卸売段階のインフレ先行指標。",
+      "source_url": "https://www.bls.gov/ppi/",
+      "result": null
     },
     {
       "id": "jp_majorsq_2026-03-13",
@@ -502,6 +548,20 @@
       "result": "CPI 前年比+3.3% / コア+2.6%（2026年3月分）"
     },
     {
+      "id": "us_ppi_2026-04-14",
+      "title": "米PPI (3月分)",
+      "category": "PPI",
+      "country": "US",
+      "datetime_utc": "2026-04-14T12:30:00Z",
+      "datetime_local": "2026-04-14T08:30:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": false,
+      "description": "生産者物価指数。卸売段階のインフレ先行指標。",
+      "source_url": "https://www.bls.gov/ppi/",
+      "result": null
+    },
+    {
       "id": "us_earnings_2026-04-14",
       "title": "Q1(1-3月期)決算シーズン開始",
       "category": "EARNINGS",
@@ -614,6 +674,20 @@
       "result": "CPI 前年比+3.8% / コア+2.7%（2026年4月分）"
     },
     {
+      "id": "us_ppi_2026-05-13",
+      "title": "米PPI (4月分)",
+      "category": "PPI",
+      "country": "US",
+      "datetime_utc": "2026-05-13T12:30:00Z",
+      "datetime_local": "2026-05-13T08:30:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": false,
+      "description": "生産者物価指数。卸売段階のインフレ先行指標。",
+      "source_url": "https://www.bls.gov/ppi/",
+      "result": null
+    },
+    {
       "id": "jp_gdp_2026-05-19",
       "title": "1-3月期GDP速報値",
       "category": "GDP",
@@ -709,6 +783,20 @@
       "is_estimated": true,
       "description": "消費者物価指数。FRB利下げ織り込みに直結。",
       "source_url": "https://www.bls.gov/cpi/",
+      "result": null
+    },
+    {
+      "id": "us_ppi_2026-06-11",
+      "title": "米PPI (5月分)",
+      "category": "PPI",
+      "country": "US",
+      "datetime_utc": "2026-06-11T12:30:00Z",
+      "datetime_local": "2026-06-11T08:30:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": false,
+      "description": "生産者物価指数。卸売段階のインフレ先行指標。",
+      "source_url": "https://www.bls.gov/ppi/",
       "result": null
     },
     {
@@ -852,6 +940,20 @@
       "result": null
     },
     {
+      "id": "us_ppi_2026-07-15",
+      "title": "米PPI (6月分)",
+      "category": "PPI",
+      "country": "US",
+      "datetime_utc": "2026-07-15T12:30:00Z",
+      "datetime_local": "2026-07-15T08:30:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": false,
+      "description": "生産者物価指数。卸売段階のインフレ先行指標。",
+      "source_url": "https://www.bls.gov/ppi/",
+      "result": null
+    },
+    {
       "id": "us_earnings_2026-07-14",
       "title": "Q2(4-6月期)決算シーズン開始",
       "category": "EARNINGS",
@@ -961,6 +1063,20 @@
       "is_estimated": true,
       "description": "消費者物価指数。FRB利下げ織り込みに直結。",
       "source_url": "https://www.bls.gov/cpi/",
+      "result": null
+    },
+    {
+      "id": "us_ppi_2026-08-12",
+      "title": "米PPI (7月分)",
+      "category": "PPI",
+      "country": "US",
+      "datetime_utc": "2026-08-12T12:30:00Z",
+      "datetime_local": "2026-08-12T08:30:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": true,
+      "description": "生産者物価指数。卸売段階のインフレ先行指標。",
+      "source_url": "https://www.bls.gov/ppi/",
       "result": null
     },
     {
@@ -1090,6 +1206,20 @@
       "result": null
     },
     {
+      "id": "us_ppi_2026-09-14",
+      "title": "米PPI (8月分)",
+      "category": "PPI",
+      "country": "US",
+      "datetime_utc": "2026-09-14T12:30:00Z",
+      "datetime_local": "2026-09-14T08:30:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": true,
+      "description": "生産者物価指数。卸売段階のインフレ先行指標。",
+      "source_url": "https://www.bls.gov/ppi/",
+      "result": null
+    },
+    {
       "id": "us_fomc_2026-09-16",
       "title": "FOMC声明発表 (9月会合)",
       "category": "FOMC",
@@ -1216,6 +1346,20 @@
       "result": null
     },
     {
+      "id": "us_ppi_2026-10-14",
+      "title": "米PPI (9月分)",
+      "category": "PPI",
+      "country": "US",
+      "datetime_utc": "2026-10-14T12:30:00Z",
+      "datetime_local": "2026-10-14T08:30:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": true,
+      "description": "生産者物価指数。卸売段階のインフレ先行指標。",
+      "source_url": "https://www.bls.gov/ppi/",
+      "result": null
+    },
+    {
       "id": "us_earnings_2026-10-14",
       "title": "Q3(7-9月期)決算シーズン開始",
       "category": "EARNINGS",
@@ -1325,6 +1469,20 @@
       "is_estimated": true,
       "description": "消費者物価指数。FRB利下げ織り込みに直結。",
       "source_url": "https://www.bls.gov/cpi/",
+      "result": null
+    },
+    {
+      "id": "us_ppi_2026-11-13",
+      "title": "米PPI (10月分)",
+      "category": "PPI",
+      "country": "US",
+      "datetime_utc": "2026-11-13T13:30:00Z",
+      "datetime_local": "2026-11-13T08:30:00-05:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": true,
+      "description": "生産者物価指数。卸売段階のインフレ先行指標。",
+      "source_url": "https://www.bls.gov/ppi/",
       "result": null
     },
     {
@@ -1465,6 +1623,20 @@
       "is_estimated": true,
       "description": "消費者物価指数。FRB利下げ織り込みに直結。",
       "source_url": "https://www.bls.gov/cpi/",
+      "result": null
+    },
+    {
+      "id": "us_ppi_2026-12-14",
+      "title": "米PPI (11月分)",
+      "category": "PPI",
+      "country": "US",
+      "datetime_utc": "2026-12-14T13:30:00Z",
+      "datetime_local": "2026-12-14T08:30:00-05:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": true,
+      "description": "生産者物価指数。卸売段階のインフレ先行指標。",
+      "source_url": "https://www.bls.gov/ppi/",
       "result": null
     },
     {

@@ -42,6 +42,7 @@ CATEGORY_TO_NOTION = {
     "JOBS": "雇用統計",
     "CPI": "CPI",
     "PCE": "PCE",
+    "PPI": "PPI",
     "GDP": "GDP",
     "TANKAN": "日銀短観",
     "DIVIDEND": "配当・権利",

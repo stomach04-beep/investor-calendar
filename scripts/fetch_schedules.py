@@ -1,18 +1,28 @@
 """
-公式日程（米PCE / 米CPI / 全国CPI）を取得し、tmp/fetch_schedules_out.json に出力する。
+公式日程（米PCE / 米CPI / 全国CPI / 米雇用統計 / 米PPI）を取得し、
+tmp/fetch_schedules_out.json に出力する。
 
 fetch_fomc.py / fetch_boj.py と同じベストエフォート方式:
-- 3系統それぞれ独立して try/except。1つ失敗しても他は続行する。
+- 各系統それぞれ独立して try/except。1つ失敗しても他は続行する。
 - 全滅しても return 0（後続 notion_upsert は build_events の出力で継続）。
-- 取得できたものは is_estimated=False（公式確定情報）で出力する。
+- 取得できたものは原則 is_estimated=False（公式確定情報）で出力する。
 
-3系統:
-  1. 米PCE  : BEA公式 https://www.bea.gov/news/schedule の
-             "Personal Income and Outlays" 行を抽出。失敗時は BEA真値表をフォールバック。
-  2. 米CPI  : BLS公式 https://www.bls.gov/schedule/news_release/cpi.htm を試す。
-             BLSはbotブロック(403)になりやすいので、失敗時は BLS真値表をフォールバック。
-  3. 全国CPI : 「対象月の翌月の、19日を含む週(月曜起算)の金曜 8:30 JST」のルールで
-             プログラム計算（公式ページはJS依存で取りにくいためルール計算をプライマリ）。
+5系統:
+  1. 米PCE     : BEA公式 https://www.bea.gov/news/schedule の
+                "Personal Income and Outlays" 行を抽出。失敗時は BEA真値表をフォールバック。
+  2. 米CPI     : BLS公式 https://www.bls.gov/schedule/news_release/cpi.htm を試す。
+                BLSはbotブロック(403)になりやすいので、失敗時は BLS真値表をフォールバック。
+  3. 全国CPI   : 「対象月の翌月の、19日を含む週(月曜起算)の金曜 8:30 JST」のルールで
+                プログラム計算（公式ページはJS依存で取りにくいためルール計算をプライマリ）。
+  4. 米雇用統計 : 「毎月第1金曜 8:30 ET」をルール計算（例外月＝祝日前倒し等は上書き表）。
+                2026-07は7/3(独立記念日振替)のため7/2(木)に前倒し。
+  5. 米PPI     : BLS公式 https://www.bls.gov/schedule/news_release/ppi.htm を試す。
+                403時は真値表(確定5件)＋未確定は対応CPIの翌営業日近似でフォールバック。
+
+重要（Notion重複防止）:
+  CPI/PCE/JOBS/PPI は、シードJSON の既存 id を (category,country,対象年,対象月) で
+  再利用する（ALIAS_CATEGORIES）。公式日付がズレても id は不変識別子として据え置き、
+  notion_upsert が「新規作成」ではなく「既存ページ上書き」になるようにする。
 
 出力フォーマット（build_events_out / fetch_fomc_out と同形式）:
     {"events": [ {...}, ... ], "fetched_at": "YYYY-MM-DDTHH:MM:SSZ"}
@@ -93,9 +103,15 @@ def _seed_target_ym(ev: dict) -> tuple[int, int] | None:
     return None
 
 
+# id を再利用するカテゴリ（シードの既存 id を使う＝Notion重複防止の要）
+#   CPI/PCE に加え、JOBS(雇用統計)/PPI もシードidを再利用する。
+#   公式日付がズレても id だけは不変識別子として据え置く（教訓: 日付ベースidは不変）。
+ALIAS_CATEGORIES = ("CPI", "PCE", "JOBS", "PPI")
+
+
 def load_seed_id_alias() -> dict[tuple[str, str, int, int], str]:
     """
-    シードJSON の CPI/PCE を (category, country, 対象年, 対象月) → id の辞書にして返す。
+    シードJSON の CPI/PCE/JOBS/PPI を (category, country, 対象年, 対象月) → id の辞書にして返す。
     取得失敗時は空辞書（フォールバックで日付ベースの新規 id を使う）。
     """
     alias: dict[tuple[str, str, int, int], str] = {}
@@ -105,7 +121,7 @@ def load_seed_id_alias() -> dict[tuple[str, str, int, int], str]:
         log(f"  fetch_schedules: シードid読込失敗 ({type(e).__name__}: {e}) → id エイリアスなしで続行")
         return alias
     for ev in data.get("events", []):
-        if ev.get("category") not in ("CPI", "PCE"):
+        if ev.get("category") not in ALIAS_CATEGORIES:
             continue
         ym = _seed_target_ym(ev)
         if ym is None:
@@ -139,6 +155,33 @@ US_CPI_TRUTH: dict[tuple[int, int], date] = {
     (2026, 5): date(2026, 6, 10),    # 5月分 → 2026-06-10(水)
     (2026, 6): date(2026, 7, 14),    # 6月分 → 2026-07-14(火)
 }
+
+# ----------------------------------------------------------------------
+# 雇用統計(JOBS)の例外公表日
+#   原則「毎月第1金曜 8:30 ET」だが、祝日等で前倒しになる月だけ上書きする。
+#   キー = 公表年月(year, month)、値 = 実際の公表日。
+#   2026-07: 7/3(金)が独立記念日の振替休のため 7/2(木)に前倒し。
+# ----------------------------------------------------------------------
+US_JOBS_PUBLISH_OVERRIDE: dict[tuple[int, int], date] = {
+    (2026, 7): date(2026, 7, 2),
+}
+
+# ----------------------------------------------------------------------
+# 米PPI 真値表（2026年・裏取り済み。フォールバック用）
+#   確定公表日（is_estimated=False）。キー = 対象月(year, month)、値 = 公表日。
+#   ここに無い対象月は「対応する米CPIの公表日の翌営業日」を近似(is_estimated=True)で置く。
+# ----------------------------------------------------------------------
+US_PPI_TRUTH: dict[tuple[int, int], date] = {
+    (2026, 1): date(2026, 2, 27),    # 1月分 → 2026-02-27(金)
+    (2026, 3): date(2026, 4, 14),    # 3月分 → 2026-04-14(火)
+    (2026, 4): date(2026, 5, 13),    # 4月分 → 2026-05-13(水)
+    (2026, 5): date(2026, 6, 11),    # 5月分 → 2026-06-11(木)
+    (2026, 6): date(2026, 7, 15),    # 6月分 → 2026-07-15(水)
+}
+
+# 米PPI 公式スケジュールURL（403が多いので失敗時は真値表＋CPI翌営業日近似にフォールバック）
+BLS_PPI_URL = "https://www.bls.gov/schedule/news_release/ppi.htm"
+BLS_PPI_SOURCE_URL = "https://www.bls.gov/ppi/"
 
 
 # ----------------------------------------------------------------------
@@ -391,6 +434,211 @@ def build_jp_cpi(target_years: set[int]) -> list[dict]:
 
 
 # ----------------------------------------------------------------------
+# 4. 米雇用統計(JOBS): ルール計算（毎月第1金曜 8:30 ET、例外月は上書き）
+# ----------------------------------------------------------------------
+def first_friday(year: int, month: int) -> date:
+    """指定年月の第1金曜日を返す。"""
+    d1 = date(year, month, 1)
+    # weekday: Mon=0..Sun=6, 金=4。1日から最初の金曜までの日数を足す。
+    offset = (4 - d1.weekday()) % 7
+    return d1 + timedelta(days=offset)
+
+
+def jobs_publish_date(pub_year: int, pub_month: int) -> date:
+    """
+    雇用統計の公表日を返す。
+    原則は「公表月の第1金曜 8:30 ET」。例外月（祝日前倒し等）は上書き表を優先。
+    """
+    override = US_JOBS_PUBLISH_OVERRIDE.get((pub_year, pub_month))
+    if override is not None:
+        return override
+    return first_friday(pub_year, pub_month)
+
+
+def make_jobs_event(target_year: int, target_month: int, pub_date: date) -> dict:
+    """米雇用統計（8:30 ET）の event dict を作る。id はシードの us_nfp_* を再利用。"""
+    offset = et_offset_str(pub_date, 8, 30)
+    datetime_local = f"{pub_date.strftime('%Y-%m-%d')}T08:30:00{offset}"
+    datetime_utc = to_utc_z(datetime_local)
+    # シードに同じ対象年月のエントリーがあれば id を再利用（上書き＝重複防止）。
+    ev_id = _SEED_ID_ALIAS.get(
+        ("JOBS", "US", target_year, target_month),
+        f"us_nfp_{pub_date.strftime('%Y-%m-%d')}",
+    )
+    # title の対象月ラベル（前年12月分など、対象年が公表年と異なる場合は年号付き）
+    if target_year != pub_date.year:
+        title = f"米雇用統計 ({target_year}年{JP_MONTH_LABEL[target_month]}分)"
+    else:
+        title = f"米雇用統計 ({JP_MONTH_LABEL[target_month]}分)"
+    return {
+        "id": ev_id,
+        "title": title,
+        "category": "JOBS",
+        "country": "US",
+        "datetime_utc": datetime_utc,
+        "datetime_local": datetime_local,
+        "timezone": "America/New_York",
+        "importance": 3,
+        "is_estimated": False,
+        "description": "非農業部門雇用者数(NFP)、失業率、平均時給。FRB政策の最重要指標。",
+        "source_url": "https://www.bls.gov/schedule/news_release/empsit.htm",
+        "result": None,
+    }
+
+
+def build_us_jobs(target_years: set[int]) -> list[dict]:
+    """
+    対象年の米雇用統計（各月分）をルール計算で生成する。
+
+    公表年でループし、各月の第1金曜（例外月は上書き）を公表日とする。
+    雇用統計の「X月分」は翌月公表なので、対象月 = 公表月の前月。
+    target_years は「公表年」基準でフィルタ（datetime_local の年で後段フィルタも入る）。
+    """
+    events: list[dict] = []
+    for pub_year in sorted(target_years):
+        for pub_month in range(1, 13):
+            pub_date = jobs_publish_date(pub_year, pub_month)
+            # 公表月の前月が対象月（1月公表 → 前年12月分）
+            if pub_month == 1:
+                tgt_year, tgt_month = pub_year - 1, 12
+            else:
+                tgt_year, tgt_month = pub_year, pub_month - 1
+            events.append(make_jobs_event(tgt_year, tgt_month, pub_date))
+    log(f"  fetch_schedules[JOBS]: ルール計算で {len(events)} 件生成")
+    return events
+
+
+# ----------------------------------------------------------------------
+# 5. 米PPI: BLS公式を試す（フォールバック = 真値表＋CPI翌営業日近似）
+# ----------------------------------------------------------------------
+def next_business_day(d: date) -> date:
+    """翌営業日（土日をスキップ）。祝日は考慮しない近似。"""
+    nd = d + timedelta(days=1)
+    while nd.weekday() >= 5:  # 5=土, 6=日
+        nd += timedelta(days=1)
+    return nd
+
+
+def make_ppi_event(target_year: int, target_month: int, pub_date: date,
+                   is_estimated: bool) -> dict:
+    """米PPI（8:30 ET）の event dict を作る。id はシードの us_ppi_* を再利用。"""
+    offset = et_offset_str(pub_date, 8, 30)
+    datetime_local = f"{pub_date.strftime('%Y-%m-%d')}T08:30:00{offset}"
+    datetime_utc = to_utc_z(datetime_local)
+    ev_id = _SEED_ID_ALIAS.get(
+        ("PPI", "US", target_year, target_month),
+        f"us_ppi_{pub_date.strftime('%Y-%m-%d')}",
+    )
+    if target_year != pub_date.year:
+        title = f"米PPI ({target_year}年{JP_MONTH_LABEL[target_month]}分)"
+    else:
+        title = f"米PPI ({JP_MONTH_LABEL[target_month]}分)"
+    return {
+        "id": ev_id,
+        "title": title,
+        "category": "PPI",
+        "country": "US",
+        "datetime_utc": datetime_utc,
+        "datetime_local": datetime_local,
+        "timezone": "America/New_York",
+        "importance": 2,
+        "is_estimated": is_estimated,
+        "description": "生産者物価指数。卸売段階のインフレ先行指標。",
+        "source_url": BLS_PPI_SOURCE_URL,
+        "result": None,
+    }
+
+
+def _us_cpi_pubdate_by_target() -> dict[tuple[int, int], date]:
+    """
+    PPI未確定月の「CPI翌営業日」算出に使う、対象月→米CPI公表日 の辞書。
+    まず US_CPI_TRUTH を採用。足りない分はシードの 米CPI(datetime_local) から補う。
+    """
+    out: dict[tuple[int, int], date] = dict(US_CPI_TRUTH)
+    try:
+        data = load_canonical_events()
+    except Exception:
+        return out
+    for ev in data.get("events", []):
+        if ev.get("category") != "CPI" or ev.get("country") != "US":
+            continue
+        ym = _seed_target_ym(ev)
+        if ym is None:
+            continue
+        if ym not in out:  # 真値表優先、無い月だけシード値で補完
+            out[ym] = datetime.fromisoformat(ev["datetime_local"]).date()
+    return out
+
+
+def ppi_fallback() -> list[dict]:
+    """
+    米PPI のフォールバック。
+      - US_PPI_TRUTH の5件は確定（is_estimated=False）。
+      - それ以外（対象月レンジ内）は「対応CPIの公表日の翌営業日」を近似（is_estimated=True）。
+    対象月レンジ = 米CPIと同一（2025年12月分 〜 2026年11月分）。
+    """
+    target_months: list[tuple[int, int]] = [(2025, 12)] + [(2026, m) for m in range(1, 12)]
+    cpi_map = _us_cpi_pubdate_by_target()
+    out: list[dict] = []
+    for (tgt_y, tgt_m) in target_months:
+        if (tgt_y, tgt_m) in US_PPI_TRUTH:
+            out.append(make_ppi_event(tgt_y, tgt_m, US_PPI_TRUTH[(tgt_y, tgt_m)], is_estimated=False))
+        else:
+            cpi_d = cpi_map.get((tgt_y, tgt_m))
+            if cpi_d is None:
+                log(f"  fetch_schedules[PPI]: 対象 {tgt_y}-{tgt_m} のCPI公表日不明 → スキップ")
+                continue
+            out.append(make_ppi_event(tgt_y, tgt_m, next_business_day(cpi_d), is_estimated=True))
+    log(f"  fetch_schedules[PPI]: フォールバックで {len(out)} 件生成（確定 {len(US_PPI_TRUTH)} 件）")
+    return out
+
+
+def fetch_bls_ppi() -> list[dict]:
+    """BLS公式スケジュールから PPI 公表日を抽出する。403が多いので失敗時は真値表＋近似。"""
+    try:
+        r = requests.get(BLS_PPI_URL, timeout=30, headers={
+            "User-Agent": USER_AGENT,
+            "Accept": "text/html,application/xhtml+xml",
+        })
+        if r.status_code != 200:
+            log(f"  fetch_schedules[PPI]: BLS HTTP {r.status_code}（botブロックの想定内）→ フォールバック")
+            return ppi_fallback()
+        soup = BeautifulSoup(r.text, "html.parser")
+        events: list[dict] = []
+        for tr in soup.find_all("tr"):
+            cells = [td.get_text(" ", strip=True) for td in tr.find_all(["td", "th"])]
+            if len(cells) < 2:
+                continue
+            ref_text = cells[0]
+            rel_text = cells[-1]
+            m_ref = re.search(r"([A-Za-z]+)\.?\s+(\d{4})", ref_text)
+            m_rel = re.search(r"([A-Za-z]+)\.?\s+(\d{1,2}),?\s+(\d{4})", rel_text)
+            if not m_ref or not m_rel:
+                continue
+            tgt_month = EN_MONTH_MAP.get(m_ref.group(1).lower())
+            tgt_year = int(m_ref.group(2))
+            rel_month = EN_MONTH_MAP.get(m_rel.group(1).lower())
+            rel_day = int(m_rel.group(2))
+            rel_year = int(m_rel.group(3))
+            if not tgt_month or not rel_month:
+                continue
+            try:
+                pub_date = date(rel_year, rel_month, rel_day)
+            except ValueError:
+                continue
+            # 公式から取れたものは確定扱い
+            events.append(make_ppi_event(tgt_year, tgt_month, pub_date, is_estimated=False))
+        if not events:
+            log("  fetch_schedules[PPI]: BLSから抽出ゼロ → フォールバック")
+            return ppi_fallback()
+        log(f"  fetch_schedules[PPI]: BLS公式から {len(events)} 件取得")
+        return events
+    except Exception as e:
+        log(f"  fetch_schedules[PPI]: BLS取得失敗 ({type(e).__name__}: {e}) → フォールバック")
+        return ppi_fallback()
+
+
+# ----------------------------------------------------------------------
 # 対象年フィルタ（fetch_fomc.py の load_target_years を踏襲）
 # ----------------------------------------------------------------------
 def load_target_years() -> set[int]:
@@ -441,6 +689,16 @@ def collect_schedule_events() -> list[dict]:
         all_events.extend(build_jp_cpi(target_years))
     except Exception as e:
         log(f"  fetch_schedules[JP CPI]: 想定外の失敗 ({type(e).__name__}: {e}) → スキップ")
+    # 4. 米雇用統計（独立try/except、ルール計算＝第1金曜）
+    try:
+        all_events.extend(build_us_jobs(target_years))
+    except Exception as e:
+        log(f"  fetch_schedules[JOBS]: 想定外の失敗 ({type(e).__name__}: {e}) → スキップ")
+    # 5. 米PPI（独立try/except、BLS公式→真値表フォールバック）
+    try:
+        all_events.extend(fetch_bls_ppi())
+    except Exception as e:
+        log(f"  fetch_schedules[PPI]: 想定外の失敗 ({type(e).__name__}: {e}) → スキップ")
 
     # target_years でフィルタ（datetime_local の年で判定）
     filtered = [e for e in all_events if event_year(e) in target_years]

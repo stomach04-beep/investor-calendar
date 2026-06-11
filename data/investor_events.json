@@ -1,6 +1,6 @@
 {
   "schema_version": "2.0",
-  "generated_at": "2026-06-07T06:13:25Z",
+  "generated_at": "2026-06-11T12:06:18Z",
   "covered_years": [
     2026
   ],
@@ -132,7 +132,7 @@
       "datetime_local": "2026-01-13T08:30:00-05:00",
       "timezone": "America/New_York",
       "importance": 3,
-      "is_estimated": true,
+      "is_estimated": false,
       "description": "消費者物価指数。FRB利下げ織り込みに直結。",
       "source_url": "https://www.bls.gov/cpi/",
       "result": "CPI 前年比+2.7% / コア+2.6%（2025年12月分）"
@@ -174,10 +174,10 @@
       "datetime_local": "2026-01-23T08:30:00+09:00",
       "timezone": "Asia/Tokyo",
       "importance": 2,
-      "is_estimated": true,
+      "is_estimated": false,
       "description": "総務省統計局発表。日銀の利上げ判断材料。",
       "source_url": "https://www.stat.go.jp/data/cpi/",
-      "result": "CPI 前年比+2.7% / コア+2.6%（2025年12月分）"
+      "result": null
     },
     {
       "id": "jp_boj_2026-01-23",
@@ -244,7 +244,7 @@
       "datetime_local": "2026-02-13T08:30:00-05:00",
       "timezone": "America/New_York",
       "importance": 3,
-      "is_estimated": true,
+      "is_estimated": false,
       "description": "消費者物価指数。FRB利下げ織り込みに直結。",
       "source_url": "https://www.bls.gov/cpi/",
       "result": "CPI 前年比+2.4% / コア+2.5%（2026年1月分）"
@@ -261,7 +261,7 @@
       "is_estimated": true,
       "description": "内閣府発表。",
       "source_url": "https://www.esri.cao.go.jp/jp/sna/menu.html",
-      "result": "実質GDP +1.6%（2026年Q1・年率）"
+      "result": null
     },
     {
       "id": "jp_cpi_2026-02-20",
@@ -272,10 +272,10 @@
       "datetime_local": "2026-02-20T08:30:00+09:00",
       "timezone": "Asia/Tokyo",
       "importance": 2,
-      "is_estimated": true,
+      "is_estimated": false,
       "description": "総務省統計局発表。日銀の利上げ判断材料。",
       "source_url": "https://www.stat.go.jp/data/cpi/",
-      "result": "CPI 前年比+2.4% / コア+2.5%（2026年1月分）"
+      "result": null
     },
     {
       "id": "us_pce_2026-02-26",
@@ -331,7 +331,7 @@
       "is_estimated": true,
       "description": "内閣府発表。",
       "source_url": "https://www.esri.cao.go.jp/jp/sna/menu.html",
-      "result": "実質GDP +1.6%（2026年Q1・年率）"
+      "result": null
     },
     {
       "id": "jp_shunto_2026",
@@ -356,7 +356,7 @@
       "datetime_local": "2026-03-11T08:30:00-04:00",
       "timezone": "America/New_York",
       "importance": 3,
-      "is_estimated": true,
+      "is_estimated": false,
       "description": "消費者物価指数。FRB利下げ織り込みに直結。",
       "source_url": "https://www.bls.gov/cpi/",
       "result": "CPI 前年比+2.4% / コア+2.5%（2026年2月分）"
@@ -412,10 +412,10 @@
       "datetime_local": "2026-03-20T08:30:00+09:00",
       "timezone": "Asia/Tokyo",
       "importance": 2,
-      "is_estimated": true,
+      "is_estimated": false,
       "description": "総務省統計局発表。日銀の利上げ判断材料。",
       "source_url": "https://www.stat.go.jp/data/cpi/",
-      "result": "CPI 前年比+2.4% / コア+2.5%（2026年2月分）"
+      "result": null
     },
     {
       "id": "us_quadwitch_2026-03-20",
@@ -496,7 +496,7 @@
       "datetime_local": "2026-04-10T08:30:00-04:00",
       "timezone": "America/New_York",
       "importance": 3,
-      "is_estimated": true,
+      "is_estimated": false,
       "description": "消費者物価指数。FRB利下げ織り込みに直結。",
       "source_url": "https://www.bls.gov/cpi/",
       "result": "CPI 前年比+3.3% / コア+2.6%（2026年3月分）"
@@ -538,10 +538,10 @@
       "datetime_local": "2026-04-17T08:30:00+09:00",
       "timezone": "Asia/Tokyo",
       "importance": 2,
-      "is_estimated": true,
+      "is_estimated": false,
       "description": "総務省統計局発表。日銀の利上げ判断材料。",
       "source_url": "https://www.stat.go.jp/data/cpi/",
-      "result": "CPI 前年比+3.3% / コア+2.6%（2026年3月分）"
+      "result": null
     },
     {
       "id": "us_pce_2026-04-24",
@@ -608,7 +608,7 @@
       "datetime_local": "2026-05-12T08:30:00-04:00",
       "timezone": "America/New_York",
       "importance": 3,
-      "is_estimated": true,
+      "is_estimated": false,
       "description": "消費者物価指数。FRB利下げ織り込みに直結。",
       "source_url": "https://www.bls.gov/cpi/",
       "result": "CPI 前年比+3.8% / コア+2.7%（2026年4月分）"
@@ -625,7 +625,7 @@
       "is_estimated": true,
       "description": "内閣府発表。",
       "source_url": "https://www.esri.cao.go.jp/jp/sna/menu.html",
-      "result": "実質GDP +1.6%（2026年Q1・年率）"
+      "result": null
     },
     {
       "id": "jp_cpi_2026-05-22",
@@ -636,10 +636,10 @@
       "datetime_local": "2026-05-22T08:30:00+09:00",
       "timezone": "Asia/Tokyo",
       "importance": 2,
-      "is_estimated": true,
+      "is_estimated": false,
       "description": "総務省統計局発表。日銀の利上げ判断材料。",
       "source_url": "https://www.stat.go.jp/data/cpi/",
-      "result": "CPI 前年比+3.8% / コア+2.7%（2026年4月分）"
+      "result": null
     },
     {
       "id": "us_pce_2026-05-26",
@@ -706,10 +706,10 @@
       "datetime_local": "2026-06-10T08:30:00-04:00",
       "timezone": "America/New_York",
       "importance": 3,
-      "is_estimated": true,
+      "is_estimated": false,
       "description": "消費者物価指数。FRB利下げ織り込みに直結。",
       "source_url": "https://www.bls.gov/cpi/",
-      "result": null
+      "result": "CPI 前年比+4.2% / コア+2.8%（2026年5月分）"
     },
     {
       "id": "jp_majorsq_2026-06-12",
@@ -759,10 +759,10 @@
       "category": "CPI",
       "country": "JP",
       "datetime_utc": "2026-06-18T23:30:00Z",
-      "datetime_local": "2026-06-19T08:30:00+09:00",
+      "datetime_local": "2026-06-18T23:30:00+00:00",
       "timezone": "Asia/Tokyo",
       "importance": 2,
-      "is_estimated": true,
+      "is_estimated": false,
       "description": "総務省統計局発表。日銀の利上げ判断材料。",
       "source_url": "https://www.stat.go.jp/data/cpi/",
       "result": null
@@ -787,10 +787,10 @@
       "category": "PCE",
       "country": "US",
       "datetime_utc": "2026-06-25T12:30:00Z",
-      "datetime_local": "2026-06-25T08:30:00-04:00",
+      "datetime_local": "2026-06-25T12:30:00+00:00",
       "timezone": "America/New_York",
       "importance": 2,
-      "is_estimated": true,
+      "is_estimated": false,
       "description": "個人消費支出物価指数。FRBが最重視するインフレ指標。",
       "source_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index",
       "result": null
@@ -832,7 +832,7 @@
       "datetime_local": "2026-07-02T08:30:00-04:00",
       "timezone": "America/New_York",
       "importance": 3,
-      "is_estimated": true,
+      "is_estimated": false,
       "description": "非農業部門雇用者数(NFP)、失業率、平均時給。FRB政策の最重要指標。",
       "source_url": "https://www.bls.gov/schedule/news_release/empsit.htm",
       "result": null
@@ -846,7 +846,7 @@
       "datetime_local": "2026-07-14T08:30:00-04:00",
       "timezone": "America/New_York",
       "importance": 3,
-      "is_estimated": true,
+      "is_estimated": false,
       "description": "消費者物価指数。FRB利下げ織り込みに直結。",
       "source_url": "https://www.bls.gov/cpi/",
       "result": null
@@ -888,7 +888,7 @@
       "datetime_local": "2026-07-17T08:30:00+09:00",
       "timezone": "Asia/Tokyo",
       "importance": 2,
-      "is_estimated": true,
+      "is_estimated": false,
       "description": "総務省統計局発表。日銀の利上げ判断材料。",
       "source_url": "https://www.stat.go.jp/data/cpi/",
       "result": null
@@ -913,10 +913,10 @@
       "category": "PCE",
       "country": "US",
       "datetime_utc": "2026-07-30T12:30:00Z",
-      "datetime_local": "2026-07-30T08:30:00-04:00",
+      "datetime_local": "2026-07-30T12:30:00+00:00",
       "timezone": "America/New_York",
       "importance": 2,
-      "is_estimated": true,
+      "is_estimated": false,
       "description": "個人消費支出物価指数。FRBが最重視するインフレ指標。",
       "source_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index",
       "result": null
@@ -986,7 +986,7 @@
       "datetime_local": "2026-08-21T08:30:00+09:00",
       "timezone": "Asia/Tokyo",
       "importance": 2,
-      "is_estimated": true,
+      "is_estimated": false,
       "description": "総務省統計局発表。日銀の利上げ判断材料。",
       "source_url": "https://www.stat.go.jp/data/cpi/",
       "result": null
@@ -1000,7 +1000,7 @@
       "datetime_local": "2026-08-26T08:30:00-04:00",
       "timezone": "America/New_York",
       "importance": 2,
-      "is_estimated": true,
+      "is_estimated": false,
       "description": "個人消費支出物価指数。FRBが最重視するインフレ指標。",
       "source_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index",
       "result": null
@@ -1112,7 +1112,7 @@
       "datetime_local": "2026-09-18T08:30:00+09:00",
       "timezone": "Asia/Tokyo",
       "importance": 2,
-      "is_estimated": true,
+      "is_estimated": false,
       "description": "総務省統計局発表。日銀の利上げ判断材料。",
       "source_url": "https://www.stat.go.jp/data/cpi/",
       "result": null
@@ -1168,7 +1168,7 @@
       "datetime_local": "2026-09-30T08:30:00-04:00",
       "timezone": "America/New_York",
       "importance": 2,
-      "is_estimated": true,
+      "is_estimated": false,
       "description": "個人消費支出物価指数。FRBが最重視するインフレ指標。",
       "source_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index",
       "result": null
@@ -1252,23 +1252,9 @@
       "datetime_local": "2026-10-23T08:30:00+09:00",
       "timezone": "Asia/Tokyo",
       "importance": 2,
-      "is_estimated": true,
+      "is_estimated": false,
       "description": "総務省統計局発表。日銀の利上げ判断材料。",
       "source_url": "https://www.stat.go.jp/data/cpi/",
-      "result": null
-    },
-    {
-      "id": "us_pce_2026-10-26",
-      "title": "米PCEデフレーター (9月分)",
-      "category": "PCE",
-      "country": "US",
-      "datetime_utc": "2026-10-26T12:30:00Z",
-      "datetime_local": "2026-10-26T08:30:00-04:00",
-      "timezone": "America/New_York",
-      "importance": 2,
-      "is_estimated": true,
-      "description": "個人消費支出物価指数。FRBが最重視するインフレ指標。",
-      "source_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index",
       "result": null
     },
     {
@@ -1283,6 +1269,20 @@
       "is_estimated": false,
       "description": "2日目14:00 ET発表、議長会見14:30 ET。",
       "source_url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
+      "result": null
+    },
+    {
+      "id": "us_pce_2026-10-26",
+      "title": "米PCEデフレーター (9月分)",
+      "category": "PCE",
+      "country": "US",
+      "datetime_utc": "2026-10-29T12:30:00Z",
+      "datetime_local": "2026-10-29T08:30:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": false,
+      "description": "個人消費支出物価指数。FRBが最重視するインフレ指標。",
+      "source_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index",
       "result": null
     },
     {
@@ -1350,7 +1350,7 @@
       "datetime_local": "2026-11-20T08:30:00+09:00",
       "timezone": "Asia/Tokyo",
       "importance": 2,
-      "is_estimated": true,
+      "is_estimated": false,
       "description": "総務省統計局発表。日銀の利上げ判断材料。",
       "source_url": "https://www.stat.go.jp/data/cpi/",
       "result": null
@@ -1364,7 +1364,7 @@
       "datetime_local": "2026-11-25T08:30:00-05:00",
       "timezone": "America/New_York",
       "importance": 2,
-      "is_estimated": true,
+      "is_estimated": false,
       "description": "個人消費支出物価指数。FRBが最重視するインフレ指標。",
       "source_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index",
       "result": null
@@ -1490,7 +1490,7 @@
       "datetime_local": "2026-12-18T08:30:00+09:00",
       "timezone": "Asia/Tokyo",
       "importance": 2,
-      "is_estimated": true,
+      "is_estimated": false,
       "description": "総務省統計局発表。日銀の利上げ判断材料。",
       "source_url": "https://www.stat.go.jp/data/cpi/",
       "result": null
@@ -1532,7 +1532,7 @@
       "datetime_local": "2026-12-23T08:30:00-05:00",
       "timezone": "America/New_York",
       "importance": 2,
-      "is_estimated": true,
+      "is_estimated": false,
       "description": "個人消費支出物価指数。FRBが最重視するインフレ指標。",
       "source_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index",
       "result": null

@@ -112,7 +112,7 @@ def collect_events() -> list[dict]:
         log("  build_events_out.json が見つかりません。build_events.py を先に実行してください")
         return []
 
-    for tmp_name in ("fetch_fomc_out", "fetch_beige_out", "fetch_boj_out"):
+    for tmp_name in ("fetch_fomc_out", "fetch_beige_out", "fetch_boj_out", "fetch_schedules_out"):
         try:
             data = load_tmp(tmp_name)
             count = 0
@@ -177,12 +177,16 @@ def main() -> int:
         target_props = build_properties_for_event(ev, name_map)
 
         if existing_page:
-            # is_estimated=False の行は触らない（人の手動補正を保護）
+            # 既存ページが確定値(is_estimated=false)なら、incoming の種別を問わず保護して触らない。
+            # 提案書の受け入れ条件「翌朝の自動実行後も is_estimated=false 行が上書きされない」に対応。
+            # 運用イメージ:
+            #   - 既存=推定(true) → fetch_schedules(公式 false) や build_events(false) で上書きして確定させる
+            #   - 既存=確定(false) → 手動確定・公式確定のどちらも以後は自動更新しない（公式日程は発表後ほぼ不変なので安全）
+            # ※ 公式日程が後日変わった等で再確定したい場合は、Notion 側で当該行の「推定日」を一旦 true に戻す。
             existing_is_estimated = read_checkbox(
                 existing_page.get("properties", {}).get(name_map["is_estimated"], {})
             )
-            if not existing_is_estimated and ev.get("is_estimated", False):
-                # 既存=確定 vs 新規=推定 → 既存（確定値）を優先して保護
+            if not existing_is_estimated:
                 protected += 1
                 continue
 

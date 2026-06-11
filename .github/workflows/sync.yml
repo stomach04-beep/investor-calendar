@@ -7,12 +7,13 @@ name: Investor Calendar Sync
 # UTC = JST - 9h → 21:35 UTC = 06:35 JST 翌朝。
 #
 # パイプライン:
-#   1. build_events.py  : seed JSON をもとに events を構築（必要なら年シフト）
-#   2. fetch_fomc.py    : FRB公式から FOMC 会合日を取得（ベストエフォート）
-#   3. fetch_boj.py     : 日銀公式から MPM 日を取得（ベストエフォート）
-#   4. notion_upsert.py : Notion DB に upsert（is_estimated=false 行は保護）
-#   5. notion_to_json.py: Notion → data/investor_events.json 再生成
-#   6. git auto-commit  : data/ の差分があればコミット
+#   1. build_events.py    : seed JSON をもとに events を構築（必要なら年シフト）
+#   2. fetch_fomc.py      : FRB公式から FOMC 会合日を取得（ベストエフォート）
+#   3. fetch_boj.py       : 日銀公式から MPM 日を取得（ベストエフォート）
+#   4. fetch_schedules.py : 米PCE(BEA)/米CPI(BLS)/全国CPI(ルール計算) を取得（ベストエフォート）
+#   5. notion_upsert.py   : Notion DB に upsert（is_estimated=false 行は保護）
+#   6. notion_to_json.py  : Notion → data/investor_events.json 再生成
+#   7. git auto-commit    : data/ の差分があればコミット
 
 on:
   schedule:
@@ -72,6 +73,10 @@ jobs:
       - name: fetch_boj.py 実行（日銀公式 - ベストエフォート）
         continue-on-error: true
         run: python scripts/fetch_boj.py
+
+      - name: fetch_schedules.py 実行（米PCE=BEA公式 / 米CPI=BLS公式 / 全国CPI=ルール計算 - ベストエフォート）
+        continue-on-error: true
+        run: python scripts/fetch_schedules.py
 
       - name: notion_upsert.py 実行
         env:

@@ -1,6 +1,6 @@
 {
   "schema_version": "2.0",
-  "generated_at": "2026-06-16T23:07:02Z",
+  "generated_at": "2026-06-17T23:02:39Z",
   "covered_years": [
     2026
   ],
@@ -839,7 +839,7 @@
       "is_estimated": false,
       "description": "2日目14:00 ET発表、議長会見14:30 ET。",
       "source_url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
-      "result": null
+      "result": "政策金利 3.50–3.75%（据え置き）"
     },
     {
       "id": "jp_cpi_2026-06-26",

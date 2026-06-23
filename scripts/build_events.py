@@ -64,7 +64,11 @@ def shift_event_to_year(event: dict, baseline_year: int, target_year: int) -> di
 def build(target_years: list[int]) -> dict:
     """シード + 必要に応じて年シフトを行い、events をまとめて返す。"""
     seed = load_canonical_events()
-    seed_events = seed.get("events", [])
+    # 保有株決算(hold_earnings_*)は fetch_earnings.py の専管。notion_to_json が
+    # 投資家カレンダーDB全体を investor_events.json へ書き戻すため、前回生成した
+    # hold_earnings がシードに紛れ込む。build_events では除外し、毎回 fetch_earnings_out
+    # だけが供給元になるようにする（archive した銘柄が build 経由で復活するのを防ぐ）。
+    seed_events = [e for e in seed.get("events", []) if not str(e.get("id", "")).startswith("hold_earnings_")]
     covered = set(seed.get("covered_years", []))
 
     if not seed_events:

@@ -285,12 +285,18 @@ def fetch_holdings(client: NotionClient, db_id: str) -> list[dict]:
     p_status = _resolve_prop(props, "ステータス", "select")
     p_name = _resolve_prop(props, "銘柄名", "title")
     p_date = _resolve_prop(props, "次回決算日", "date")
+    p_shares = _resolve_prop(props, "保有株数", "number")
 
     holds: list[dict] = []
     for pg in client.query_database(db_id):
         pr = pg.get("properties", {})
         status = read_select(pr.get(p_status, {}))
         if status not in HELD_STATUSES:
+            continue
+        # 保有株数0（持株会の積立開始直後など、まだ実保有がない）は決算対象外
+        shares = pr.get(p_shares, {}).get("number")
+        if shares is not None and shares <= 0:
+            log(f"  skip(0株): {read_title(pr.get(p_name, {}))}")
             continue
         name = read_title(pr.get(p_name, {}))
         # 重複・無効・統合済みの整理用ページは決算対象外（銘柄名で判定）

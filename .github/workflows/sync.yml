@@ -78,7 +78,7 @@ jobs:
         continue-on-error: true
         run: python scripts/fetch_schedules.py
 
-      - name: fetch_earnings.py 実行（保有株の決算日: ポートフォリオDB読込→yfinance/JPX→カレンダー反映 - ベストエフォート）
+      - name: fetch_earnings.py 実行（保有株の決算日を取得しカレンダーへ反映・ベストエフォート）
         continue-on-error: true
         env:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}

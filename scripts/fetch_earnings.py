@@ -31,6 +31,7 @@ from __future__ import annotations
 import argparse
 import io
 import os
+import re
 import sys
 from datetime import date, datetime, timezone
 from pathlib import Path
@@ -96,6 +97,19 @@ def to_yf_symbol(ticker: str, market: str) -> str:
 def to_jp_code(ticker: str) -> str:
     """JPX 照合用の銘柄コード（.T を除いた4桁）。"""
     return (ticker or "").strip().upper().replace(".T", "")
+
+
+def is_valid_ticker(ticker: str, market: str) -> bool:
+    """
+    yfinance で扱えるティッカー形式かを判定する。
+    投資信託・債券（例『DC米国株IDX』『Tボンド』）は日本語コードなので除外される。
+      - 日本株: 4桁数字（.T は許容）
+      - 米国株: 先頭が英字で、英数字・ピリオド・ハイフンのみ（例 NVDA, BRK.B）
+    """
+    t = (ticker or "").strip().upper()
+    if market == "日本":
+        return bool(re.fullmatch(r"\d{4}", t.replace(".T", "")))
+    return bool(re.fullmatch(r"[A-Z][A-Z0-9.\-]*", t))
 
 
 # ----------------------------------------------------------------------
@@ -278,12 +292,21 @@ def fetch_holdings(client: NotionClient, db_id: str) -> list[dict]:
         status = read_select(pr.get(p_status, {}))
         if status not in HELD_STATUSES:
             continue
+        name = read_title(pr.get(p_name, {}))
+        # 重複・無効・統合済みの整理用ページは決算対象外（銘柄名で判定）
+        if any(ng in name for ng in ("【重複", "[重複", "無効】", "統合")):
+            log(f"  skip(重複・無効): {name}")
+            continue
         ticker = read_rich_text(pr.get(p_ticker, {})).strip()
         market = read_select(pr.get(p_market, {}))
         if not ticker or market == "ETF" or not market:
             continue
+        # 投信・債券など yfinance で扱えない日本語コードを除外
+        if not is_valid_ticker(ticker, market):
+            log(f"  skip(非対応ティッカー): {name}({ticker})")
+            continue
         holds.append({
-            "name": read_title(pr.get(p_name, {})) or ticker,
+            "name": name or ticker,
             "ticker": ticker,
             "market": market,
             "page_id": pg["id"],

@@ -1,6 +1,6 @@
 {
   "schema_version": "2.0",
-  "generated_at": "2026-06-23T00:21:38Z",
+  "generated_at": "2026-06-23T00:27:28Z",
   "covered_years": [
     2026
   ],
@@ -674,20 +674,6 @@
       "result": null
     },
     {
-      "id": "hold_earnings_us_CRWV",
-      "title": "【重複・無効】コアウィーブ（→ 36d4…401 に統合） 決算",
-      "category": "EARNINGS",
-      "country": "US",
-      "datetime_utc": "2026-05-07T20:00:00Z",
-      "datetime_local": "2026-05-07T16:00:00-04:00",
-      "timezone": "America/New_York",
-      "importance": 2,
-      "is_estimated": true,
-      "description": "保有株の決算発表予定（【重複・無効】コアウィーブ（→ 36d4…401 に統合））。予定日は変更される場合があります。",
-      "source_url": "https://finance.yahoo.com/quote/CRWV",
-      "result": null
-    },
-    {
       "id": "us_cpi_2026-05-11",
       "title": "米CPI (4月分)",
       "category": "CPI",
@@ -1052,20 +1038,6 @@
       "result": null
     },
     {
-      "id": "hold_earnings_us_RMBS",
-      "title": "【重複・無効】ラムバス（→ 36d4…b4 に統合） 決算",
-      "category": "EARNINGS",
-      "country": "US",
-      "datetime_utc": "2026-07-27T20:00:00Z",
-      "datetime_local": "2026-07-27T16:00:00-04:00",
-      "timezone": "America/New_York",
-      "importance": 2,
-      "is_estimated": true,
-      "description": "保有株の決算発表予定（【重複・無効】ラムバス（→ 36d4…b4 に統合））。予定日は変更される場合があります。",
-      "source_url": "https://finance.yahoo.com/quote/RMBS",
-      "result": null
-    },
-    {
       "id": "hold_earnings_us_CAKE",
       "title": "チーズケーキファクトリー 決算",
       "category": "EARNINGS",
@@ -1273,20 +1245,6 @@
       "is_estimated": true,
       "description": "保有株の決算発表予定（任天堂）。予定日は変更される場合があります。",
       "source_url": "https://finance.yahoo.co.jp/quote/7974.T",
-      "result": null
-    },
-    {
-      "id": "hold_earnings_us_APP",
-      "title": "【重複・無効】アップラビン（→ 36d4…a7d に統合） 決算",
-      "category": "EARNINGS",
-      "country": "US",
-      "datetime_utc": "2026-08-06T20:00:00Z",
-      "datetime_local": "2026-08-06T16:00:00-04:00",
-      "timezone": "America/New_York",
-      "importance": 2,
-      "is_estimated": true,
-      "description": "保有株の決算発表予定（【重複・無効】アップラビン（→ 36d4…a7d に統合））。予定日は変更される場合があります。",
-      "source_url": "https://finance.yahoo.com/quote/APP",
       "result": null
     },
     {

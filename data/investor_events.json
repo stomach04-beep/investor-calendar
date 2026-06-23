@@ -1,6 +1,6 @@
 {
   "schema_version": "2.0",
-  "generated_at": "2026-06-23T02:47:45Z",
+  "generated_at": "2026-06-23T22:47:56Z",
   "covered_years": [
     2026
   ],
@@ -1024,6 +1024,20 @@
       "result": null
     },
     {
+      "id": "hold_earnings_us_KMB",
+      "title": "キンバリークラーク 決算",
+      "category": "EARNINGS",
+      "country": "US",
+      "datetime_utc": "2026-07-28T20:00:00Z",
+      "datetime_local": "2026-07-28T16:00:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": true,
+      "description": "保有株の決算発表予定（キンバリークラーク）。予定日は変更される場合があります。",
+      "source_url": "https://finance.yahoo.com/quote/KMB",
+      "result": null
+    },
+    {
       "id": "hold_earnings_us_CAKE",
       "title": "チーズケーキファクトリー 決算",
       "category": "EARNINGS",
@@ -1259,20 +1273,6 @@
       "is_estimated": false,
       "description": "非農業部門雇用者数(NFP)、失業率、平均時給。FRB政策の最重要指標。",
       "source_url": "https://www.bls.gov/schedule/news_release/empsit.htm",
-      "result": null
-    },
-    {
-      "id": "hold_earnings_us_KMB",
-      "title": "キンバリークラーク 決算",
-      "category": "EARNINGS",
-      "country": "US",
-      "datetime_utc": "2026-08-10T20:00:00Z",
-      "datetime_local": "2026-08-10T16:00:00-04:00",
-      "timezone": "America/New_York",
-      "importance": 2,
-      "is_estimated": true,
-      "description": "保有株の決算発表予定（キンバリークラーク）。予定日は変更される場合があります。",
-      "source_url": "https://finance.yahoo.com/quote/KMB",
       "result": null
     },
     {

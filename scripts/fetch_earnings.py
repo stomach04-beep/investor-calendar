@@ -1,0 +1,413 @@
+# -*- coding: utf-8 -*-
+"""
+保有株の次回決算日を取得して:
+  (A) ポートフォリオ管理DB(Notion)の「次回決算日」プロパティを更新
+  (B) 投資家カレンダー用の「決算」イベントを tmp/fetch_earnings_out.json に出力
+する。
+
+データ源:
+  - yfinance（主力・日米両対応）: Ticker.calendar["Earnings Date"]（日付のみ採用）
+  - JPX 決算発表予定Excel（日本株の補完）: yfinance で取れない日本株をコードで補う
+
+役割分担（既存パイプラインの思想を踏襲）:
+  - 投資家カレンダーDB への「決算」イベント登録は notion_upsert.py が
+    tmp/fetch_earnings_out.json をマージして行う（本スクリプトはイベントを生成するだけ）。
+  - ただし「ポートフォリオDBの次回決算日更新」と「売却済み銘柄の決算イベント掃除」は
+    保有状態を知っている本スクリプトが直接 Notion に書く。
+
+モード:
+  通常         : Notion 読み書き（NOTION_TOKEN 必須）
+  --dry-run    : Notion を読むが書かない（件数・ログのみ）
+  --self-test  : Notion 不要。サンプル保有株で yfinance/JPX 取得とイベント生成のみ確認
+
+実行:
+  set NOTION_TOKEN=secret_xxx
+  python scripts/fetch_earnings.py
+  python scripts/fetch_earnings.py --dry-run
+  python scripts/fetch_earnings.py --self-test
+"""
+from __future__ import annotations
+
+import argparse
+import io
+import os
+import sys
+from datetime import date, datetime, timezone
+from pathlib import Path
+from zoneinfo import ZoneInfo
+
+import requests
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from common import (  # noqa: E402
+    NotionClient,
+    get_notion_db_id,
+    log,
+    read_date_start,
+    read_rich_text,
+    read_select,
+    read_title,
+    write_tmp,
+)
+
+# ----------------------------------------------------------------------
+# 定数
+# ----------------------------------------------------------------------
+UA = "investor-calendar-bot/1.0 (+https://github.com/stomach04-beep/investor-calendar)"
+
+# 「保有中」とみなすステータス（これ以外＝未購入/売却予定/売却済 は対象外）
+HELD_STATUSES = {"保有継続", "目標達成", "部分達成", "打診買い済"}
+
+TZ_JST = ZoneInfo("Asia/Tokyo")
+TZ_ET = ZoneInfo("America/New_York")
+
+# 日本株のデフォルト決算発表時刻（15:00 JST 想定）／米国株は引け後 16:00 ET 想定。
+# yfinance の時刻は不正確なので採用せず、日付＋この既定時刻で表示・通知する。
+JP_HOUR, JP_MIN = 15, 0
+US_HOUR, US_MIN = 16, 0
+
+# self-test 用サンプル（Notion 不要でデータ取得を確認するための固定リスト）
+SELF_TEST_HOLDINGS = [
+    {"name": "NVIDIA", "ticker": "NVDA", "market": "米国", "page_id": None, "current": None, "date_prop": "次回決算日"},
+    {"name": "Apple", "ticker": "AAPL", "market": "米国", "page_id": None, "current": None, "date_prop": "次回決算日"},
+    {"name": "任天堂", "ticker": "7974", "market": "日本", "page_id": None, "current": None, "date_prop": "次回決算日"},
+    {"name": "三菱UFJ", "ticker": "8306", "market": "日本", "page_id": None, "current": None, "date_prop": "次回決算日"},
+]
+
+
+def get_portfolio_db_id() -> str:
+    """ポートフォリオ管理DBの database_id。env 優先、無ければ既定値。"""
+    v = (os.environ.get("PORTFOLIO_DB_ID") or "").lstrip("﻿").strip()
+    return v or "f724f7b77ca34d0fbbdaafe81003d956"
+
+
+# ----------------------------------------------------------------------
+# ティッカー正規化
+# ----------------------------------------------------------------------
+def to_yf_symbol(ticker: str, market: str) -> str:
+    """yfinance 用シンボルに整形。日本株は『4桁コード + .T』。"""
+    t = (ticker or "").strip().upper()
+    if market == "日本":
+        code = t.replace(".T", "").strip()
+        return f"{code}.T" if code else ""
+    return t  # 米国株はティッカーそのまま
+
+
+def to_jp_code(ticker: str) -> str:
+    """JPX 照合用の銘柄コード（.T を除いた4桁）。"""
+    return (ticker or "").strip().upper().replace(".T", "")
+
+
+# ----------------------------------------------------------------------
+# 時刻ユーティリティ
+# ----------------------------------------------------------------------
+def et_offset_str(d: date, hour: int, minute: int) -> str:
+    """指定日の ET(America/New_York) の UTC オフセット文字列（例 '-04:00'）。"""
+    aware = datetime(d.year, d.month, d.day, hour, minute, tzinfo=TZ_ET)
+    off = aware.utcoffset()
+    assert off is not None
+    total = int(off.total_seconds() // 60)
+    sign = "+" if total >= 0 else "-"
+    total = abs(total)
+    return f"{sign}{total // 60:02d}:{total % 60:02d}"
+
+
+def to_utc_z(local_iso: str) -> str:
+    """オフセット付き ISO 文字列を UTC の 'YYYY-MM-DDTHH:MM:SSZ' に変換。"""
+    aware = datetime.fromisoformat(local_iso)
+    return aware.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+# ----------------------------------------------------------------------
+# yfinance 取得（主力）
+# ----------------------------------------------------------------------
+def yf_next_earnings(symbol: str) -> date | None:
+    """yfinance で次回決算予定日(date)を返す。取れなければ None。"""
+    if not symbol:
+        return None
+    try:
+        import yfinance as yf
+        tk = yf.Ticker(symbol)
+        cal = tk.calendar
+        ed = cal.get("Earnings Date") if isinstance(cal, dict) else None
+        if not ed:
+            return None
+        if isinstance(ed, (list, tuple)):
+            ed = ed[0] if ed else None
+        if isinstance(ed, datetime):
+            return ed.date()
+        if isinstance(ed, date):
+            return ed
+        try:
+            return date.fromisoformat(str(ed)[:10])
+        except ValueError:
+            return None
+    except Exception as e:
+        log(f"  yfinance {symbol} 取得失敗: {type(e).__name__}: {e}")
+        return None
+
+
+# ----------------------------------------------------------------------
+# JPX 決算発表予定Excel（日本株の補完）
+# ----------------------------------------------------------------------
+JPX_INDEX = "https://www.jpx.co.jp/listing/event-schedules/financial-announcement/index.html"
+JPX_BASE = "https://www.jpx.co.jp"
+
+
+def jpx_earnings_map() -> dict[str, date]:
+    """
+    JPX の決算発表予定Excelを全て読み、{4桁コード: 決算発表予定日} を返す。
+    ベストエフォート（失敗時は空 dict）。yfinance で取れない日本株の補完に使う。
+
+    Excel 仕様（2026-06 時点で確認）:
+      行5(0始まり4)=ヘッダ、データは行6から。列0=決算発表予定日, 列1=コード。
+    """
+    out: dict[str, date] = {}
+    try:
+        from bs4 import BeautifulSoup
+        import openpyxl
+        r = requests.get(JPX_INDEX, headers={"User-Agent": UA}, timeout=30)
+        if r.status_code != 200:
+            log(f"  JPX index HTTP {r.status_code} → 日本株補完なしで継続")
+            return out
+        soup = BeautifulSoup(r.text, "html.parser")
+        hrefs: list[str] = []
+        for a in soup.find_all("a"):
+            h = a.get("href") or ""
+            if h.lower().endswith(".xlsx") and "kessan" in h.lower():
+                hrefs.append(h if h.startswith("http") else JPX_BASE + h)
+        for url in hrefs:
+            try:
+                rr = requests.get(url, headers={"User-Agent": UA}, timeout=30)
+                if rr.status_code != 200:
+                    continue
+                wb = openpyxl.load_workbook(io.BytesIO(rr.content), read_only=True, data_only=True)
+                ws = wb.active
+                for row in ws.iter_rows(min_row=6, values_only=True):
+                    if not row or len(row) < 2:
+                        continue
+                    d, code = row[0], row[1]
+                    if d is None or code is None:
+                        continue
+                    cd = str(code).strip().replace(".0", "")
+                    if isinstance(d, datetime):
+                        dd = d.date()
+                    elif isinstance(d, date):
+                        dd = d
+                    else:
+                        continue
+                    # 同一コードは「より新しい予定日」を採用（更新版優先）
+                    if cd not in out or dd > out[cd]:
+                        out[cd] = dd
+            except Exception as e:
+                log(f"  JPX excel {url} 失敗: {type(e).__name__}")
+                continue
+        log(f"  JPX 補完マップ {len(out)} 件")
+    except Exception as e:
+        log(f"  JPX 取得失敗: {type(e).__name__}: {e} → 日本株補完なしで継続")
+    return out
+
+
+# ----------------------------------------------------------------------
+# イベント生成
+# ----------------------------------------------------------------------
+def build_event(h: dict, edate: date) -> dict:
+    """保有株1件 + 決算日 から 投資家カレンダー用イベント dict を作る。"""
+    market = h["market"]
+    name = h["name"]
+    ticker = h["ticker"]
+    if market == "日本":
+        country = "JP"
+        code = to_jp_code(ticker)
+        # id は銘柄ごとに固定（日付を含めない＝決算日が動いても upsert で更新・重複しない）
+        ev_id = f"hold_earnings_jp_{code}"
+        local = f"{edate.isoformat()}T{JP_HOUR:02d}:{JP_MIN:02d}:00+09:00"
+        tz = "Asia/Tokyo"
+        src = f"https://finance.yahoo.co.jp/quote/{code}.T"
+    else:
+        country = "US"
+        sym = ticker.strip().upper()
+        ev_id = f"hold_earnings_us_{sym}"
+        off = et_offset_str(edate, US_HOUR, US_MIN)
+        local = f"{edate.isoformat()}T{US_HOUR:02d}:{US_MIN:02d}:00{off}"
+        tz = "America/New_York"
+        src = f"https://finance.yahoo.com/quote/{sym}"
+    return {
+        "id": ev_id,
+        "title": f"{name} 決算",
+        "category": "EARNINGS",
+        "country": country,
+        "datetime_utc": to_utc_z(local),
+        "datetime_local": local,
+        "timezone": tz,
+        "importance": 2,
+        # 予定日は変わりうるので推定扱い（notion_upsert の保護対象にせず毎朝追従させる）
+        "is_estimated": True,
+        "description": f"保有株の決算発表予定（{name}）。予定日は変更される場合があります。",
+        "source_url": src,
+        "result": None,
+    }
+
+
+# ----------------------------------------------------------------------
+# Notion: 保有株の取得
+# ----------------------------------------------------------------------
+def _resolve_prop(props: dict, jp_name: str, expected_type: str) -> str:
+    """日本語プロパティ名を型一致で解決（前後空白の揺れに耐える）。"""
+    if jp_name in props and props[jp_name].get("type") == expected_type:
+        return jp_name
+    for name, meta in props.items():
+        if name.strip() == jp_name and meta.get("type") == expected_type:
+            return name
+    return jp_name  # 見つからなくても名前で素直に試す
+
+
+def fetch_holdings(client: NotionClient, db_id: str) -> list[dict]:
+    """ポートフォリオDBから『保有中・ティッカーあり・ETF以外』の銘柄を抽出する。"""
+    schema = client._request("GET", f"https://api.notion.com/v1/databases/{db_id}", None)
+    props = schema.get("properties", {})
+    p_ticker = _resolve_prop(props, "ティッカー", "rich_text")
+    p_market = _resolve_prop(props, "市場", "select")
+    p_status = _resolve_prop(props, "ステータス", "select")
+    p_name = _resolve_prop(props, "銘柄名", "title")
+    p_date = _resolve_prop(props, "次回決算日", "date")
+
+    holds: list[dict] = []
+    for pg in client.query_database(db_id):
+        pr = pg.get("properties", {})
+        status = read_select(pr.get(p_status, {}))
+        if status not in HELD_STATUSES:
+            continue
+        ticker = read_rich_text(pr.get(p_ticker, {})).strip()
+        market = read_select(pr.get(p_market, {}))
+        if not ticker or market == "ETF" or not market:
+            continue
+        holds.append({
+            "name": read_title(pr.get(p_name, {})) or ticker,
+            "ticker": ticker,
+            "market": market,
+            "page_id": pg["id"],
+            "current": read_date_start(pr.get(p_date, {})),
+            "date_prop": p_date,
+        })
+    return holds
+
+
+def update_portfolio_date(client: NotionClient, h: dict, edate: date, dry: bool) -> bool:
+    """ポートフォリオDBの『次回決算日』を更新する（変化がある時だけ）。更新したら True。"""
+    cur = (h.get("current") or "")[:10]
+    new = edate.isoformat()
+    if cur == new:
+        return False
+    if not dry:
+        client.update_page(h["page_id"], {h["date_prop"]: {"date": {"start": new}}})
+    return True
+
+
+def archive_stale(client: NotionClient, cal_db_id: str, current_ids: set[str], dry: bool) -> int:
+    """
+    投資家カレンダーDBの hold_earnings_* イベントのうち、今回の保有セットに無いもの
+    （＝売却された銘柄）を archive（アーカイブ）して掃除する。archive 件数を返す。
+    """
+    schema = client._request("GET", f"https://api.notion.com/v1/databases/{cal_db_id}", None)
+    props = schema.get("properties", {})
+    id_name = "ID"
+    if id_name not in props:
+        for n in props:
+            if n.lower() == "id" or n.endswith(":ID") or n.endswith(":id"):
+                id_name = n
+                break
+    n = 0
+    for pg in client.query_database(cal_db_id):
+        idv = read_rich_text(pg.get("properties", {}).get(id_name, {}))
+        if idv.startswith("hold_earnings_") and idv not in current_ids:
+            if not dry:
+                client.archive_page(pg["id"])
+            n += 1
+            log(f"  掃除(archive): {idv}")
+    return n
+
+
+# ----------------------------------------------------------------------
+# メイン
+# ----------------------------------------------------------------------
+def _resolve_dates(holds: list[dict]) -> tuple[list[dict], list[dict]]:
+    """各保有株の決算日を yfinance（主）＋JPX（日本株補完）で解決。(date付きリスト, 取得失敗リスト)。"""
+    jpx: dict[str, date] = {}
+    if any(h["market"] == "日本" for h in holds):
+        jpx = jpx_earnings_map()
+    resolved: list[dict] = []
+    missing: list[dict] = []
+    for h in holds:
+        sym = to_yf_symbol(h["ticker"], h["market"])
+        ed = yf_next_earnings(sym)
+        src = "yfinance"
+        if ed is None and h["market"] == "日本":
+            ed = jpx.get(to_jp_code(h["ticker"]))
+            src = "JPX"
+        if ed is None:
+            missing.append(h)
+            log(f"  {h['name']}({h['ticker']}): 決算日が取得できず（スキップ）")
+            continue
+        h2 = dict(h)
+        h2["edate"] = ed
+        h2["src"] = src
+        resolved.append(h2)
+        log(f"  {h['name']}({h['ticker']}) -> {ed} [{src}]")
+    return resolved, missing
+
+
+def main() -> int:
+    ap = argparse.ArgumentParser(description="保有株の次回決算日を取得しカレンダーへ反映")
+    ap.add_argument("--dry-run", action="store_true", help="Notion を読むが書き込まない")
+    ap.add_argument("--self-test", action="store_true", help="Notion 不要・サンプル銘柄で取得と生成のみ確認")
+    args = ap.parse_args()
+
+    # ---- self-test: Notion を使わずデータ取得＋生成だけ確認 ----
+    if args.self_test:
+        resolved, missing = _resolve_dates(SELF_TEST_HOLDINGS)
+        events = [build_event(h, h["edate"]) for h in resolved]
+        write_tmp("fetch_earnings_out", {
+            "events": events,
+            "fetched_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        })
+        log(f"self-test 完了: 生成 {len(events)} 件 / 取得失敗 {len(missing)} 件")
+        for e in events:
+            log(f"    {e['id']} | {e['datetime_local']} | {e['title']}")
+        return 0
+
+    # ---- 通常 / dry-run ----
+    client = NotionClient()
+    pdb = get_portfolio_db_id()
+    holds = fetch_holdings(client, pdb)
+    log(f"  保有株（対象）{len(holds)} 件")
+    if not holds:
+        log("  対象保有株なし → 何もしない")
+        write_tmp("fetch_earnings_out", {"events": [], "fetched_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")})
+        return 0
+
+    resolved, missing = _resolve_dates(holds)
+
+    updated = 0
+    for h in resolved:
+        if update_portfolio_date(client, h, h["edate"], args.dry_run):
+            updated += 1
+
+    events = [build_event(h, h["edate"]) for h in resolved]
+    write_tmp("fetch_earnings_out", {
+        "events": events,
+        "fetched_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+    })
+
+    # 売却された銘柄の決算イベントを掃除（投資家カレンダーDB）
+    cur_ids = {e["id"] for e in events}
+    archived = archive_stale(client, get_notion_db_id(), cur_ids, args.dry_run)
+
+    mode = "dry-run" if args.dry_run else "実行"
+    log(f"fetch_earnings 完了({mode}): events={len(events)}, "
+        f"ポートフォリオ更新={updated}, 取得失敗={len(missing)}, 掃除={archived}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

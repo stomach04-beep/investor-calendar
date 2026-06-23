@@ -186,6 +186,11 @@ class NotionClient:
         url = f"https://api.notion.com/v1/pages/{page_id}"
         return self._request("PATCH", url, {"properties": properties})
 
+    def archive_page(self, page_id: str) -> dict:
+        """ページをアーカイブ（archived=true）する。保有から外れた決算イベントの掃除用。"""
+        url = f"https://api.notion.com/v1/pages/{page_id}"
+        return self._request("PATCH", url, {"archived": True})
+
 
 # ----------------------------------------------------------------------
 # Notion プロパティ生成ヘルパー

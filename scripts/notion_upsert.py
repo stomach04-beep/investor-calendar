@@ -112,7 +112,7 @@ def collect_events() -> list[dict]:
         log("  build_events_out.json が見つかりません。build_events.py を先に実行してください")
         return []
 
-    for tmp_name in ("fetch_fomc_out", "fetch_beige_out", "fetch_boj_out", "fetch_schedules_out"):
+    for tmp_name in ("fetch_fomc_out", "fetch_beige_out", "fetch_boj_out", "fetch_schedules_out", "fetch_earnings_out"):
         try:
             data = load_tmp(tmp_name)
             count = 0

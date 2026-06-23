@@ -1,6 +1,6 @@
 {
   "schema_version": "2.0",
-  "generated_at": "2026-06-23T00:54:38Z",
+  "generated_at": "2026-06-23T02:47:45Z",
   "covered_years": [
     2026
   ],
@@ -1108,20 +1108,6 @@
       "result": null
     },
     {
-      "id": "hold_earnings_jp_8031",
-      "title": "三井物産 決算",
-      "category": "EARNINGS",
-      "country": "JP",
-      "datetime_utc": "2026-07-30T06:00:00Z",
-      "datetime_local": "2026-07-30T15:00:00+09:00",
-      "timezone": "Asia/Tokyo",
-      "importance": 2,
-      "is_estimated": true,
-      "description": "保有株の決算発表予定（三井物産）。予定日は変更される場合があります。",
-      "source_url": "https://finance.yahoo.co.jp/quote/8031.T",
-      "result": null
-    },
-    {
       "id": "us_pce_2026-07-24",
       "title": "米PCEデフレーター (6月分)",
       "category": "PCE",
@@ -1357,20 +1343,6 @@
       "is_estimated": false,
       "description": "個人消費支出物価指数。FRBが最重視するインフレ指標。",
       "source_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index",
-      "result": null
-    },
-    {
-      "id": "hold_earnings_us_PLAB",
-      "title": "フォトロニクス 決算",
-      "category": "EARNINGS",
-      "country": "US",
-      "datetime_utc": "2026-08-26T20:00:00Z",
-      "datetime_local": "2026-08-26T16:00:00-04:00",
-      "timezone": "America/New_York",
-      "importance": 2,
-      "is_estimated": true,
-      "description": "保有株の決算発表予定（フォトロニクス）。予定日は変更される場合があります。",
-      "source_url": "https://finance.yahoo.com/quote/PLAB",
       "result": null
     },
     {

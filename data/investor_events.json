@@ -1,6 +1,6 @@
 {
   "schema_version": "2.0",
-  "generated_at": "2026-06-23T00:15:26Z",
+  "generated_at": "2026-06-23T00:21:38Z",
   "covered_years": [
     2026
   ],
@@ -1333,7 +1333,7 @@
     },
     {
       "id": "hold_earnings_us_KMB",
-      "title": "【重複・無効】キンバリークラーク（→ 3614…816e に統合） 決算",
+      "title": "キンバリークラーク 決算",
       "category": "EARNINGS",
       "country": "US",
       "datetime_utc": "2026-08-10T20:00:00Z",
@@ -1341,7 +1341,7 @@
       "timezone": "America/New_York",
       "importance": 2,
       "is_estimated": true,
-      "description": "保有株の決算発表予定（【重複・無効】キンバリークラーク（→ 3614…816e に統合））。予定日は変更される場合があります。",
+      "description": "保有株の決算発表予定（キンバリークラーク）。予定日は変更される場合があります。",
       "source_url": "https://finance.yahoo.com/quote/KMB",
       "result": null
     },

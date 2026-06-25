@@ -1,6 +1,6 @@
 {
   "schema_version": "2.0",
-  "generated_at": "2026-06-24T22:49:16Z",
+  "generated_at": "2026-06-25T14:44:25Z",
   "covered_years": [
     2026
   ],
@@ -881,7 +881,7 @@
       "is_estimated": false,
       "description": "個人消費支出物価指数。FRBが最重視するインフレ指標。",
       "source_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index",
-      "result": null
+      "result": "PCE 前年比+4.1% / コア+3.4%（2026年5月分）"
     },
     {
       "id": "jp_exdiv_2026-06-26",
@@ -1021,6 +1021,20 @@
       "is_estimated": true,
       "description": "保有株の決算発表予定（コカ・コーラ）。予定日は変更される場合があります。",
       "source_url": "https://finance.yahoo.com/quote/KO",
+      "result": null
+    },
+    {
+      "id": "watch_earnings_us_VZ",
+      "title": "ベライゾン 決算",
+      "category": "EARNINGS",
+      "country": "US",
+      "datetime_utc": "2026-07-24T20:00:00Z",
+      "datetime_local": "2026-07-24T16:00:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": true,
+      "description": "ウォッチ銘柄の決算発表予定（ベライゾン）。予定日は変更される場合があります。",
+      "source_url": "https://finance.yahoo.com/quote/VZ",
       "result": null
     },
     {
@@ -1175,6 +1189,20 @@
       "is_estimated": false,
       "description": "結果発表は最終日の正午頃、総裁会見は15:30頃。",
       "source_url": "https://www.boj.or.jp/mopo/mpmsche_minu/index.htm",
+      "result": null
+    },
+    {
+      "id": "watch_earnings_us_CVX",
+      "title": "シェブロン 決算",
+      "category": "EARNINGS",
+      "country": "US",
+      "datetime_utc": "2026-07-31T20:00:00Z",
+      "datetime_local": "2026-07-31T16:00:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": true,
+      "description": "ウォッチ銘柄の決算発表予定（シェブロン）。予定日は変更される場合があります。",
+      "source_url": "https://finance.yahoo.com/quote/CVX",
       "result": null
     },
     {

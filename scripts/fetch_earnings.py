@@ -75,6 +75,20 @@ SELF_TEST_HOLDINGS = [
     {"name": "三菱UFJ", "ticker": "8306", "market": "日本", "page_id": None, "current": None, "date_prop": "次回決算日"},
 ]
 
+# ウォッチ銘柄（保有していないが決算日をカレンダーに載せたい銘柄）。
+# ここに1行追記すれば、毎朝 yfinance から次回決算日を自動取得してカレンダーへ反映される。
+#   name   … カレンダーに出す表示名（「○○ 決算」になる）
+#   ticker … 米国株はティッカー（例 CVX）、日本株は4桁コード（例 7203）
+#   market … "米国" か "日本"
+#   is_watch=True … 保有株(hold_earnings_*)と区別し watch_earnings_* の id にするための目印
+# 保有していないだけなので、ポートフォリオDBの「次回決算日」更新の対象にはしない（page_id=None）。
+WATCH_HOLDINGS = [
+    {"name": "シェブロン", "ticker": "CVX", "market": "米国",
+     "page_id": None, "current": None, "date_prop": "次回決算日", "is_watch": True},
+    {"name": "ベライゾン", "ticker": "VZ", "market": "米国",
+     "page_id": None, "current": None, "date_prop": "次回決算日", "is_watch": True},
+]
+
 
 def get_portfolio_db_id() -> str:
     """ポートフォリオ管理DBの database_id。env 優先、無ければ既定値。"""
@@ -226,22 +240,25 @@ def jpx_earnings_map() -> dict[str, date]:
 # イベント生成
 # ----------------------------------------------------------------------
 def build_event(h: dict, edate: date) -> dict:
-    """保有株1件 + 決算日 から 投資家カレンダー用イベント dict を作る。"""
+    """保有株/ウォッチ銘柄1件 + 決算日 から 投資家カレンダー用イベント dict を作る。"""
     market = h["market"]
     name = h["name"]
     ticker = h["ticker"]
+    # ウォッチ銘柄（保有外）は id を watch_earnings_* にして保有株と区別する
+    prefix = "watch_earnings" if h.get("is_watch") else "hold_earnings"
+    kind = "ウォッチ銘柄" if h.get("is_watch") else "保有株"
     if market == "日本":
         country = "JP"
         code = to_jp_code(ticker)
         # id は銘柄ごとに固定（日付を含めない＝決算日が動いても upsert で更新・重複しない）
-        ev_id = f"hold_earnings_jp_{code}"
+        ev_id = f"{prefix}_jp_{code}"
         local = f"{edate.isoformat()}T{JP_HOUR:02d}:{JP_MIN:02d}:00+09:00"
         tz = "Asia/Tokyo"
         src = f"https://finance.yahoo.co.jp/quote/{code}.T"
     else:
         country = "US"
         sym = ticker.strip().upper()
-        ev_id = f"hold_earnings_us_{sym}"
+        ev_id = f"{prefix}_us_{sym}"
         off = et_offset_str(edate, US_HOUR, US_MIN)
         local = f"{edate.isoformat()}T{US_HOUR:02d}:{US_MIN:02d}:00{off}"
         tz = "America/New_York"
@@ -257,7 +274,7 @@ def build_event(h: dict, edate: date) -> dict:
         "importance": 2,
         # 予定日は変わりうるので推定扱い（notion_upsert の保護対象にせず毎朝追従させる）
         "is_estimated": True,
-        "description": f"保有株の決算発表予定（{name}）。予定日は変更される場合があります。",
+        "description": f"{kind}の決算発表予定（{name}）。予定日は変更される場合があります。",
         "source_url": src,
         "result": None,
     }
@@ -324,6 +341,9 @@ def fetch_holdings(client: NotionClient, db_id: str) -> list[dict]:
 
 def update_portfolio_date(client: NotionClient, h: dict, edate: date, dry: bool) -> bool:
     """ポートフォリオDBの『次回決算日』を更新する（変化がある時だけ）。更新したら True。"""
+    # ウォッチ銘柄などポートフォリオDBに行が無い銘柄（page_id なし）は更新対象外
+    if not h.get("page_id"):
+        return False
     cur = (h.get("current") or "")[:10]
     new = edate.isoformat()
     if cur == new:
@@ -335,8 +355,9 @@ def update_portfolio_date(client: NotionClient, h: dict, edate: date, dry: bool)
 
 def archive_stale(client: NotionClient, cal_db_id: str, current_ids: set[str], dry: bool) -> int:
     """
-    投資家カレンダーDBの hold_earnings_* イベントのうち、今回の保有セットに無いもの
-    （＝売却された銘柄）を archive（アーカイブ）して掃除する。archive 件数を返す。
+    投資家カレンダーDBの hold_earnings_*/watch_earnings_* イベントのうち、今回の
+    保有・ウォッチセットに無いもの（＝売却された／ウォッチ対象から外した銘柄）を
+    archive（アーカイブ）して掃除する。archive 件数を返す。
     """
     schema = client._request("GET", f"https://api.notion.com/v1/databases/{cal_db_id}", None)
     props = schema.get("properties", {})
@@ -349,7 +370,7 @@ def archive_stale(client: NotionClient, cal_db_id: str, current_ids: set[str], d
     n = 0
     for pg in client.query_database(cal_db_id):
         idv = read_rich_text(pg.get("properties", {}).get(id_name, {}))
-        if idv.startswith("hold_earnings_") and idv not in current_ids:
+        if idv.startswith(("hold_earnings_", "watch_earnings_")) and idv not in current_ids:
             if not dry:
                 client.archive_page(pg["id"])
             n += 1
@@ -394,7 +415,8 @@ def main() -> int:
 
     # ---- self-test: Notion を使わずデータ取得＋生成だけ確認 ----
     if args.self_test:
-        resolved, missing = _resolve_dates(SELF_TEST_HOLDINGS)
+        # ウォッチ銘柄（CVX/VZ等）も含めて取得確認する
+        resolved, missing = _resolve_dates(SELF_TEST_HOLDINGS + WATCH_HOLDINGS)
         events = [build_event(h, h["edate"]) for h in resolved]
         write_tmp("fetch_earnings_out", {
             "events": events,
@@ -410,6 +432,9 @@ def main() -> int:
     pdb = get_portfolio_db_id()
     holds = fetch_holdings(client, pdb)
     log(f"  保有株（対象）{len(holds)} 件")
+    # 保有はしていないが決算日を載せたいウォッチ銘柄を合流（CVX/VZ 等）
+    holds.extend(WATCH_HOLDINGS)
+    log(f"  ＋ウォッチ銘柄 {len(WATCH_HOLDINGS)} 件 → 合計 {len(holds)} 件")
     if not holds:
         log("  対象保有株なし → 何もしない")
         write_tmp("fetch_earnings_out", {"events": [], "fetched_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")})

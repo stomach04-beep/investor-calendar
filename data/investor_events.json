@@ -1,6 +1,6 @@
 {
   "schema_version": "2.0",
-  "generated_at": "2026-06-25T22:56:47Z",
+  "generated_at": "2026-06-26T22:46:21Z",
   "covered_years": [
     2026
   ],
@@ -1164,20 +1164,6 @@
       "result": null
     },
     {
-      "id": "hold_earnings_us_ABBV",
-      "title": "アッヴィ 決算",
-      "category": "EARNINGS",
-      "country": "US",
-      "datetime_utc": "2026-07-30T20:00:00Z",
-      "datetime_local": "2026-07-30T16:00:00-04:00",
-      "timezone": "America/New_York",
-      "importance": 2,
-      "is_estimated": true,
-      "description": "保有株の決算発表予定（アッヴィ）。予定日は変更される場合があります。",
-      "source_url": "https://finance.yahoo.com/quote/ABBV",
-      "result": null
-    },
-    {
       "id": "jp_boj_2026-07-31",
       "title": "日銀金融政策決定会合 (7月会合)",
       "category": "BOJ",
@@ -1203,6 +1189,20 @@
       "is_estimated": true,
       "description": "ウォッチ銘柄の決算発表予定（シェブロン）。予定日は変更される場合があります。",
       "source_url": "https://finance.yahoo.com/quote/CVX",
+      "result": null
+    },
+    {
+      "id": "hold_earnings_us_ABBV",
+      "title": "アッヴィ 決算",
+      "category": "EARNINGS",
+      "country": "US",
+      "datetime_utc": "2026-07-31T20:00:00Z",
+      "datetime_local": "2026-07-31T16:00:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": true,
+      "description": "保有株の決算発表予定（アッヴィ）。予定日は変更される場合があります。",
+      "source_url": "https://finance.yahoo.com/quote/ABBV",
       "result": null
     },
     {

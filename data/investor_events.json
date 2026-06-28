@@ -1,6 +1,6 @@
 {
   "schema_version": "2.0",
-  "generated_at": "2026-06-27T22:37:43Z",
+  "generated_at": "2026-06-28T13:50:29Z",
   "covered_years": [
     2026
   ],
@@ -128,7 +128,8 @@
       "importance": 1,
       "is_estimated": true,
       "description": "January Barometer（1月の株価で1年が決まる）＋ January Effect（小型株が1月に上昇しやすい）。米国を代表するアノマリー。",
-      "source_url": null
+      "source_url": null,
+      "result": null
     },
     {
       "id": "jp_market_2026-01-05",
@@ -155,7 +156,8 @@
       "importance": 1,
       "is_estimated": true,
       "description": "1月（特に小型株）は値上がりしやすいとされる経験則。新年の新規資金流入や、前年末の節税売り（損出し）一巡後の買い戻しが背景とされる。",
-      "source_url": null
+      "source_url": null,
+      "result": null
     },
     {
       "id": "us_cpi_2026-01-12",
@@ -280,7 +282,8 @@
       "importance": 1,
       "is_estimated": true,
       "description": "「節分天井・彼岸底」の天井側。2月上旬（節分ごろ）に高値をつけやすいという古くからの経験則。年明けの上昇が一服しやすい時期とされる。",
-      "source_url": null
+      "source_url": null,
+      "result": null
     },
     {
       "id": "us_nfp_2026-02-06",
@@ -475,7 +478,8 @@
       "importance": 1,
       "is_estimated": true,
       "description": "「節分天井・彼岸底」の底側。春の彼岸（3月中旬〜下旬）に安値をつけやすいとされる。年度末の益出し・損出し売りが一巡し、反発に向かいやすい時期。",
-      "source_url": null
+      "source_url": null,
+      "result": null
     },
     {
       "id": "us_fomc_2026-03-18",
@@ -712,7 +716,8 @@
       "importance": 1,
       "is_estimated": true,
       "description": "「Sell in May（5月に売れ）」。5月〜夏にかけて株価が軟調になりやすいという経験則。原文は『Sell in May and go away, come back on St. Leger's day（9月中旬）』。",
-      "source_url": null
+      "source_url": null,
+      "result": null
     },
     {
       "id": "us_nfp_2026-05-01",
@@ -1397,7 +1402,8 @@
       "importance": 1,
       "is_estimated": true,
       "description": "夏枯れ相場。お盆前後は機関投資家の夏休みで市場参加者が減り出来高が細る。値動きが軽くなり、薄商いの中で突発材料に振れやすい。",
-      "source_url": null
+      "source_url": null,
+      "result": null
     },
     {
       "id": "us_ppi_2026-08-12",
@@ -1494,7 +1500,8 @@
       "importance": 1,
       "is_estimated": true,
       "description": "September Effect。9月は歴史的に米国株が最も弱い月とされる経験則。",
-      "source_url": null
+      "source_url": null,
+      "result": null
     },
     {
       "id": "us_beige_2026-09-02",
@@ -1815,7 +1822,8 @@
       "importance": 1,
       "is_estimated": true,
       "description": "ハロウィン効果。10月末〜翌年4月は相対的に株価パフォーマンスが良いとされる（『Sell in May』の裏返し）。10月末は買い場とする見方。",
-      "source_url": null
+      "source_url": null,
+      "result": null
     },
     {
       "id": "us_nfp_2026-11-06",
@@ -2094,7 +2102,8 @@
       "importance": 1,
       "is_estimated": true,
       "description": "Santa Claus Rally。12月最終5営業日〜翌年1月最初の2営業日にかけて株価が上昇しやすいとされる経験則。",
-      "source_url": null
+      "source_url": null,
+      "result": null
     },
     {
       "id": "anomaly_jp_toubi_2026",
@@ -2107,7 +2116,8 @@
       "importance": 1,
       "is_estimated": true,
       "description": "掉尾（とうび）の一振。年末最終週に株価が上昇しやすいとされる経験則。節税売り一巡・新年への期待・大納会に向けたご祝儀相場が背景。",
-      "source_url": null
+      "source_url": null,
+      "result": null
     },
     {
       "id": "jp_exdiv_2026-12-29",

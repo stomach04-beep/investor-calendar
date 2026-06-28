@@ -11,6 +11,8 @@ name: Investor Calendar Sync
 #   2. fetch_fomc.py      : FRB公式から FOMC 会合日を取得（ベストエフォート）
 #   3. fetch_boj.py       : 日銀公式から MPM 日を取得（ベストエフォート）
 #   4. fetch_schedules.py : 米PCE(BEA)/米CPI(BLS)/全国CPI(ルール計算) を取得（ベストエフォート）
+#   4b. fetch_anomalies.py: 相場アノマリー（節分天井・セルインメイ等）を暦計算で生成（AI呼び出しなし）
+#   4c. fetch_earnings.py : 保有株/ウォッチ銘柄の決算日を取得
 #   5. notion_upsert.py   : Notion DB に upsert（is_estimated=false 行は保護）
 #   6. notion_to_json.py  : Notion → data/investor_events.json 再生成
 #   7. git auto-commit    : data/ の差分があればコミット
@@ -77,6 +79,10 @@ jobs:
       - name: fetch_schedules.py 実行（米PCE=BEA公式 / 米CPI=BLS公式 / 全国CPI=ルール計算 - ベストエフォート）
         continue-on-error: true
         run: python scripts/fetch_schedules.py
+
+      - name: fetch_anomalies.py 実行（相場アノマリーを暦計算で生成・AI呼び出しなし）
+        continue-on-error: true
+        run: python scripts/fetch_anomalies.py
 
       - name: fetch_earnings.py 実行（保有株の決算日を取得しカレンダーへ反映・ベストエフォート）
         continue-on-error: true

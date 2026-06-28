@@ -89,6 +89,10 @@
       "label": "市場",
       "color": "#455A64"
     },
+    "ANOMALY": {
+      "label": "アノマリー",
+      "color": "#3949AB"
+    },
     "EVENT": {
       "label": "その他イベント",
       "color": "#616161"
@@ -114,6 +118,19 @@
       "result": null
     },
     {
+      "id": "anomaly_us_january_barometer_2026",
+      "title": "1月のバロメーター",
+      "category": "ANOMALY",
+      "country": "US",
+      "datetime_utc": "2026-01-02T14:30:00Z",
+      "datetime_local": "2026-01-02T09:30:00-05:00",
+      "timezone": "America/New_York",
+      "importance": 1,
+      "is_estimated": true,
+      "description": "January Barometer（1月の株価で1年が決まる）＋ January Effect（小型株が1月に上昇しやすい）。米国を代表するアノマリー。",
+      "source_url": null
+    },
+    {
       "id": "jp_market_2026-01-05",
       "title": "大発会",
       "category": "MARKET",
@@ -126,6 +143,19 @@
       "description": "東証年初取引日。NISA年間枠リセット。",
       "source_url": null,
       "result": null
+    },
+    {
+      "id": "anomaly_jp_january_effect_2026",
+      "title": "1月効果",
+      "category": "ANOMALY",
+      "country": "JP",
+      "datetime_utc": "2026-01-05T00:00:00Z",
+      "datetime_local": "2026-01-05T09:00:00+09:00",
+      "timezone": "Asia/Tokyo",
+      "importance": 1,
+      "is_estimated": true,
+      "description": "1月（特に小型株）は値上がりしやすいとされる経験則。新年の新規資金流入や、前年末の節税売り（損出し）一巡後の買い戻しが背景とされる。",
+      "source_url": null
     },
     {
       "id": "us_cpi_2026-01-12",
@@ -238,6 +268,19 @@
       "description": "2日目14:00 ET発表、議長会見14:30 ET。",
       "source_url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "result": "政策金利 3.50–3.75%（据え置き）"
+    },
+    {
+      "id": "anomaly_jp_setsubun_tenjo_2026",
+      "title": "節分天井",
+      "category": "ANOMALY",
+      "country": "JP",
+      "datetime_utc": "2026-02-03T00:00:00Z",
+      "datetime_local": "2026-02-03T09:00:00+09:00",
+      "timezone": "Asia/Tokyo",
+      "importance": 1,
+      "is_estimated": true,
+      "description": "「節分天井・彼岸底」の天井側。2月上旬（節分ごろ）に高値をつけやすいという古くからの経験則。年明けの上昇が一服しやすい時期とされる。",
+      "source_url": null
     },
     {
       "id": "us_nfp_2026-02-06",
@@ -420,6 +463,19 @@
       "description": "日経225先物・TOPIX先物・指数オプションの特別清算指数（SQ）算出日（第2金曜日 09:00 寄り付き）。算出値は寄り付きの板で決まる。",
       "source_url": null,
       "result": null
+    },
+    {
+      "id": "anomaly_jp_higan_zoko_2026",
+      "title": "彼岸底",
+      "category": "ANOMALY",
+      "country": "JP",
+      "datetime_utc": "2026-03-18T00:00:00Z",
+      "datetime_local": "2026-03-18T09:00:00+09:00",
+      "timezone": "Asia/Tokyo",
+      "importance": 1,
+      "is_estimated": true,
+      "description": "「節分天井・彼岸底」の底側。春の彼岸（3月中旬〜下旬）に安値をつけやすいとされる。年度末の益出し・損出し売りが一巡し、反発に向かいやすい時期。",
+      "source_url": null
     },
     {
       "id": "us_fomc_2026-03-18",
@@ -644,6 +700,19 @@
       "description": "2日目14:00 ET発表、議長会見14:30 ET。",
       "source_url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "result": "政策金利 3.50–3.75%（据え置き）"
+    },
+    {
+      "id": "anomaly_jp_sell_in_may_2026",
+      "title": "セルインメイ",
+      "category": "ANOMALY",
+      "country": "JP",
+      "datetime_utc": "2026-05-01T00:00:00Z",
+      "datetime_local": "2026-05-01T09:00:00+09:00",
+      "timezone": "Asia/Tokyo",
+      "importance": 1,
+      "is_estimated": true,
+      "description": "「Sell in May（5月に売れ）」。5月〜夏にかけて株価が軟調になりやすいという経験則。原文は『Sell in May and go away, come back on St. Leger's day（9月中旬）』。",
+      "source_url": null
     },
     {
       "id": "us_nfp_2026-05-01",
@@ -1318,6 +1387,19 @@
       "result": null
     },
     {
+      "id": "anomaly_jp_natsugare_2026",
+      "title": "夏枯れ相場",
+      "category": "ANOMALY",
+      "country": "JP",
+      "datetime_utc": "2026-08-12T00:00:00Z",
+      "datetime_local": "2026-08-12T09:00:00+09:00",
+      "timezone": "Asia/Tokyo",
+      "importance": 1,
+      "is_estimated": true,
+      "description": "夏枯れ相場。お盆前後は機関投資家の夏休みで市場参加者が減り出来高が細る。値動きが軽くなり、薄商いの中で突発材料に振れやすい。",
+      "source_url": null
+    },
+    {
       "id": "us_ppi_2026-08-12",
       "title": "米PPI (7月分)",
       "category": "PPI",
@@ -1400,6 +1482,19 @@
       "description": "カンザスシティ連銀主催。FRB議長講演で金融政策の方向性が示されることが多い。",
       "source_url": "https://www.kansascityfed.org/research/jackson-hole-economic-symposium/",
       "result": null
+    },
+    {
+      "id": "anomaly_us_september_effect_2026",
+      "title": "9月効果",
+      "category": "ANOMALY",
+      "country": "US",
+      "datetime_utc": "2026-09-01T13:30:00Z",
+      "datetime_local": "2026-09-01T09:30:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 1,
+      "is_estimated": true,
+      "description": "September Effect。9月は歴史的に米国株が最も弱い月とされる経験則。",
+      "source_url": null
     },
     {
       "id": "us_beige_2026-09-02",
@@ -1710,6 +1805,19 @@
       "result": null
     },
     {
+      "id": "anomaly_jp_halloween_2026",
+      "title": "ハロウィン効果",
+      "category": "ANOMALY",
+      "country": "JP",
+      "datetime_utc": "2026-10-31T00:00:00Z",
+      "datetime_local": "2026-10-31T09:00:00+09:00",
+      "timezone": "Asia/Tokyo",
+      "importance": 1,
+      "is_estimated": true,
+      "description": "ハロウィン効果。10月末〜翌年4月は相対的に株価パフォーマンスが良いとされる（『Sell in May』の裏返し）。10月末は買い場とする見方。",
+      "source_url": null
+    },
+    {
       "id": "us_nfp_2026-11-06",
       "title": "米雇用統計 (10月分)",
       "category": "JOBS",
@@ -1974,6 +2082,32 @@
       "description": "個人消費支出物価指数。FRBが最重視するインフレ指標。",
       "source_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index",
       "result": null
+    },
+    {
+      "id": "anomaly_us_santa_rally_2026",
+      "title": "サンタクロースラリー",
+      "category": "ANOMALY",
+      "country": "US",
+      "datetime_utc": "2026-12-24T14:30:00Z",
+      "datetime_local": "2026-12-24T09:30:00-05:00",
+      "timezone": "America/New_York",
+      "importance": 1,
+      "is_estimated": true,
+      "description": "Santa Claus Rally。12月最終5営業日〜翌年1月最初の2営業日にかけて株価が上昇しやすいとされる経験則。",
+      "source_url": null
+    },
+    {
+      "id": "anomaly_jp_toubi_2026",
+      "title": "掉尾の一振",
+      "category": "ANOMALY",
+      "country": "JP",
+      "datetime_utc": "2026-12-28T00:00:00Z",
+      "datetime_local": "2026-12-28T09:00:00+09:00",
+      "timezone": "Asia/Tokyo",
+      "importance": 1,
+      "is_estimated": true,
+      "description": "掉尾（とうび）の一振。年末最終週に株価が上昇しやすいとされる経験則。節税売り一巡・新年への期待・大納会に向けたご祝儀相場が背景。",
+      "source_url": null
     },
     {
       "id": "jp_exdiv_2026-12-29",

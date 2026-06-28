@@ -49,6 +49,7 @@ CATEGORY_TO_NOTION = {
     "EARNINGS": "決算",
     "MARKET": "市場",
     "BEIGE": "ベージュブック",
+    "ANOMALY": "アノマリー",
     "EVENT": "その他イベント",
 }
 NOTION_TO_CATEGORY = {v: k for k, v in CATEGORY_TO_NOTION.items()}

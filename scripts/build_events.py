@@ -68,9 +68,14 @@ def build(target_years: list[int]) -> dict:
     # 専管。notion_to_json が投資家カレンダーDB全体を investor_events.json へ書き戻すため、
     # 前回生成した決算イベントがシードに紛れ込む。build_events では除外し、毎回
     # fetch_earnings_out だけが供給元になるようにする（archive した銘柄が build 経由で復活するのを防ぐ）。
+    # アノマリー(anomaly_*)も fetch_anomalies.py の専管。暦ベースの固定日付なので
+    # 52週シフトすると日付がズレる（節分=2/3 等が崩れる）。決算と同じくシードから除外し、
+    # 毎回 fetch_anomalies_out だけが供給元になるようにする。
     seed_events = [
         e for e in seed.get("events", [])
-        if not str(e.get("id", "")).startswith(("hold_earnings_", "watch_earnings_"))
+        if not str(e.get("id", "")).startswith(
+            ("hold_earnings_", "watch_earnings_", "anomaly_")
+        )
     ]
     covered = set(seed.get("covered_years", []))
 

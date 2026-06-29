@@ -1,6 +1,6 @@
 {
   "schema_version": "2.0",
-  "generated_at": "2026-06-28T22:36:13Z",
+  "generated_at": "2026-06-29T22:38:05Z",
   "covered_years": [
     2026
   ],
@@ -1084,20 +1084,6 @@
       "result": null
     },
     {
-      "id": "hold_earnings_us_KO",
-      "title": "コカ・コーラ 決算",
-      "category": "EARNINGS",
-      "country": "US",
-      "datetime_utc": "2026-07-21T20:00:00Z",
-      "datetime_local": "2026-07-21T16:00:00-04:00",
-      "timezone": "America/New_York",
-      "importance": 2,
-      "is_estimated": true,
-      "description": "保有株の決算発表予定（コカ・コーラ）。予定日は変更される場合があります。",
-      "source_url": "https://finance.yahoo.com/quote/KO",
-      "result": null
-    },
-    {
       "id": "watch_earnings_us_VZ",
       "title": "ベライゾン 決算",
       "category": "EARNINGS",
@@ -1165,6 +1151,20 @@
       "is_estimated": true,
       "description": "保有株の決算発表予定（PPG Industries）。予定日は変更される場合があります。",
       "source_url": "https://finance.yahoo.com/quote/PPG",
+      "result": null
+    },
+    {
+      "id": "hold_earnings_us_KO",
+      "title": "コカ・コーラ 決算",
+      "category": "EARNINGS",
+      "country": "US",
+      "datetime_utc": "2026-07-28T20:00:00Z",
+      "datetime_local": "2026-07-28T16:00:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": true,
+      "description": "保有株の決算発表予定（コカ・コーラ）。予定日は変更される場合があります。",
+      "source_url": "https://finance.yahoo.com/quote/KO",
       "result": null
     },
     {

@@ -1,6 +1,6 @@
 {
   "schema_version": "2.0",
-  "generated_at": "2026-06-30T22:51:02Z",
+  "generated_at": "2026-07-01T22:48:10Z",
   "covered_years": [
     2026
   ],
@@ -1081,6 +1081,20 @@
       "is_estimated": false,
       "description": "総務省統計局発表。日銀の利上げ判断材料。",
       "source_url": "https://www.stat.go.jp/data/cpi/",
+      "result": null
+    },
+    {
+      "id": "hold_earnings_us_VZ",
+      "title": "ベライゾン 決算",
+      "category": "EARNINGS",
+      "country": "US",
+      "datetime_utc": "2026-07-24T20:00:00Z",
+      "datetime_local": "2026-07-24T16:00:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": true,
+      "description": "保有株の決算発表予定（ベライゾン）。予定日は変更される場合があります。",
+      "source_url": "https://finance.yahoo.com/quote/VZ",
       "result": null
     },
     {

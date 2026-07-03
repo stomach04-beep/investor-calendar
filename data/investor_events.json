@@ -1,6 +1,6 @@
 {
   "schema_version": "2.0",
-  "generated_at": "2026-07-02T22:37:27Z",
+  "generated_at": "2026-07-03T22:34:27Z",
   "covered_years": [
     2026
   ],
@@ -1112,6 +1112,20 @@
       "result": null
     },
     {
+      "id": "hold_earnings_jp_5911",
+      "title": "横河ブリッジHD 決算",
+      "category": "EARNINGS",
+      "country": "JP",
+      "datetime_utc": "2026-07-27T06:00:00Z",
+      "datetime_local": "2026-07-27T15:00:00+09:00",
+      "timezone": "Asia/Tokyo",
+      "importance": 2,
+      "is_estimated": true,
+      "description": "保有株の決算発表予定（横河ブリッジHD）。予定日は変更される場合があります。",
+      "source_url": "https://finance.yahoo.co.jp/quote/5911.T",
+      "result": null
+    },
+    {
       "id": "hold_earnings_us_KMB",
       "title": "キンバリークラーク 決算",
       "category": "EARNINGS",
@@ -1322,6 +1336,20 @@
       "result": null
     },
     {
+      "id": "hold_earnings_jp_1926",
+      "title": "ライト工業 決算",
+      "category": "EARNINGS",
+      "country": "JP",
+      "datetime_utc": "2026-08-05T06:00:00Z",
+      "datetime_local": "2026-08-05T15:00:00+09:00",
+      "timezone": "Asia/Tokyo",
+      "importance": 2,
+      "is_estimated": true,
+      "description": "保有株の決算発表予定（ライト工業）。予定日は変更される場合があります。",
+      "source_url": "https://finance.yahoo.co.jp/quote/1926.T",
+      "result": null
+    },
+    {
       "id": "hold_earnings_us_DIS",
       "title": "ディズニー 決算",
       "category": "EARNINGS",
@@ -1389,6 +1417,20 @@
       "is_estimated": true,
       "description": "保有株の決算発表予定（ゾエティス）。予定日は変更される場合があります。",
       "source_url": "https://finance.yahoo.com/quote/ZTS",
+      "result": null
+    },
+    {
+      "id": "hold_earnings_jp_7466",
+      "title": "三洋SPK 決算",
+      "category": "EARNINGS",
+      "country": "JP",
+      "datetime_utc": "2026-08-07T06:00:00Z",
+      "datetime_local": "2026-08-07T15:00:00+09:00",
+      "timezone": "Asia/Tokyo",
+      "importance": 2,
+      "is_estimated": true,
+      "description": "保有株の決算発表予定（三洋SPK）。予定日は変更される場合があります。",
+      "source_url": "https://finance.yahoo.co.jp/quote/7466.T",
       "result": null
     },
     {

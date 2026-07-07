@@ -1,5 +1,5 @@
 """
-公式日程（米PCE / 米CPI / 全国CPI / 米雇用統計 / 米PPI）を取得し、
+公式日程（米PCE / 米CPI / 全国CPI / 米雇用統計 / 米PPI / 米GDP / 米小売売上高 / ISM）を取得し、
 tmp/fetch_schedules_out.json に出力する。
 
 fetch_fomc.py / fetch_boj.py と同じベストエフォート方式:
@@ -18,6 +18,14 @@ fetch_fomc.py / fetch_boj.py と同じベストエフォート方式:
                 2026-07は7/3(独立記念日振替)のため7/2(木)に前倒し。
   5. 米PPI     : BLS公式 https://www.bls.gov/schedule/news_release/ppi.htm を試す。
                 403時は真値表(確定5件)＋未確定は対応CPIの翌営業日近似でフォールバック。
+  6. 米GDP     : BEA公式 https://www.bea.gov/news/schedule の
+                "Gross Domestic Product" 行を抽出（速報値=Advance / 改定値=Second のみ。
+                確報値=Third は相場インパクトが小さいので載せない）。失敗時は真値表。
+  7. 米小売売上高: Census公式 https://www.census.gov/retail/release_schedule.html を試す。
+                失敗時は真値表（2026年公式日程・裏取り済み）フォールバック。
+  8. ISM景況指数: ルール計算。製造業=毎月第1営業日（1月のみ第2営業日）、
+                非製造業=毎月第3営業日、いずれも 10:00 ET（ISM公式ルール）。
+                公式カレンダーが取れないため is_estimated=True で近似する。
 
 重要（Notion重複防止）:
   CPI/PCE/JOBS/PPI は、シードJSON の既存 id を (category,country,対象年,対象月) で
@@ -182,6 +190,39 @@ US_PPI_TRUTH: dict[tuple[int, int], date] = {
 # 米PPI 公式スケジュールURL（403が多いので失敗時は真値表＋CPI翌営業日近似にフォールバック）
 BLS_PPI_URL = "https://www.bls.gov/schedule/news_release/ppi.htm"
 BLS_PPI_SOURCE_URL = "https://www.bls.gov/ppi/"
+
+# ----------------------------------------------------------------------
+# 米GDP 真値表（2026年・BEA公式 https://www.bea.gov/news/schedule で裏取り済み 2026-07-08）
+#   キー = (対象年, 四半期, 種別)。種別 "adv"=速報値(Advance) / "2nd"=改定値(Second)。
+#   確報値(Third)は相場インパクトが小さいのでカレンダーに載せない。
+# ----------------------------------------------------------------------
+US_GDP_TRUTH: dict[tuple[int, int, str], date] = {
+    (2026, 2, "adv"): date(2026, 7, 30),    # Q2速報 → 2026-07-30(木)
+    (2026, 2, "2nd"): date(2026, 8, 26),    # Q2改定 → 2026-08-26(水)
+    (2026, 3, "adv"): date(2026, 10, 29),   # Q3速報 → 2026-10-29(木)
+    (2026, 3, "2nd"): date(2026, 11, 25),   # Q3改定 → 2026-11-25(水)
+}
+BEA_GDP_SOURCE_URL = "https://www.bea.gov/data/gdp/gross-domestic-product"
+
+# ----------------------------------------------------------------------
+# 米小売売上高 真値表（2026年・Census公式 release_schedule.html で裏取り済み 2026-07-08）
+#   キー = 対象月の (year, month)、値 = 公表日（8:30 ET）
+# ----------------------------------------------------------------------
+US_RETAIL_TRUTH: dict[tuple[int, int], date] = {
+    (2026, 4): date(2026, 5, 14),    # 4月分 → 2026-05-14(木)
+    (2026, 5): date(2026, 6, 17),    # 5月分 → 2026-06-17(水)
+    (2026, 6): date(2026, 7, 16),    # 6月分 → 2026-07-16(木)
+    (2026, 7): date(2026, 8, 14),    # 7月分 → 2026-08-14(金)
+    (2026, 8): date(2026, 9, 16),    # 8月分 → 2026-09-16(水)
+    (2026, 9): date(2026, 10, 15),   # 9月分 → 2026-10-15(木)
+    (2026, 10): date(2026, 11, 17),  # 10月分 → 2026-11-17(火)
+    (2026, 11): date(2026, 12, 16),  # 11月分 → 2026-12-16(水)
+}
+CENSUS_RETAIL_URL = "https://www.census.gov/retail/release_schedule.html"
+CENSUS_RETAIL_SOURCE_URL = "https://www.census.gov/retail/"
+
+# ISM 公式レポートページ（日程はルール計算するのでソースURL表示用のみ）
+ISM_SOURCE_URL = "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/"
 
 
 # ----------------------------------------------------------------------
@@ -639,6 +680,295 @@ def fetch_bls_ppi() -> list[dict]:
 
 
 # ----------------------------------------------------------------------
+# 6. 米GDP: BEA公式から取得（フォールバック = 真値表）
+#    速報値(Advance)と改定値(Second)のみ。id は対象四半期ベースで不変
+#    （us_gdp_2026q2_adv 形式。公表日がズレても id は変わらない）。
+# ----------------------------------------------------------------------
+GDP_KIND_LABEL = {"adv": "速報値", "2nd": "改定値"}
+
+
+def make_gdp_event(tgt_year: int, quarter: int, kind: str, pub_date: date,
+                   is_estimated: bool = False) -> dict:
+    """米GDP（8:30 ET）の event dict を作る。kind は 'adv'(速報) / '2nd'(改定)。"""
+    offset = et_offset_str(pub_date, 8, 30)
+    datetime_local = f"{pub_date.strftime('%Y-%m-%d')}T08:30:00{offset}"
+    datetime_utc = to_utc_z(datetime_local)
+    label = GDP_KIND_LABEL[kind]
+    # 速報値は市場が動く（★★☆）、改定値は参考（★☆☆）
+    importance = 2 if kind == "adv" else 1
+    return {
+        "id": f"us_gdp_{tgt_year}q{quarter}_{kind}",
+        "title": f"米GDP{label} (Q{quarter})",
+        "category": "GDP",
+        "country": "US",
+        "datetime_utc": datetime_utc,
+        "datetime_local": datetime_local,
+        "timezone": "America/New_York",
+        "importance": importance,
+        "is_estimated": is_estimated,
+        "description": f"米実質GDP成長率（前期比年率）の{label}。"
+                       "速報値は四半期終了の約1ヶ月後に公表され、サプライズで相場が動きやすい。",
+        "source_url": BEA_GDP_SOURCE_URL,
+        "result": None,
+    }
+
+
+def gdp_fallback() -> list[dict]:
+    """米GDP のフォールバック（BEA真値表からイベント生成）。"""
+    out = [make_gdp_event(y, q, kind, d) for (y, q, kind), d in US_GDP_TRUTH.items()]
+    log(f"  fetch_schedules[GDP]: 真値表フォールバックで {len(out)} 件生成")
+    return out
+
+
+def fetch_bea_gdp() -> list[dict]:
+    """BEA公式スケジュールから Gross Domestic Product の公表日を抽出する。"""
+    try:
+        r = requests.get(BEA_URL, timeout=30, headers={"User-Agent": USER_AGENT})
+        if r.status_code != 200:
+            log(f"  fetch_schedules[GDP]: BEA HTTP {r.status_code} → 真値表フォールバック")
+            return gdp_fallback()
+        soup = BeautifulSoup(r.text, "html.parser")
+        table = soup.find("table")
+        if table is None:
+            log("  fetch_schedules[GDP]: BEAにテーブルなし → 真値表フォールバック")
+            return gdp_fallback()
+
+        events: list[dict] = []
+        for tr in table.find_all("tr"):
+            cells = [td.get_text(" ", strip=True) for td in tr.find_all(["td", "th"])]
+            if len(cells) < 3:
+                continue
+            release_cell, _type_cell, desc_cell = cells[0], cells[1], cells[2]
+            # BEA実ページの表記は "GDP (Advance Estimate), 2nd Quarter 2026" 形式
+            # （"GDP by County..." 等の年次統計行は Quarter 正規表現で自然に除外される）
+            if "GDP (" not in desc_cell and "Gross Domestic Product" not in desc_cell:
+                continue
+            # 種別: Advance=速報 / Second=改定。Third(確報)は載せない
+            if "Advance" in desc_cell:
+                kind = "adv"
+            elif "Second" in desc_cell:
+                kind = "2nd"
+            else:
+                continue
+            # 対象四半期: "2nd Quarter 2026" 形式
+            m_q = re.search(r"(\d)(?:st|nd|rd|th)\s+Quarter\s+(\d{4})", desc_cell)
+            if not m_q:
+                continue
+            quarter = int(m_q.group(1))
+            tgt_year = int(m_q.group(2))
+            # 公表日: "July 30 8:30 AM" 形式
+            m_rel = re.search(r"([A-Za-z]+)\s+(\d{1,2})", release_cell)
+            if not m_rel:
+                continue
+            rel_month = EN_MONTH_MAP.get(m_rel.group(1).lower())
+            rel_day = int(m_rel.group(2))
+            if not rel_month:
+                continue
+            # 公表年の推定: 公表月が四半期末月より後なら同年、前なら翌年（Q4速報は翌年1月）
+            quarter_end_month = quarter * 3
+            pub_year = tgt_year if rel_month > quarter_end_month else tgt_year + 1
+            try:
+                pub_date = date(pub_year, rel_month, rel_day)
+            except ValueError:
+                continue
+            events.append(make_gdp_event(tgt_year, quarter, kind, pub_date))
+
+        if not events:
+            log("  fetch_schedules[GDP]: BEAから抽出ゼロ → 真値表フォールバック")
+            return gdp_fallback()
+        log(f"  fetch_schedules[GDP]: BEA公式から {len(events)} 件取得")
+        return events
+    except Exception as e:
+        log(f"  fetch_schedules[GDP]: BEA取得失敗 ({type(e).__name__}: {e}) → 真値表フォールバック")
+        return gdp_fallback()
+
+
+# ----------------------------------------------------------------------
+# 7. 米小売売上高: Census公式から取得（フォールバック = 真値表）
+#    id は対象月ベースで不変（us_retail_2026-06 形式）。
+# ----------------------------------------------------------------------
+def make_retail_event(tgt_year: int, tgt_month: int, pub_date: date,
+                      is_estimated: bool = False) -> dict:
+    """米小売売上高（8:30 ET）の event dict を作る。"""
+    offset = et_offset_str(pub_date, 8, 30)
+    datetime_local = f"{pub_date.strftime('%Y-%m-%d')}T08:30:00{offset}"
+    datetime_utc = to_utc_z(datetime_local)
+    if tgt_year != pub_date.year:
+        title = f"米小売売上高 ({tgt_year}年{JP_MONTH_LABEL[tgt_month]}分)"
+    else:
+        title = f"米小売売上高 ({JP_MONTH_LABEL[tgt_month]}分)"
+    return {
+        "id": f"us_retail_{tgt_year}-{tgt_month:02d}",
+        "title": title,
+        "category": "RETAIL",
+        "country": "US",
+        "datetime_utc": datetime_utc,
+        "datetime_local": datetime_local,
+        "timezone": "America/New_York",
+        "importance": 2,
+        "is_estimated": is_estimated,
+        "description": "米国の小売・飲食サービス売上高（前月比）。米経済の約7割を占める"
+                       "個人消費の強さを測る速報。CPI級に相場が動く月もある。",
+        "source_url": CENSUS_RETAIL_SOURCE_URL,
+        "result": None,
+    }
+
+
+def retail_fallback() -> list[dict]:
+    """米小売売上高のフォールバック（Census真値表からイベント生成）。"""
+    out = [make_retail_event(y, m, d) for (y, m), d in US_RETAIL_TRUTH.items()]
+    log(f"  fetch_schedules[RETAIL]: 真値表フォールバックで {len(out)} 件生成")
+    return out
+
+
+def fetch_census_retail() -> list[dict]:
+    """Census公式 release_schedule.html から MARTS（速報）公表日を抽出する。"""
+    try:
+        r = requests.get(CENSUS_RETAIL_URL, timeout=30, headers={"User-Agent": USER_AGENT})
+        if r.status_code != 200:
+            log(f"  fetch_schedules[RETAIL]: Census HTTP {r.status_code} → 真値表フォールバック")
+            return retail_fallback()
+        soup = BeautifulSoup(r.text, "html.parser")
+        events: list[dict] = []
+        for tr in soup.find_all("tr"):
+            cells = [td.get_text(" ", strip=True) for td in tr.find_all(["td", "th"])]
+            if len(cells) < 2:
+                continue
+            # 対象月セル "June 2026" / 公表日セル "July 16, 2026" を推定
+            m_ref = re.search(r"([A-Za-z]+)\.?\s+(\d{4})", cells[0])
+            m_rel = re.search(r"([A-Za-z]+)\.?\s+(\d{1,2}),?\s+(\d{4})", cells[1])
+            if not m_ref or not m_rel:
+                continue
+            tgt_month = EN_MONTH_MAP.get(m_ref.group(1).lower())
+            tgt_year = int(m_ref.group(2))
+            rel_month = EN_MONTH_MAP.get(m_rel.group(1).lower())
+            rel_day = int(m_rel.group(2))
+            rel_year = int(m_rel.group(3))
+            if not tgt_month or not rel_month:
+                continue
+            try:
+                pub_date = date(rel_year, rel_month, rel_day)
+            except ValueError:
+                continue
+            events.append(make_retail_event(tgt_year, tgt_month, pub_date))
+        if not events:
+            log("  fetch_schedules[RETAIL]: Censusから抽出ゼロ → 真値表フォールバック")
+            return retail_fallback()
+        log(f"  fetch_schedules[RETAIL]: Census公式から {len(events)} 件取得")
+        return events
+    except Exception as e:
+        log(f"  fetch_schedules[RETAIL]: Census取得失敗 ({type(e).__name__}: {e}) → 真値表フォールバック")
+        return retail_fallback()
+
+
+# ----------------------------------------------------------------------
+# 8. ISM景況指数: ルール計算
+#    製造業 = 毎月第1営業日（1月のみ第2営業日）、非製造業 = 毎月第3営業日、10:00 ET。
+#    ISMの公式カレンダーは取得しにくいため is_estimated=True の近似で出す。
+#    id は対象月ベースで不変（us_ism_mfg_2026-06 形式。対象月 = 公表月の前月）。
+# ----------------------------------------------------------------------
+def us_federal_holidays(year: int) -> set[date]:
+    """営業日判定に使う米国の主要祝日（振替込み）。"""
+    def observed(d: date) -> date:
+        # 土曜→前日金曜、日曜→翌日月曜に振替
+        if d.weekday() == 5:
+            return d - timedelta(days=1)
+        if d.weekday() == 6:
+            return d + timedelta(days=1)
+        return d
+
+    def nth_weekday(month: int, weekday: int, n: int) -> date:
+        d1 = date(year, month, 1)
+        offset = (weekday - d1.weekday()) % 7
+        return d1 + timedelta(days=offset + (n - 1) * 7)
+
+    def last_weekday(month: int, weekday: int) -> date:
+        # 翌月1日から遡って最後の該当曜日
+        nxt = date(year + 1, 1, 1) if month == 12 else date(year, month + 1, 1)
+        d = nxt - timedelta(days=1)
+        while d.weekday() != weekday:
+            d -= timedelta(days=1)
+        return d
+
+    return {
+        observed(date(year, 1, 1)),        # 元日
+        nth_weekday(1, 0, 3),              # MLKデー（1月第3月曜）
+        nth_weekday(2, 0, 3),              # 大統領の日（2月第3月曜）
+        last_weekday(5, 0),                # メモリアルデー（5月最終月曜）
+        observed(date(year, 6, 19)),       # ジューンティーンス
+        observed(date(year, 7, 4)),        # 独立記念日
+        nth_weekday(9, 0, 1),              # レイバーデー（9月第1月曜）
+        nth_weekday(11, 3, 4),             # 感謝祭（11月第4木曜）
+        observed(date(year, 12, 25)),      # クリスマス
+    }
+
+
+def nth_business_day(year: int, month: int, n: int) -> date:
+    """指定年月の第n営業日（土日・米主要祝日を除く）を返す。"""
+    holidays = us_federal_holidays(year)
+    d = date(year, month, 1)
+    count = 0
+    while True:
+        if d.weekday() < 5 and d not in holidays:
+            count += 1
+            if count == n:
+                return d
+        d += timedelta(days=1)
+
+
+def make_ism_event(kind: str, tgt_year: int, tgt_month: int, pub_date: date) -> dict:
+    """ISM景況指数（10:00 ET）の event dict を作る。kind は 'mfg' / 'svc'。"""
+    offset = et_offset_str(pub_date, 10, 0)
+    datetime_local = f"{pub_date.strftime('%Y-%m-%d')}T10:00:00{offset}"
+    datetime_utc = to_utc_z(datetime_local)
+    name = "ISM製造業景況指数" if kind == "mfg" else "ISM非製造業景況指数"
+    if tgt_year != pub_date.year:
+        title = f"{name} ({tgt_year}年{JP_MONTH_LABEL[tgt_month]}分)"
+    else:
+        title = f"{name} ({JP_MONTH_LABEL[tgt_month]}分)"
+    desc = (
+        "全米の製造業購買担当者への調査（PMI）。50が好況/不況の分かれ目。月初一番乗りの景況指標で相場が動きやすい。"
+        if kind == "mfg"
+        else "サービス業など非製造業の購買担当者調査（PMI）。50が好況/不況の分かれ目。米経済はサービス業が主体のため注目度が高い。"
+    )
+    return {
+        "id": f"us_ism_{kind}_{tgt_year}-{tgt_month:02d}",
+        "title": title,
+        "category": "ISM",
+        "country": "US",
+        "datetime_utc": datetime_utc,
+        "datetime_local": datetime_local,
+        "timezone": "America/New_York",
+        "importance": 2,
+        "is_estimated": True,   # ルール計算の近似（公式カレンダー未取得）
+        "description": desc,
+        "source_url": ISM_SOURCE_URL,
+        "result": None,
+    }
+
+
+def build_us_ism(target_years: set[int]) -> list[dict]:
+    """対象年のISM製造業・非製造業をルール計算で生成する（公表年でループ）。"""
+    events: list[dict] = []
+    for pub_year in sorted(target_years):
+        for pub_month in range(1, 13):
+            # 対象月 = 公表月の前月（1月公表 → 前年12月分）
+            if pub_month == 1:
+                tgt_year, tgt_month = pub_year - 1, 12
+            else:
+                tgt_year, tgt_month = pub_year, pub_month - 1
+            # 製造業: 第1営業日（1月のみ第2営業日）
+            mfg_n = 2 if pub_month == 1 else 1
+            events.append(make_ism_event("mfg", tgt_year, tgt_month,
+                                         nth_business_day(pub_year, pub_month, mfg_n)))
+            # 非製造業: 第3営業日
+            events.append(make_ism_event("svc", tgt_year, tgt_month,
+                                         nth_business_day(pub_year, pub_month, 3)))
+    log(f"  fetch_schedules[ISM]: ルール計算で {len(events)} 件生成")
+    return events
+
+
+# ----------------------------------------------------------------------
 # 対象年フィルタ（fetch_fomc.py の load_target_years を踏襲）
 # ----------------------------------------------------------------------
 def load_target_years() -> set[int]:
@@ -699,6 +1029,21 @@ def collect_schedule_events() -> list[dict]:
         all_events.extend(fetch_bls_ppi())
     except Exception as e:
         log(f"  fetch_schedules[PPI]: 想定外の失敗 ({type(e).__name__}: {e}) → スキップ")
+    # 6. 米GDP（独立try/except、BEA公式→真値表フォールバック）
+    try:
+        all_events.extend(fetch_bea_gdp())
+    except Exception as e:
+        log(f"  fetch_schedules[GDP]: 想定外の失敗 ({type(e).__name__}: {e}) → スキップ")
+    # 7. 米小売売上高（独立try/except、Census公式→真値表フォールバック）
+    try:
+        all_events.extend(fetch_census_retail())
+    except Exception as e:
+        log(f"  fetch_schedules[RETAIL]: 想定外の失敗 ({type(e).__name__}: {e}) → スキップ")
+    # 8. ISM景況指数（独立try/except、ルール計算）
+    try:
+        all_events.extend(build_us_ism(target_years))
+    except Exception as e:
+        log(f"  fetch_schedules[ISM]: 想定外の失敗 ({type(e).__name__}: {e}) → スキップ")
 
     # target_years でフィルタ（datetime_local の年で判定）
     filtered = [e for e in all_events if event_year(e) in target_years]

@@ -8,6 +8,7 @@
 - CPI  : 総合・コアの前年同月比（CPIAUCSL / CPILFESL）
 - PCE  : 総合・コアの前年同月比（PCEPI / PCEPILFE）
 - GDP  : 実質GDP成長率 年率（A191RL1Q225SBEA）
+- RETAIL: 小売売上高の前月比（RSAFS）
 
 仕様:
 - 過去（発表日時 < 現在）かつ「結果」が空のイベントだけ対象（手入力・既記入は上書きしない）
@@ -34,6 +35,7 @@ import requests
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from common import (  # noqa: E402
+    NOTION_TO_CATEGORY,
     NotionClient,
     get_notion_db_id,
     log,
@@ -56,6 +58,7 @@ CATEGORY_SERIES = {
     "CPI": ["CPIAUCSL", "CPILFESL"],
     "PCE": ["PCEPI", "PCEPILFE"],
     "GDP": ["A191RL1Q225SBEA"],
+    "RETAIL": ["RSAFS"],   # 小売・飲食サービス売上高（速報、百万ドル）→ 前月比%を計算
 }
 
 
@@ -191,6 +194,19 @@ def build_result(category: str, event_date: date, cache: dict) -> str | None:
         quarter = (cur[0].month - 1) // 3 + 1
         return f"実質GDP {cur[1]:+.1f}%（{cur[0].year}年Q{quarter}・年率）"
 
+    if category == "RETAIL":
+        ty, tm = prev_month(event_date)  # 対象月＝発表日の前月
+        r = s("RSAFS")
+        cur = month_value(r, ty, tm)
+        if not cur:
+            return None
+        py, pm = prev_month(date(ty, tm, 1))
+        prev = month_value(r, py, pm)
+        if not prev or prev[1] == 0:
+            return None
+        mom = (cur[1] / prev[1] - 1) * 100
+        return f"小売売上高 前月比{mom:+.1f}%（{ty}年{tm}月分）"
+
     return None
 
 
@@ -239,6 +255,7 @@ def run_self_test() -> int:
         ("CPI", date(2026, 3, 11)), ("CPI", date(2026, 5, 12)),
         ("PCE", date(2026, 2, 27)), ("PCE", date(2026, 5, 29)),
         ("GDP", date(2026, 4, 29)),
+        ("RETAIL", date(2026, 6, 17)),
     ]
     print("=== fetch_results self-test（FRED実取得） ===")
     for cat, d in samples:
@@ -273,8 +290,16 @@ def main() -> int:
 
     for page in pages:
         props = page.get("properties", {})
-        category = read_select(props.get(name_map["category"], {}))
+        # Notion select は日本語名（例: 雇用統計）なので英語キー（JOBS）へ変換してから照合する。
+        # （旧コードは select 名を直接比較していたため「雇用統計」「小売売上高」が一致せず
+        #   結果が記入されないバグがあった。英語名一致のカテゴリはそのまま通す）
+        select_name = read_select(props.get(name_map["category"], {}))
+        category = NOTION_TO_CATEGORY.get(select_name or "", select_name)
         if category not in CATEGORY_SERIES:
+            continue
+        # FOMC議事要旨（category=FOMC を共有）に政策金利の結果を書かないよう ID で除外
+        ev_id = read_rich_text(props.get(name_map["id"], {}))
+        if ev_id.startswith("us_fomc_minutes_"):
             continue
         # FRED は米国指標のみ。日本の CPI/GDP 等に米国値を入れないよう国=US に限定
         country = read_select(props.get(name_map["country"], {}))

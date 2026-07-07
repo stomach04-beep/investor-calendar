@@ -44,6 +44,8 @@ CATEGORY_TO_NOTION = {
     "PCE": "PCE",
     "PPI": "PPI",
     "GDP": "GDP",
+    "ISM": "ISM景況感",
+    "RETAIL": "小売売上高",
     "TANKAN": "日銀短観",
     "DIVIDEND": "配当・権利",
     "EARNINGS": "決算",

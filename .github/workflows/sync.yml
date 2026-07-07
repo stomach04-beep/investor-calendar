@@ -9,8 +9,10 @@ name: Investor Calendar Sync
 # パイプライン:
 #   1. build_events.py    : seed JSON をもとに events を構築（必要なら年シフト）
 #   2. fetch_fomc.py      : FRB公式から FOMC 会合日を取得（ベストエフォート）
+#   2b. fetch_fomc_minutes.py : FOMC日程から議事要旨公表日(+21日)を逆算
 #   3. fetch_boj.py       : 日銀公式から MPM 日を取得（ベストエフォート）
-#   4. fetch_schedules.py : 米PCE(BEA)/米CPI(BLS)/全国CPI(ルール計算) を取得（ベストエフォート）
+#   4. fetch_schedules.py : 米PCE(BEA)/米CPI(BLS)/全国CPI(ルール計算)/米雇用統計/米PPI/
+#                           米GDP(BEA)/米小売売上高(Census)/ISM(ルール計算) を取得（ベストエフォート）
 #   4b. fetch_anomalies.py: 相場アノマリー（節分天井・セルインメイ等）を暦計算で生成（AI呼び出しなし）
 #   4c. fetch_earnings.py : 保有株/ウォッチ銘柄の決算日を取得
 #   5. notion_upsert.py   : Notion DB に upsert（is_estimated=false 行は保護）
@@ -72,11 +74,15 @@ jobs:
         continue-on-error: true
         run: python scripts/fetch_beige.py
 
+      - name: fetch_fomc_minutes.py 実行（FOMC日程から議事要旨21日後を逆算 - ベストエフォート）
+        continue-on-error: true
+        run: python scripts/fetch_fomc_minutes.py
+
       - name: fetch_boj.py 実行（日銀公式 - ベストエフォート）
         continue-on-error: true
         run: python scripts/fetch_boj.py
 
-      - name: fetch_schedules.py 実行（米PCE=BEA公式 / 米CPI=BLS公式 / 全国CPI=ルール計算 - ベストエフォート）
+      - name: fetch_schedules.py 実行（米PCE・米CPI・全国CPI・米雇用統計・米PPI・米GDP・米小売・ISM - ベストエフォート）
         continue-on-error: true
         run: python scripts/fetch_schedules.py
 

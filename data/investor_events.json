@@ -1,6 +1,6 @@
 {
   "schema_version": "2.0",
-  "generated_at": "2026-07-06T22:46:41Z",
+  "generated_at": "2026-07-07T22:16:17Z",
   "covered_years": [
     2026
   ],
@@ -123,7 +123,7 @@
       "is_estimated": false,
       "description": "非農業部門雇用者数(NFP)、失業率、平均時給。FRB政策の最重要指標。",
       "source_url": "https://www.bls.gov/schedule/news_release/empsit.htm",
-      "result": null
+      "result": "非農業部門雇用者数 前月比-1.7万人 / 失業率 4.4%（2025年12月分）"
     },
     {
       "id": "anomaly_us_january_barometer_2026",
@@ -168,6 +168,34 @@
       "result": null
     },
     {
+      "id": "us_ism_mfg_2025-12",
+      "title": "ISM製造業景況指数 (2025年12月分)",
+      "category": "ISM",
+      "country": "US",
+      "datetime_utc": "2026-01-05T15:00:00Z",
+      "datetime_local": "2026-01-05T10:00:00-05:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": true,
+      "description": "全米の製造業購買担当者への調査（PMI）。50が好況/不況の分かれ目。月初一番乗りの景況指標で相場が動きやすい。",
+      "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
+      "result": null
+    },
+    {
+      "id": "us_ism_svc_2025-12",
+      "title": "ISM非製造業景況指数 (2025年12月分)",
+      "category": "ISM",
+      "country": "US",
+      "datetime_utc": "2026-01-06T15:00:00Z",
+      "datetime_local": "2026-01-06T10:00:00-05:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": true,
+      "description": "サービス業など非製造業の購買担当者調査（PMI）。50が好況/不況の分かれ目。米経済はサービス業が主体のため注目度が高い。",
+      "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
+      "result": null
+    },
+    {
       "id": "us_cpi_2026-01-12",
       "title": "米CPI (2025年12月分)",
       "category": "CPI",
@@ -180,6 +208,20 @@
       "description": "消費者物価指数。FRB利下げ織り込みに直結。",
       "source_url": "https://www.bls.gov/cpi/",
       "result": "CPI 前年比+2.7% / コア+2.6%（2025年12月分）"
+    },
+    {
+      "id": "us_retail_2025-10",
+      "title": "米小売売上高 (2025年10月分)",
+      "category": "RETAIL",
+      "country": "US",
+      "datetime_utc": "2026-01-14T13:30:00Z",
+      "datetime_local": "2026-01-14T08:30:00-05:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": false,
+      "description": "米国の小売・飲食サービス売上高（前月比）。米経済の約7割を占める個人消費の強さを測る速報。CPI級に相場が動く月もある。",
+      "source_url": "https://www.census.gov/retail/",
+      "result": "小売売上高 前月比-0.0%（2025年12月分）"
     },
     {
       "id": "us_ppi_2026-01-14",
@@ -280,6 +322,20 @@
       "result": "政策金利 3.50–3.75%（据え置き）"
     },
     {
+      "id": "us_ism_mfg_2026-01",
+      "title": "ISM製造業景況指数 (1月分)",
+      "category": "ISM",
+      "country": "US",
+      "datetime_utc": "2026-02-02T15:00:00Z",
+      "datetime_local": "2026-02-02T10:00:00-05:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": true,
+      "description": "全米の製造業購買担当者への調査（PMI）。50が好況/不況の分かれ目。月初一番乗りの景況指標で相場が動きやすい。",
+      "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
+      "result": null
+    },
+    {
       "id": "anomaly_jp_setsubun_tenjo_2026",
       "title": "節分天井",
       "category": "ANOMALY",
@@ -294,6 +350,20 @@
       "result": null
     },
     {
+      "id": "us_ism_svc_2026-01",
+      "title": "ISM非製造業景況指数 (1月分)",
+      "category": "ISM",
+      "country": "US",
+      "datetime_utc": "2026-02-04T15:00:00Z",
+      "datetime_local": "2026-02-04T10:00:00-05:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": true,
+      "description": "サービス業など非製造業の購買担当者調査（PMI）。50が好況/不況の分かれ目。米経済はサービス業が主体のため注目度が高い。",
+      "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
+      "result": null
+    },
+    {
       "id": "us_nfp_2026-02-06",
       "title": "米雇用統計 (1月分)",
       "category": "JOBS",
@@ -305,7 +375,21 @@
       "is_estimated": false,
       "description": "非農業部門雇用者数(NFP)、失業率、平均時給。FRB政策の最重要指標。",
       "source_url": "https://www.bls.gov/schedule/news_release/empsit.htm",
-      "result": null
+      "result": "非農業部門雇用者数 前月比+16.0万人 / 失業率 4.3%（2026年1月分）"
+    },
+    {
+      "id": "us_retail_2025-11",
+      "title": "米小売売上高 (2025年11月分)",
+      "category": "RETAIL",
+      "country": "US",
+      "datetime_utc": "2026-02-10T13:30:00Z",
+      "datetime_local": "2026-02-10T08:30:00-05:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": false,
+      "description": "米国の小売・飲食サービス売上高（前月比）。米経済の約7割を占める個人消費の強さを測る速報。CPI級に相場が動く月もある。",
+      "source_url": "https://www.census.gov/retail/",
+      "result": "小売売上高 前月比-0.0%（2026年1月分）"
     },
     {
       "id": "us_cpi_2026-02-11",
@@ -333,6 +417,20 @@
       "is_estimated": true,
       "description": "内閣府発表。",
       "source_url": "https://www.esri.cao.go.jp/jp/sna/menu.html",
+      "result": null
+    },
+    {
+      "id": "us_fomc_minutes_2026-02-18",
+      "title": "FOMC議事要旨 (1月会合分)",
+      "category": "FOMC",
+      "country": "US",
+      "datetime_utc": "2026-02-18T19:00:00Z",
+      "datetime_local": "2026-02-18T14:00:00-05:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": false,
+      "description": "FOMC議事要旨（Minutes）。会合の3週間後(水)14:00 ET公表。利上げ/利下げ議論の内訳が分かり、タカ派/ハト派サプライズで相場が動くことがある。",
+      "source_url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "result": null
     },
     {
@@ -378,6 +476,34 @@
       "result": null
     },
     {
+      "id": "us_ism_mfg_2026-02",
+      "title": "ISM製造業景況指数 (2月分)",
+      "category": "ISM",
+      "country": "US",
+      "datetime_utc": "2026-03-02T15:00:00Z",
+      "datetime_local": "2026-03-02T10:00:00-05:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": true,
+      "description": "全米の製造業購買担当者への調査（PMI）。50が好況/不況の分かれ目。月初一番乗りの景況指標で相場が動きやすい。",
+      "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
+      "result": null
+    },
+    {
+      "id": "us_ism_svc_2026-02",
+      "title": "ISM非製造業景況指数 (2月分)",
+      "category": "ISM",
+      "country": "US",
+      "datetime_utc": "2026-03-04T15:00:00Z",
+      "datetime_local": "2026-03-04T10:00:00-05:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": true,
+      "description": "サービス業など非製造業の購買担当者調査（PMI）。50が好況/不況の分かれ目。米経済はサービス業が主体のため注目度が高い。",
+      "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
+      "result": null
+    },
+    {
       "id": "us_beige_2026-03-04",
       "title": "ベージュブック (3月FOMC前)",
       "category": "BEIGE",
@@ -392,6 +518,20 @@
       "result": null
     },
     {
+      "id": "us_retail_2025-12",
+      "title": "米小売売上高 (2025年12月分)",
+      "category": "RETAIL",
+      "country": "US",
+      "datetime_utc": "2026-03-06T13:30:00Z",
+      "datetime_local": "2026-03-06T08:30:00-05:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": false,
+      "description": "米国の小売・飲食サービス売上高（前月比）。米経済の約7割を占める個人消費の強さを測る速報。CPI級に相場が動く月もある。",
+      "source_url": "https://www.census.gov/retail/",
+      "result": "小売売上高 前月比+0.9%（2026年2月分）"
+    },
+    {
       "id": "us_nfp_2026-03-06",
       "title": "米雇用統計 (2月分)",
       "category": "JOBS",
@@ -403,7 +543,7 @@
       "is_estimated": false,
       "description": "非農業部門雇用者数(NFP)、失業率、平均時給。FRB政策の最重要指標。",
       "source_url": "https://www.bls.gov/schedule/news_release/empsit.htm",
-      "result": null
+      "result": "非農業部門雇用者数 前月比-15.6万人 / 失業率 4.4%（2026年2月分）"
     },
     {
       "id": "jp_gdp_2026-03-09",
@@ -588,6 +728,34 @@
       "result": null
     },
     {
+      "id": "us_retail_2026-01",
+      "title": "米小売売上高 (1月分)",
+      "category": "RETAIL",
+      "country": "US",
+      "datetime_utc": "2026-04-01T12:30:00Z",
+      "datetime_local": "2026-04-01T08:30:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": false,
+      "description": "米国の小売・飲食サービス売上高（前月比）。米経済の約7割を占める個人消費の強さを測る速報。CPI級に相場が動く月もある。",
+      "source_url": "https://www.census.gov/retail/",
+      "result": "小売売上高 前月比+1.7%（2026年3月分）"
+    },
+    {
+      "id": "us_ism_mfg_2026-03",
+      "title": "ISM製造業景況指数 (3月分)",
+      "category": "ISM",
+      "country": "US",
+      "datetime_utc": "2026-04-01T14:00:00Z",
+      "datetime_local": "2026-04-01T10:00:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": true,
+      "description": "全米の製造業購買担当者への調査（PMI）。50が好況/不況の分かれ目。月初一番乗りの景況指標で相場が動きやすい。",
+      "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
+      "result": null
+    },
+    {
       "id": "us_nfp_2026-04-03",
       "title": "米雇用統計 (3月分)",
       "category": "JOBS",
@@ -599,6 +767,34 @@
       "is_estimated": false,
       "description": "非農業部門雇用者数(NFP)、失業率、平均時給。FRB政策の最重要指標。",
       "source_url": "https://www.bls.gov/schedule/news_release/empsit.htm",
+      "result": "非農業部門雇用者数 前月比+21.4万人 / 失業率 4.3%（2026年3月分）"
+    },
+    {
+      "id": "us_ism_svc_2026-03",
+      "title": "ISM非製造業景況指数 (3月分)",
+      "category": "ISM",
+      "country": "US",
+      "datetime_utc": "2026-04-03T14:00:00Z",
+      "datetime_local": "2026-04-03T10:00:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": true,
+      "description": "サービス業など非製造業の購買担当者調査（PMI）。50が好況/不況の分かれ目。米経済はサービス業が主体のため注目度が高い。",
+      "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
+      "result": null
+    },
+    {
+      "id": "us_fomc_minutes_2026-04-08",
+      "title": "FOMC議事要旨 (3月会合分)",
+      "category": "FOMC",
+      "country": "US",
+      "datetime_utc": "2026-04-08T18:00:00Z",
+      "datetime_local": "2026-04-08T14:00:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": false,
+      "description": "FOMC議事要旨（Minutes）。会合の3週間後(水)14:00 ET公表。利上げ/利下げ議論の内訳が分かり、タカ派/ハト派サプライズで相場が動くことがある。",
+      "source_url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "result": null
     },
     {
@@ -672,6 +868,20 @@
       "result": null
     },
     {
+      "id": "us_retail_2026-02",
+      "title": "米小売売上高 (2月分)",
+      "category": "RETAIL",
+      "country": "US",
+      "datetime_utc": "2026-04-21T12:30:00Z",
+      "datetime_local": "2026-04-21T08:30:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": false,
+      "description": "米国の小売・飲食サービス売上高（前月比）。米経済の約7割を占める個人消費の強さを測る速報。CPI級に相場が動く月もある。",
+      "source_url": "https://www.census.gov/retail/",
+      "result": "小売売上高 前月比+1.7%（2026年3月分）"
+    },
+    {
       "id": "us_pce_2026-04-24",
       "title": "米PCEデフレーター (3月分)",
       "category": "PCE",
@@ -739,6 +949,34 @@
       "is_estimated": false,
       "description": "非農業部門雇用者数(NFP)、失業率、平均時給。FRB政策の最重要指標。",
       "source_url": "https://www.bls.gov/schedule/news_release/empsit.htm",
+      "result": "非農業部門雇用者数 前月比+14.8万人 / 失業率 4.3%（2026年4月分）"
+    },
+    {
+      "id": "us_ism_mfg_2026-04",
+      "title": "ISM製造業景況指数 (4月分)",
+      "category": "ISM",
+      "country": "US",
+      "datetime_utc": "2026-05-01T14:00:00Z",
+      "datetime_local": "2026-05-01T10:00:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": true,
+      "description": "全米の製造業購買担当者への調査（PMI）。50が好況/不況の分かれ目。月初一番乗りの景況指標で相場が動きやすい。",
+      "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
+      "result": null
+    },
+    {
+      "id": "us_ism_svc_2026-04",
+      "title": "ISM非製造業景況指数 (4月分)",
+      "category": "ISM",
+      "country": "US",
+      "datetime_utc": "2026-05-05T14:00:00Z",
+      "datetime_local": "2026-05-05T10:00:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": true,
+      "description": "サービス業など非製造業の購買担当者調査（PMI）。50が好況/不況の分かれ目。米経済はサービス業が主体のため注目度が高い。",
+      "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
       "result": null
     },
     {
@@ -770,6 +1008,20 @@
       "result": null
     },
     {
+      "id": "us_retail_2026-03",
+      "title": "米小売売上高 (3月分)",
+      "category": "RETAIL",
+      "country": "US",
+      "datetime_utc": "2026-05-14T12:30:00Z",
+      "datetime_local": "2026-05-14T08:30:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": false,
+      "description": "米国の小売・飲食サービス売上高（前月比）。米経済の約7割を占める個人消費の強さを測る速報。CPI級に相場が動く月もある。",
+      "source_url": "https://www.census.gov/retail/",
+      "result": "小売売上高 前月比+0.4%（2026年4月分）"
+    },
+    {
       "id": "jp_gdp_2026-05-19",
       "title": "1-3月期GDP速報値",
       "category": "GDP",
@@ -781,6 +1033,20 @@
       "is_estimated": true,
       "description": "内閣府発表。",
       "source_url": "https://www.esri.cao.go.jp/jp/sna/menu.html",
+      "result": null
+    },
+    {
+      "id": "us_fomc_minutes_2026-05-20",
+      "title": "FOMC議事要旨 (4月会合分)",
+      "category": "FOMC",
+      "country": "US",
+      "datetime_utc": "2026-05-20T18:00:00Z",
+      "datetime_local": "2026-05-20T14:00:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": false,
+      "description": "FOMC議事要旨（Minutes）。会合の3週間後(水)14:00 ET公表。利上げ/利下げ議論の内訳が分かり、タカ派/ハト派サプライズで相場が動くことがある。",
+      "source_url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "result": null
     },
     {
@@ -812,6 +1078,34 @@
       "result": "PCE 前年比+3.8% / コア+3.3%（2026年4月分）"
     },
     {
+      "id": "us_ism_mfg_2026-05",
+      "title": "ISM製造業景況指数 (5月分)",
+      "category": "ISM",
+      "country": "US",
+      "datetime_utc": "2026-06-01T14:00:00Z",
+      "datetime_local": "2026-06-01T10:00:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": true,
+      "description": "全米の製造業購買担当者への調査（PMI）。50が好況/不況の分かれ目。月初一番乗りの景況指標で相場が動きやすい。",
+      "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
+      "result": null
+    },
+    {
+      "id": "us_ism_svc_2026-05",
+      "title": "ISM非製造業景況指数 (5月分)",
+      "category": "ISM",
+      "country": "US",
+      "datetime_utc": "2026-06-03T14:00:00Z",
+      "datetime_local": "2026-06-03T10:00:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": true,
+      "description": "サービス業など非製造業の購買担当者調査（PMI）。50が好況/不況の分かれ目。米経済はサービス業が主体のため注目度が高い。",
+      "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
+      "result": null
+    },
+    {
       "id": "us_beige_2026-06-03",
       "title": "ベージュブック (6月FOMC前)",
       "category": "BEIGE",
@@ -837,7 +1131,7 @@
       "is_estimated": false,
       "description": "非農業部門雇用者数(NFP)、失業率、平均時給。FRB政策の最重要指標。",
       "source_url": "https://www.bls.gov/schedule/news_release/empsit.htm",
-      "result": null
+      "result": "非農業部門雇用者数 前月比+12.9万人 / 失業率 4.3%（2026年5月分）"
     },
     {
       "id": "jp_gdp_2026-06-08",
@@ -908,6 +1202,20 @@
       "description": "結果発表は最終日の正午頃、総裁会見は15:30頃。",
       "source_url": "https://www.boj.or.jp/mopo/mpmsche_minu/index.htm",
       "result": null
+    },
+    {
+      "id": "us_retail_2026-04",
+      "title": "米小売売上高 (4月分)",
+      "category": "RETAIL",
+      "country": "US",
+      "datetime_utc": "2026-06-17T12:30:00Z",
+      "datetime_local": "2026-06-17T08:30:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": false,
+      "description": "米国の小売・飲食サービス売上高（前月比）。米経済の約7割を占める個人消費の強さを測る速報。CPI級に相場が動く月もある。",
+      "source_url": "https://www.census.gov/retail/",
+      "result": "小売売上高 前月比+0.9%（2026年5月分）"
     },
     {
       "id": "us_fomc_2026-06-17",
@@ -994,6 +1302,20 @@
       "result": null
     },
     {
+      "id": "us_ism_mfg_2026-06",
+      "title": "ISM製造業景況指数 (6月分)",
+      "category": "ISM",
+      "country": "US",
+      "datetime_utc": "2026-07-01T14:00:00Z",
+      "datetime_local": "2026-07-01T10:00:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": true,
+      "description": "全米の製造業購買担当者への調査（PMI）。50が好況/不況の分かれ目。月初一番乗りの景況指標で相場が動きやすい。",
+      "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
+      "result": null
+    },
+    {
       "id": "us_nfp_2026-07-02",
       "title": "米雇用統計 (6月分)",
       "category": "JOBS",
@@ -1005,6 +1327,48 @@
       "is_estimated": false,
       "description": "非農業部門雇用者数(NFP)、失業率、平均時給。FRB政策の最重要指標。",
       "source_url": "https://www.bls.gov/schedule/news_release/empsit.htm",
+      "result": "非農業部門雇用者数 前月比+5.7万人 / 失業率 4.2%（2026年6月分）"
+    },
+    {
+      "id": "us_ism_svc_2026-06",
+      "title": "ISM非製造業景況指数 (6月分)",
+      "category": "ISM",
+      "country": "US",
+      "datetime_utc": "2026-07-06T14:00:00Z",
+      "datetime_local": "2026-07-06T10:00:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": true,
+      "description": "サービス業など非製造業の購買担当者調査（PMI）。50が好況/不況の分かれ目。米経済はサービス業が主体のため注目度が高い。",
+      "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
+      "result": null
+    },
+    {
+      "id": "anomaly_jp_etf_bunpai_2026",
+      "title": "ETF分配金捻出売り",
+      "category": "ANOMALY",
+      "country": "JP",
+      "datetime_utc": "2026-07-08T00:00:00Z",
+      "datetime_local": "2026-07-08T09:00:00+09:00",
+      "timezone": "Asia/Tokyo",
+      "importance": 1,
+      "is_estimated": true,
+      "description": "国内の日経平均・TOPIX連動ETFの決算が7月上旬（7/8・7/10）に集中し、運用会社が分配金の原資を作るための機械的な先物売りが出やすい。数千億円規模の需給イベントで、例年7/7〜7/10ごろは上値が重くなりやすいとされる。",
+      "source_url": null,
+      "result": null
+    },
+    {
+      "id": "us_fomc_minutes_2026-07-08",
+      "title": "FOMC議事要旨 (6月会合分)",
+      "category": "FOMC",
+      "country": "US",
+      "datetime_utc": "2026-07-08T18:00:00Z",
+      "datetime_local": "2026-07-08T14:00:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": false,
+      "description": "FOMC議事要旨（Minutes）。会合の3週間後(水)14:00 ET公表。利上げ/利下げ議論の内訳が分かり、タカ派/ハト派サプライズで相場が動くことがある。",
+      "source_url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "result": null
     },
     {
@@ -1078,6 +1442,20 @@
       "result": null
     },
     {
+      "id": "us_retail_2026-05",
+      "title": "米小売売上高 (5月分)",
+      "category": "RETAIL",
+      "country": "US",
+      "datetime_utc": "2026-07-16T12:30:00Z",
+      "datetime_local": "2026-07-16T08:30:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": false,
+      "description": "米国の小売・飲食サービス売上高（前月比）。米経済の約7割を占める個人消費の強さを測る速報。CPI級に相場が動く月もある。",
+      "source_url": "https://www.census.gov/retail/",
+      "result": null
+    },
+    {
       "id": "jp_cpi_2026-07-24",
       "title": "全国CPI (6月分)",
       "category": "CPI",
@@ -1131,20 +1509,6 @@
       "is_estimated": true,
       "description": "保有株の決算発表予定（横河ブリッジHD）。予定日は変更される場合があります。",
       "source_url": "https://finance.yahoo.co.jp/quote/5911.T",
-      "result": null
-    },
-    {
-      "id": "hold_earnings_us_KMB",
-      "title": "キンバリークラーク 決算",
-      "category": "EARNINGS",
-      "country": "US",
-      "datetime_utc": "2026-07-28T20:00:00Z",
-      "datetime_local": "2026-07-28T16:00:00-04:00",
-      "timezone": "America/New_York",
-      "importance": 2,
-      "is_estimated": true,
-      "description": "保有株の決算発表予定（キンバリークラーク）。予定日は変更される場合があります。",
-      "source_url": "https://finance.yahoo.com/quote/KMB",
       "result": null
     },
     {
@@ -1246,6 +1610,20 @@
       "result": null
     },
     {
+      "id": "us_gdp_2026q2_adv",
+      "title": "米GDP速報値 (Q2)",
+      "category": "GDP",
+      "country": "US",
+      "datetime_utc": "2026-07-30T12:30:00Z",
+      "datetime_local": "2026-07-30T08:30:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": false,
+      "description": "米実質GDP成長率（前期比年率）の速報値。速報値は四半期終了の約1ヶ月後に公表され、サプライズで相場が動きやすい。",
+      "source_url": "https://www.bea.gov/data/gdp/gross-domestic-product",
+      "result": null
+    },
+    {
       "id": "us_pce_2026-07-24",
       "title": "米PCEデフレーター (6月分)",
       "category": "PCE",
@@ -1330,6 +1708,20 @@
       "result": null
     },
     {
+      "id": "us_ism_mfg_2026-07",
+      "title": "ISM製造業景況指数 (7月分)",
+      "category": "ISM",
+      "country": "US",
+      "datetime_utc": "2026-08-03T14:00:00Z",
+      "datetime_local": "2026-08-03T10:00:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": true,
+      "description": "全米の製造業購買担当者への調査（PMI）。50が好況/不況の分かれ目。月初一番乗りの景況指標で相場が動きやすい。",
+      "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
+      "result": null
+    },
+    {
       "id": "hold_earnings_jp_8031",
       "title": "三井物産 決算",
       "category": "EARNINGS",
@@ -1344,6 +1736,48 @@
       "result": null
     },
     {
+      "id": "hold_earnings_us_KMB",
+      "title": "キンバリークラーク 決算",
+      "category": "EARNINGS",
+      "country": "US",
+      "datetime_utc": "2026-08-04T20:00:00Z",
+      "datetime_local": "2026-08-04T16:00:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": true,
+      "description": "保有株の決算発表予定（キンバリークラーク）。予定日は変更される場合があります。",
+      "source_url": "https://finance.yahoo.com/quote/KMB",
+      "result": null
+    },
+    {
+      "id": "hold_earnings_us_MCD",
+      "title": "マクドナルド 決算",
+      "category": "EARNINGS",
+      "country": "US",
+      "datetime_utc": "2026-08-04T20:00:00Z",
+      "datetime_local": "2026-08-04T16:00:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": true,
+      "description": "保有株の決算発表予定（マクドナルド）。予定日は変更される場合があります。",
+      "source_url": "https://finance.yahoo.com/quote/MCD",
+      "result": null
+    },
+    {
+      "id": "hold_earnings_jp_1980",
+      "title": "ダイダン 決算",
+      "category": "EARNINGS",
+      "country": "JP",
+      "datetime_utc": "2026-08-05T06:00:00Z",
+      "datetime_local": "2026-08-05T15:00:00+09:00",
+      "timezone": "Asia/Tokyo",
+      "importance": 2,
+      "is_estimated": true,
+      "description": "保有株の決算発表予定（ダイダン）。予定日は変更される場合があります。",
+      "source_url": "https://finance.yahoo.co.jp/quote/1980.T",
+      "result": null
+    },
+    {
       "id": "hold_earnings_jp_1926",
       "title": "ライト工業 決算",
       "category": "EARNINGS",
@@ -1355,6 +1789,20 @@
       "is_estimated": true,
       "description": "保有株の決算発表予定（ライト工業）。予定日は変更される場合があります。",
       "source_url": "https://finance.yahoo.co.jp/quote/1926.T",
+      "result": null
+    },
+    {
+      "id": "us_ism_svc_2026-07",
+      "title": "ISM非製造業景況指数 (7月分)",
+      "category": "ISM",
+      "country": "US",
+      "datetime_utc": "2026-08-05T14:00:00Z",
+      "datetime_local": "2026-08-05T10:00:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": true,
+      "description": "サービス業など非製造業の購買担当者調査（PMI）。50が好況/不況の分かれ目。米経済はサービス業が主体のため注目度が高い。",
+      "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
       "result": null
     },
     {
@@ -1400,8 +1848,8 @@
       "result": null
     },
     {
-      "id": "hold_earnings_us_MCD",
-      "title": "マクドナルド 決算",
+      "id": "hold_earnings_us_KTOS",
+      "title": "クラトス・ディフェンス&セキュリティー・ソリューションズ 決算",
       "category": "EARNINGS",
       "country": "US",
       "datetime_utc": "2026-08-06T20:00:00Z",
@@ -1409,8 +1857,8 @@
       "timezone": "America/New_York",
       "importance": 2,
       "is_estimated": true,
-      "description": "保有株の決算発表予定（マクドナルド）。予定日は変更される場合があります。",
-      "source_url": "https://finance.yahoo.com/quote/MCD",
+      "description": "保有株の決算発表予定（クラトス・ディフェンス&セキュリティー・ソリューションズ）。予定日は変更される場合があります。",
+      "source_url": "https://finance.yahoo.com/quote/KTOS",
       "result": null
     },
     {
@@ -1526,6 +1974,20 @@
       "result": null
     },
     {
+      "id": "us_retail_2026-06",
+      "title": "米小売売上高 (6月分)",
+      "category": "RETAIL",
+      "country": "US",
+      "datetime_utc": "2026-08-14T12:30:00Z",
+      "datetime_local": "2026-08-14T08:30:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": false,
+      "description": "米国の小売・飲食サービス売上高（前月比）。米経済の約7割を占める個人消費の強さを測る速報。CPI級に相場が動く月もある。",
+      "source_url": "https://www.census.gov/retail/",
+      "result": null
+    },
+    {
       "id": "jp_gdp_2026-08-17",
       "title": "4-6月期GDP速報値",
       "category": "GDP",
@@ -1540,6 +2002,20 @@
       "result": null
     },
     {
+      "id": "us_fomc_minutes_2026-08-19",
+      "title": "FOMC議事要旨 (7月会合分)",
+      "category": "FOMC",
+      "country": "US",
+      "datetime_utc": "2026-08-19T18:00:00Z",
+      "datetime_local": "2026-08-19T14:00:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": false,
+      "description": "FOMC議事要旨（Minutes）。会合の3週間後(水)14:00 ET公表。利上げ/利下げ議論の内訳が分かり、タカ派/ハト派サプライズで相場が動くことがある。",
+      "source_url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
+      "result": null
+    },
+    {
       "id": "jp_cpi_2026-08-21",
       "title": "全国CPI (7月分)",
       "category": "CPI",
@@ -1551,6 +2027,20 @@
       "is_estimated": false,
       "description": "総務省統計局発表。日銀の利上げ判断材料。",
       "source_url": "https://www.stat.go.jp/data/cpi/",
+      "result": null
+    },
+    {
+      "id": "us_gdp_2026q2_2nd",
+      "title": "米GDP改定値 (Q2)",
+      "category": "GDP",
+      "country": "US",
+      "datetime_utc": "2026-08-26T12:30:00Z",
+      "datetime_local": "2026-08-26T08:30:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 1,
+      "is_estimated": false,
+      "description": "米実質GDP成長率（前期比年率）の改定値。速報値は四半期終了の約1ヶ月後に公表され、サプライズで相場が動きやすい。",
+      "source_url": "https://www.bea.gov/data/gdp/gross-domestic-product",
       "result": null
     },
     {
@@ -1610,6 +2100,20 @@
       "result": null
     },
     {
+      "id": "us_ism_mfg_2026-08",
+      "title": "ISM製造業景況指数 (8月分)",
+      "category": "ISM",
+      "country": "US",
+      "datetime_utc": "2026-09-01T14:00:00Z",
+      "datetime_local": "2026-09-01T10:00:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": true,
+      "description": "全米の製造業購買担当者への調査（PMI）。50が好況/不況の分かれ目。月初一番乗りの景況指標で相場が動きやすい。",
+      "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
+      "result": null
+    },
+    {
       "id": "us_beige_2026-09-02",
       "title": "ベージュブック (9月FOMC前)",
       "category": "BEIGE",
@@ -1621,6 +2125,20 @@
       "is_estimated": false,
       "description": "地区連銀経済報告（Beige Book）。FOMC会合の2週間前(水)14:00 ET公表。全12地区の景況感まとめで、利上げ/利下げ判断の地ならし材料。",
       "source_url": "https://www.federalreserve.gov/monetarypolicy/publications/beige-book-default.htm",
+      "result": null
+    },
+    {
+      "id": "us_ism_svc_2026-08",
+      "title": "ISM非製造業景況指数 (8月分)",
+      "category": "ISM",
+      "country": "US",
+      "datetime_utc": "2026-09-03T14:00:00Z",
+      "datetime_local": "2026-09-03T10:00:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": true,
+      "description": "サービス業など非製造業の購買担当者調査（PMI）。50が好況/不況の分かれ目。米経済はサービス業が主体のため注目度が高い。",
+      "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
       "result": null
     },
     {
@@ -1691,6 +2209,20 @@
       "is_estimated": true,
       "description": "生産者物価指数。卸売段階のインフレ先行指標。",
       "source_url": "https://www.bls.gov/ppi/",
+      "result": null
+    },
+    {
+      "id": "us_retail_2026-07",
+      "title": "米小売売上高 (7月分)",
+      "category": "RETAIL",
+      "country": "US",
+      "datetime_utc": "2026-09-16T12:30:00Z",
+      "datetime_local": "2026-09-16T08:30:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": false,
+      "description": "米国の小売・飲食サービス売上高（前月比）。米経済の約7割を占める個人消費の強さを測る速報。CPI級に相場が動く月もある。",
+      "source_url": "https://www.census.gov/retail/",
       "result": null
     },
     {
@@ -1792,6 +2324,20 @@
       "result": null
     },
     {
+      "id": "us_ism_mfg_2026-09",
+      "title": "ISM製造業景況指数 (9月分)",
+      "category": "ISM",
+      "country": "US",
+      "datetime_utc": "2026-10-01T14:00:00Z",
+      "datetime_local": "2026-10-01T10:00:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": true,
+      "description": "全米の製造業購買担当者への調査（PMI）。50が好況/不況の分かれ目。月初一番乗りの景況指標で相場が動きやすい。",
+      "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
+      "result": null
+    },
+    {
       "id": "us_nfp_2026-10-02",
       "title": "米雇用統計 (9月分)",
       "category": "JOBS",
@@ -1803,6 +2349,34 @@
       "is_estimated": false,
       "description": "非農業部門雇用者数(NFP)、失業率、平均時給。FRB政策の最重要指標。",
       "source_url": "https://www.bls.gov/schedule/news_release/empsit.htm",
+      "result": null
+    },
+    {
+      "id": "us_ism_svc_2026-09",
+      "title": "ISM非製造業景況指数 (9月分)",
+      "category": "ISM",
+      "country": "US",
+      "datetime_utc": "2026-10-05T14:00:00Z",
+      "datetime_local": "2026-10-05T10:00:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": true,
+      "description": "サービス業など非製造業の購買担当者調査（PMI）。50が好況/不況の分かれ目。米経済はサービス業が主体のため注目度が高い。",
+      "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
+      "result": null
+    },
+    {
+      "id": "us_fomc_minutes_2026-10-07",
+      "title": "FOMC議事要旨 (9月会合分)",
+      "category": "FOMC",
+      "country": "US",
+      "datetime_utc": "2026-10-07T18:00:00Z",
+      "datetime_local": "2026-10-07T14:00:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": false,
+      "description": "FOMC議事要旨（Minutes）。会合の3週間後(水)14:00 ET公表。利上げ/利下げ議論の内訳が分かり、タカ派/ハト派サプライズで相場が動くことがある。",
+      "source_url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "result": null
     },
     {
@@ -1862,6 +2436,20 @@
       "result": null
     },
     {
+      "id": "us_retail_2026-08",
+      "title": "米小売売上高 (8月分)",
+      "category": "RETAIL",
+      "country": "US",
+      "datetime_utc": "2026-10-15T12:30:00Z",
+      "datetime_local": "2026-10-15T08:30:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": false,
+      "description": "米国の小売・飲食サービス売上高（前月比）。米経済の約7割を占める個人消費の強さを測る速報。CPI級に相場が動く月もある。",
+      "source_url": "https://www.census.gov/retail/",
+      "result": null
+    },
+    {
       "id": "jp_cpi_2026-10-23",
       "title": "全国CPI (9月分)",
       "category": "CPI",
@@ -1887,6 +2475,20 @@
       "is_estimated": false,
       "description": "2日目14:00 ET発表、議長会見14:30 ET。",
       "source_url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
+      "result": null
+    },
+    {
+      "id": "us_gdp_2026q3_adv",
+      "title": "米GDP速報値 (Q3)",
+      "category": "GDP",
+      "country": "US",
+      "datetime_utc": "2026-10-29T12:30:00Z",
+      "datetime_local": "2026-10-29T08:30:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": false,
+      "description": "米実質GDP成長率（前期比年率）の速報値。速報値は四半期終了の約1ヶ月後に公表され、サプライズで相場が動きやすい。",
+      "source_url": "https://www.bea.gov/data/gdp/gross-domestic-product",
       "result": null
     },
     {
@@ -1929,6 +2531,34 @@
       "is_estimated": true,
       "description": "ハロウィン効果。10月末〜翌年4月は相対的に株価パフォーマンスが良いとされる（『Sell in May』の裏返し）。10月末は買い場とする見方。",
       "source_url": null,
+      "result": null
+    },
+    {
+      "id": "us_ism_mfg_2026-10",
+      "title": "ISM製造業景況指数 (10月分)",
+      "category": "ISM",
+      "country": "US",
+      "datetime_utc": "2026-11-02T15:00:00Z",
+      "datetime_local": "2026-11-02T10:00:00-05:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": true,
+      "description": "全米の製造業購買担当者への調査（PMI）。50が好況/不況の分かれ目。月初一番乗りの景況指標で相場が動きやすい。",
+      "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
+      "result": null
+    },
+    {
+      "id": "us_ism_svc_2026-10",
+      "title": "ISM非製造業景況指数 (10月分)",
+      "category": "ISM",
+      "country": "US",
+      "datetime_utc": "2026-11-04T15:00:00Z",
+      "datetime_local": "2026-11-04T10:00:00-05:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": true,
+      "description": "サービス業など非製造業の購買担当者調査（PMI）。50が好況/不況の分かれ目。米経済はサービス業が主体のため注目度が高い。",
+      "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
       "result": null
     },
     {
@@ -1988,6 +2618,34 @@
       "result": null
     },
     {
+      "id": "us_retail_2026-09",
+      "title": "米小売売上高 (9月分)",
+      "category": "RETAIL",
+      "country": "US",
+      "datetime_utc": "2026-11-17T13:30:00Z",
+      "datetime_local": "2026-11-17T08:30:00-05:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": false,
+      "description": "米国の小売・飲食サービス売上高（前月比）。米経済の約7割を占める個人消費の強さを測る速報。CPI級に相場が動く月もある。",
+      "source_url": "https://www.census.gov/retail/",
+      "result": null
+    },
+    {
+      "id": "us_fomc_minutes_2026-11-18",
+      "title": "FOMC議事要旨 (10月会合分)",
+      "category": "FOMC",
+      "country": "US",
+      "datetime_utc": "2026-11-18T19:00:00Z",
+      "datetime_local": "2026-11-18T14:00:00-05:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": false,
+      "description": "FOMC議事要旨（Minutes）。会合の3週間後(水)14:00 ET公表。利上げ/利下げ議論の内訳が分かり、タカ派/ハト派サプライズで相場が動くことがある。",
+      "source_url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
+      "result": null
+    },
+    {
       "id": "jp_cpi_2026-11-20",
       "title": "全国CPI (10月分)",
       "category": "CPI",
@@ -1999,6 +2657,20 @@
       "is_estimated": false,
       "description": "総務省統計局発表。日銀の利上げ判断材料。",
       "source_url": "https://www.stat.go.jp/data/cpi/",
+      "result": null
+    },
+    {
+      "id": "us_gdp_2026q3_2nd",
+      "title": "米GDP改定値 (Q3)",
+      "category": "GDP",
+      "country": "US",
+      "datetime_utc": "2026-11-25T13:30:00Z",
+      "datetime_local": "2026-11-25T08:30:00-05:00",
+      "timezone": "America/New_York",
+      "importance": 1,
+      "is_estimated": false,
+      "description": "米実質GDP成長率（前期比年率）の改定値。速報値は四半期終了の約1ヶ月後に公表され、サプライズで相場が動きやすい。",
+      "source_url": "https://www.bea.gov/data/gdp/gross-domestic-product",
       "result": null
     },
     {
@@ -2027,6 +2699,34 @@
       "is_estimated": false,
       "description": "地区連銀経済報告（Beige Book）。FOMC会合の2週間前(水)14:00 ET公表。全12地区の景況感まとめで、利上げ/利下げ判断の地ならし材料。",
       "source_url": "https://www.federalreserve.gov/monetarypolicy/publications/beige-book-default.htm",
+      "result": null
+    },
+    {
+      "id": "us_ism_mfg_2026-11",
+      "title": "ISM製造業景況指数 (11月分)",
+      "category": "ISM",
+      "country": "US",
+      "datetime_utc": "2026-12-01T15:00:00Z",
+      "datetime_local": "2026-12-01T10:00:00-05:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": true,
+      "description": "全米の製造業購買担当者への調査（PMI）。50が好況/不況の分かれ目。月初一番乗りの景況指標で相場が動きやすい。",
+      "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
+      "result": null
+    },
+    {
+      "id": "us_ism_svc_2026-11",
+      "title": "ISM非製造業景況指数 (11月分)",
+      "category": "ISM",
+      "country": "US",
+      "datetime_utc": "2026-12-03T15:00:00Z",
+      "datetime_local": "2026-12-03T10:00:00-05:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": true,
+      "description": "サービス業など非製造業の購買担当者調査（PMI）。50が好況/不況の分かれ目。米経済はサービス業が主体のため注目度が高い。",
+      "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
       "result": null
     },
     {
@@ -2142,6 +2842,34 @@
       "result": null
     },
     {
+      "id": "us_retail_2026-11",
+      "title": "米小売売上高 (11月分)",
+      "category": "RETAIL",
+      "country": "US",
+      "datetime_utc": "2026-12-16T13:30:00Z",
+      "datetime_local": "2026-12-16T08:30:00-05:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": false,
+      "description": "米国の小売・飲食サービス売上高（前月比）。米経済の約7割を占める個人消費の強さを測る速報。CPI級に相場が動く月もある。",
+      "source_url": "https://www.census.gov/retail/",
+      "result": null
+    },
+    {
+      "id": "us_retail_2026-10",
+      "title": "米小売売上高 (10月分)",
+      "category": "RETAIL",
+      "country": "US",
+      "datetime_utc": "2026-12-16T13:30:00Z",
+      "datetime_local": "2026-12-16T08:30:00-05:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": false,
+      "description": "米国の小売・飲食サービス売上高（前月比）。米経済の約7割を占める個人消費の強さを測る速報。CPI級に相場が動く月もある。",
+      "source_url": "https://www.census.gov/retail/",
+      "result": null
+    },
+    {
       "id": "jp_cpi_2026-12-25",
       "title": "全国CPI (11月分)",
       "category": "CPI",
@@ -2251,6 +2979,20 @@
       "is_estimated": true,
       "description": "東証年最終取引日。年内最終売買。",
       "source_url": null,
+      "result": null
+    },
+    {
+      "id": "us_fomc_minutes_2026-12-30",
+      "title": "FOMC議事要旨 (12月会合分)",
+      "category": "FOMC",
+      "country": "US",
+      "datetime_utc": "2026-12-30T19:00:00Z",
+      "datetime_local": "2026-12-30T14:00:00-05:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": false,
+      "description": "FOMC議事要旨（Minutes）。会合の3週間後(水)14:00 ET公表。利上げ/利下げ議論の内訳が分かり、タカ派/ハト派サプライズで相場が動くことがある。",
+      "source_url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "result": null
     },
     {

@@ -7,3 +7,4 @@ venv/
 .vscode/
 tmp/
 build_events_out.json
+.pytest_cache/

@@ -1,0 +1,36 @@
+name: Tests
+
+# fetch_schedules.py の日程ロジックの回帰テスト。
+# BLS は bot ブロックで恒常的に 403 のため真値表が実質の本番経路になる。
+# 真値表が公式日程からズレたら、Notion に反映される前にここで落とす。
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read   # テストのみ。書き込み不要（最小権限）
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: チェックアウト
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+
+      - name: Python セットアップ
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements-dev.txt
+
+      - name: 依存パッケージのインストール
+        run: pip install -r requirements-dev.txt
+
+      - name: pytest 実行
+        run: python -m pytest tests/ -v

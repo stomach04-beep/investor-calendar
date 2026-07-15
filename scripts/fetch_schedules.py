@@ -11,13 +11,19 @@ fetch_fomc.py / fetch_boj.py と同じベストエフォート方式:
   1. 米PCE     : BEA公式 https://www.bea.gov/news/schedule の
                 "Personal Income and Outlays" 行を抽出。失敗時は BEA真値表をフォールバック。
   2. 米CPI     : BLS公式 https://www.bls.gov/schedule/news_release/cpi.htm を試す。
-                BLSはbotブロック(403)になりやすいので、失敗時は BLS真値表をフォールバック。
+                ただし BLS は Akamai の bot 遮断で「恒常的に」403（2026-07-15 実測：
+                User-Agent をブラウザ偽装しても、bls.ics でも、GitHub Actions からも全て403）。
+                つまり真値表フォールバックが実質の本番経路であり、真値表の鮮度が生命線。
+                切れると誤日付が黙って残るため warn_uncovered_targets() で警告する。
   3. 全国CPI   : 「対象月の翌月の、19日を含む週(月曜起算)の金曜 8:30 JST」のルールで
                 プログラム計算（公式ページはJS依存で取りにくいためルール計算をプライマリ）。
   4. 米雇用統計 : 「毎月第1金曜 8:30 ET」をルール計算（例外月＝祝日前倒し等は上書き表）。
                 2026-07は7/3(独立記念日振替)のため7/2(木)に前倒し。
-  5. 米PPI     : BLS公式 https://www.bls.gov/schedule/news_release/ppi.htm を試す。
-                403時は真値表(確定5件)＋未確定は対応CPIの翌営業日近似でフォールバック。
+                対象年の12月分は翌年1月公表なので、公表月ループは翌年1月まで伸ばす。
+  5. 米PPI     : BLS公式 https://www.bls.gov/schedule/news_release/ppi.htm を試す（CPI同様に恒常403）。
+                真値表を優先し、表に無い月のみ「対応CPIの翌営業日」で近似する。
+                ※この近似は PPI が CPI より先に出る月（2026年8月分＝PPI 9/10 < CPI 9/11）を
+                  構造的に表現できない。あくまで最後の手段であり、真値表を埋めるのが正。
   6. 米GDP     : BEA公式 https://www.bea.gov/news/schedule の
                 "Gross Domestic Product" 行を抽出（速報値=Advance / 改定値=Second のみ。
                 確報値=Third は相場インパクトが小さいので載せない）。失敗時は真値表。
@@ -66,6 +72,9 @@ BLS_CPI_URL = "https://www.bls.gov/schedule/news_release/cpi.htm"
 BEA_SOURCE_URL = "https://www.bea.gov/data/personal-consumption-expenditures-price-index"
 BLS_SOURCE_URL = "https://www.bls.gov/cpi/"
 JP_CPI_SOURCE_URL = "https://www.stat.go.jp/data/cpi/"
+# 米雇用統計のソースURL。シードに BEA(PCE) の URL が紛れ込んでいた事故があるため、
+# 生成側の単一定義から必ず埋める（DRY: 表示・派生側で再定義しない）。
+JOBS_SOURCE_URL = "https://www.bls.gov/schedule/news_release/empsit.htm"
 
 TZ_JST = ZoneInfo("Asia/Tokyo")
 TZ_ET = ZoneInfo("America/New_York")
@@ -162,6 +171,14 @@ US_CPI_TRUTH: dict[tuple[int, int], date] = {
     (2026, 4): date(2026, 5, 12),    # 4月分 → 2026-05-12(火)
     (2026, 5): date(2026, 6, 10),    # 5月分 → 2026-06-10(水)
     (2026, 6): date(2026, 7, 14),    # 6月分 → 2026-07-14(火)
+    # 以下は 2026-07-15 に BLS公式(cpi.htm)で裏取りして追加。
+    # ここが 6月分で途切れていたため、7月分以降はフォールバックすら生成されず
+    # シードJSONの誤日付がそのまま素通りしていた（本バグの直接原因）。
+    (2026, 7): date(2026, 8, 12),    # 7月分 → 2026-08-12(水)
+    (2026, 8): date(2026, 9, 11),    # 8月分 → 2026-09-11(金)
+    (2026, 9): date(2026, 10, 14),   # 9月分 → 2026-10-14(水)
+    (2026, 10): date(2026, 11, 10),  # 10月分 → 2026-11-10(火)
+    (2026, 11): date(2026, 12, 10),  # 11月分 → 2026-12-10(木)
 }
 
 # ----------------------------------------------------------------------
@@ -172,7 +189,18 @@ US_CPI_TRUTH: dict[tuple[int, int], date] = {
 # ----------------------------------------------------------------------
 US_JOBS_PUBLISH_OVERRIDE: dict[tuple[int, int], date] = {
     (2026, 7): date(2026, 7, 2),
+    # 2027-01: 第1金曜が 1/1(元日=祝日)。雇用統計は集計が間に合わないため
+    # 前倒しではなく翌週金曜へ後ろ倒しになる（2021-01 も同型で 1/8 公表）。
+    # ※ 7月の独立記念日は「前倒し」(7/3休→7/2)、元日は「後ろ倒し」で向きが逆。
+    #    規則化すると必ず取り違えるので、例外は個別に裏取りして表で持つ。
+    (2027, 1): date(2027, 1, 8),
 }
+
+# BLS が公式スケジュールを公表済みの範囲（2026-07-15 時点で empsit.htm は 11月分＝12/4 まで）。
+# これ以降の公表日はルール計算・慣例による推定なので is_estimated=True にする。
+# 確定扱い(False)にすると notion_upsert の保護対象になり、BLS が2027年分を公表しても
+# 二度と更新されなくなるため（＝間違ったまま固着する）。
+US_JOBS_CONFIRMED_THROUGH = date(2026, 12, 4)
 
 # ----------------------------------------------------------------------
 # 米PPI 真値表（2026年・裏取り済み。フォールバック用）
@@ -185,6 +213,14 @@ US_PPI_TRUTH: dict[tuple[int, int], date] = {
     (2026, 4): date(2026, 5, 13),    # 4月分 → 2026-05-13(水)
     (2026, 5): date(2026, 6, 11),    # 5月分 → 2026-06-11(木)
     (2026, 6): date(2026, 7, 15),    # 6月分 → 2026-07-15(水)
+    # 以下は 2026-07-15 に BLS公式(ppi.htm)で裏取りして追加。
+    # 「CPI公表日の翌営業日」近似は PPI が CPI より先に出る月（8月分=9/10 < CPI 9/11 等）を
+    # 構造的に表現できず、5件中4件が誤りだった。公式日程で置き換える。
+    (2026, 7): date(2026, 8, 13),    # 7月分 → 2026-08-13(木)
+    (2026, 8): date(2026, 9, 10),    # 8月分 → 2026-09-10(木)
+    (2026, 9): date(2026, 10, 15),   # 9月分 → 2026-10-15(木)
+    (2026, 10): date(2026, 11, 13),  # 10月分 → 2026-11-13(金)
+    (2026, 11): date(2026, 12, 15),  # 11月分 → 2026-12-15(火)
 }
 
 # 米PPI 公式スケジュールURL（403が多いので失敗時は真値表＋CPI翌営業日近似にフォールバック）
@@ -228,6 +264,45 @@ ISM_SOURCE_URL = "https://www.ismworld.org/supply-management-news-and-reports/re
 # ----------------------------------------------------------------------
 # 共通ユーティリティ
 # ----------------------------------------------------------------------
+def warn(msg: str) -> None:
+    """
+    GitHub Actions のアノテーション付き警告を出す（実行サマリーに赤く出る）。
+    ローカル実行でもただの行として読める。
+    """
+    log(f"::warning::{msg}")
+
+
+def warn_uncovered_targets(label: str, category: str, country: str,
+                           truth: dict[tuple[int, int], date],
+                           today: date | None = None) -> None:
+    """
+    シードに存在する対象月のうち、真値表に無いものを警告する。
+
+    真値表が切れている対象月は fetch_schedules が何も生成しないため、シードJSONの
+    古い日付がそのまま Notion に残り続ける（notion_to_json がシードに書き戻すので
+    誤りが自己増殖する）。ジョブは success のままなので気付けない。
+    2026-07 に CPI/PPI で実際にこれが起きたので、切れたら必ず声を上げる。
+
+    公表済みの過去月は今さら直しても意味がなく、毎朝鳴り続けると警告全体が
+    無視されるようになるため、当月以降（＝まだ直せる分）だけを対象にする。
+    """
+    today = today or datetime.now(TZ_ET).date()
+    missing = sorted(
+        (y, m)
+        for (cat, ctry, y, m) in _SEED_ID_ALIAS
+        if cat == category and ctry == country
+        and (y, m) not in truth
+        and (y, m) >= (today.year, today.month)
+    )
+    if missing:
+        ym_txt = ", ".join(f"{y}-{m:02d}" for y, m in missing)
+        warn(
+            f"{label}: 真値表に無い対象月があります（{ym_txt}）。"
+            f"この月はシードJSONの古い日付が上書きされずに残ります。"
+            f"BLS公式スケジュールを確認して真値表を追加してください。"
+        )
+
+
 def et_offset_str(d: date, hour: int = 8, minute: int = 30) -> str:
     """指定日の ET(America/New_York) のUTCオフセット文字列（例 '-04:00'）を返す。"""
     aware = datetime(d.year, d.month, d.day, hour, minute, tzinfo=TZ_ET)
@@ -407,6 +482,7 @@ def cpi_fallback() -> list[dict]:
     for (tgt_y, tgt_m), pub_date in US_CPI_TRUTH.items():
         out.append(make_us_event("CPI", "米CPI", tgt_m, pub_date, BLS_SOURCE_URL, tgt_y))
     log(f"  fetch_schedules[CPI]: 真値表フォールバックで {len(out)} 件生成")
+    warn_uncovered_targets("fetch_schedules[CPI]", "CPI", "US", US_CPI_TRUTH)
     return out
 
 
@@ -520,9 +596,10 @@ def make_jobs_event(target_year: int, target_month: int, pub_date: date) -> dict
         "datetime_local": datetime_local,
         "timezone": "America/New_York",
         "importance": 3,
-        "is_estimated": False,
+        # BLS公表済み範囲内なら確定、それ以降（2027年分など）は推定として追従を残す
+        "is_estimated": pub_date > US_JOBS_CONFIRMED_THROUGH,
         "description": "非農業部門雇用者数(NFP)、失業率、平均時給。FRB政策の最重要指標。",
-        "source_url": "https://www.bls.gov/schedule/news_release/empsit.htm",
+        "source_url": JOBS_SOURCE_URL,
         "result": None,
     }
 
@@ -533,17 +610,23 @@ def build_us_jobs(target_years: set[int]) -> list[dict]:
 
     公表年でループし、各月の第1金曜（例外月は上書き）を公表日とする。
     雇用統計の「X月分」は翌月公表なので、対象月 = 公表月の前月。
-    target_years は「公表年」基準でフィルタ（datetime_local の年で後段フィルタも入る）。
+
+    年跨ぎ: 対象年の「12月分」は翌年1月公表なので、公表月ループを翌年1月まで伸ばす。
+    ここを 1〜12月で閉じていたため 12月分が一度も生成されず、シードJSONに残った
+    幽霊行（us_nfp_2026-12-31・ソースURLがBEA）が誰にも上書きされず固着していた。
     """
     events: list[dict] = []
     for pub_year in sorted(target_years):
-        for pub_month in range(1, 13):
-            pub_date = jobs_publish_date(pub_year, pub_month)
+        # 翌年1月＝対象年12月分の公表月。target_years に翌年が入っていれば
+        # 重複するが、呼び出し元で id 一意化されるので無害。
+        pub_months = [(pub_year, m) for m in range(1, 13)] + [(pub_year + 1, 1)]
+        for py, pub_month in pub_months:
+            pub_date = jobs_publish_date(py, pub_month)
             # 公表月の前月が対象月（1月公表 → 前年12月分）
             if pub_month == 1:
-                tgt_year, tgt_month = pub_year - 1, 12
+                tgt_year, tgt_month = py - 1, 12
             else:
-                tgt_year, tgt_month = pub_year, pub_month - 1
+                tgt_year, tgt_month = py, pub_month - 1
             events.append(make_jobs_event(tgt_year, tgt_month, pub_date))
     log(f"  fetch_schedules[JOBS]: ルール計算で {len(events)} 件生成")
     return events
@@ -631,6 +714,7 @@ def ppi_fallback() -> list[dict]:
                 continue
             out.append(make_ppi_event(tgt_y, tgt_m, next_business_day(cpi_d), is_estimated=True))
     log(f"  fetch_schedules[PPI]: フォールバックで {len(out)} 件生成（確定 {len(US_PPI_TRUTH)} 件）")
+    warn_uncovered_targets("fetch_schedules[PPI]", "PPI", "US", US_PPI_TRUTH)
     return out
 
 
@@ -1045,8 +1129,15 @@ def collect_schedule_events() -> list[dict]:
     except Exception as e:
         log(f"  fetch_schedules[ISM]: 想定外の失敗 ({type(e).__name__}: {e}) → スキップ")
 
-    # target_years でフィルタ（datetime_local の年で判定）
-    filtered = [e for e in all_events if event_year(e) in target_years]
+    # target_years でフィルタ（datetime_local の年＝公表年で判定）。
+    # ただし年跨ぎイベント（2026年12月分の雇用統計＝2027-01-08公表）は公表年が
+    # target_years(=[2026]) の外に出るため、そのままでは弾かれてシードの誤日付が
+    # 生き残る。既にシードに id がある行＝維持すべき既存ページなので必ず残す。
+    alias_ids = set(_SEED_ID_ALIAS.values())
+    filtered = [
+        e for e in all_events
+        if event_year(e) in target_years or e["id"] in alias_ids
+    ]
     # id 重複は後勝ちで除去
     by_id: dict[str, dict] = {}
     for e in filtered:

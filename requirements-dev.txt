@@ -1,0 +1,3 @@
+# 開発・テスト用。本番の Actions sync ジョブでは使わない（requirements.txt のみ）。
+-r requirements.txt
+pytest>=8.0.0

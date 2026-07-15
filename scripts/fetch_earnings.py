@@ -8,6 +8,10 @@
 データ源:
   - yfinance（主力・日米両対応）: Ticker.calendar["Earnings Date"]（日付のみ採用）
   - JPX 決算発表予定Excel（日本株の補完）: yfinance で取れない日本株をコードで補う
+  - J-Quants 予測日 data/jq_earnings_jp.json（日本株の最終フォールバック）:
+    jquants-bulk/build_earnings_estimates.py が10年開示履歴から生成した
+    「昨年同四半期の実開示日+364日」の予測。JPX予定Excelは直近約1ヶ月分しか
+    無いため、決算通過後〜次回掲載までの空白期間もイベントが消えないようにする
 
 役割分担（既存パイプラインの思想を踏襲）:
   - 投資家カレンダーDB への「決算」イベント登録は notion_upsert.py が
@@ -30,6 +34,7 @@ from __future__ import annotations
 
 import argparse
 import io
+import json
 import os
 import re
 import sys
@@ -237,6 +242,34 @@ def jpx_earnings_map() -> dict[str, date]:
 
 
 # ----------------------------------------------------------------------
+# J-Quants 予測日（日本株の最終フォールバック）
+# ----------------------------------------------------------------------
+JQ_ESTIMATES_PATH = Path(__file__).resolve().parents[1] / "data" / "jq_earnings_jp.json"
+
+
+def jq_estimates_map(today: date | None = None) -> dict[str, date]:
+    """
+    data/jq_earnings_jp.json（J-Quants 開示履歴からの予測日）を読み、
+    {4桁コード: 今日以降で最も近い予測日} を返す。ベストエフォート（無ければ空 dict）。
+    予測は「昨年同四半期の実開示日+364日」なので±数日ズレうる（is_estimated=true 前提）。
+    """
+    out: dict[str, date] = {}
+    today = today or date.today()
+    try:
+        payload = json.loads(JQ_ESTIMATES_PATH.read_text(encoding="utf-8"))
+        for code, dates in payload.get("estimates", {}).items():
+            future = sorted(d for d in dates if d >= today.isoformat())
+            if future:
+                out[code] = date.fromisoformat(future[0])
+        log(f"  J-Quants 予測マップ {len(out)} 件 (generated_at={payload.get('generated_at')})")
+    except FileNotFoundError:
+        log("  J-Quants 予測ファイルなし → フォールバックなしで継続")
+    except Exception as e:
+        log(f"  J-Quants 予測読込失敗: {type(e).__name__}: {e} → フォールバックなしで継続")
+    return out
+
+
+# ----------------------------------------------------------------------
 # イベント生成
 # ----------------------------------------------------------------------
 def build_event(h: dict, edate: date) -> dict:
@@ -382,10 +415,13 @@ def archive_stale(client: NotionClient, cal_db_id: str, current_ids: set[str], d
 # メイン
 # ----------------------------------------------------------------------
 def _resolve_dates(holds: list[dict]) -> tuple[list[dict], list[dict]]:
-    """各保有株の決算日を yfinance（主）＋JPX（日本株補完）で解決。(date付きリスト, 取得失敗リスト)。"""
+    """各保有株の決算日を yfinance（主）→JPX→J-Quants予測 の順で解決。
+    (date付きリスト, 取得失敗リスト) を返す。"""
     jpx: dict[str, date] = {}
+    jq: dict[str, date] = {}
     if any(h["market"] == "日本" for h in holds):
         jpx = jpx_earnings_map()
+        jq = jq_estimates_map()
     resolved: list[dict] = []
     missing: list[dict] = []
     for h in holds:
@@ -395,6 +431,10 @@ def _resolve_dates(holds: list[dict]) -> tuple[list[dict], list[dict]]:
         if ed is None and h["market"] == "日本":
             ed = jpx.get(to_jp_code(h["ticker"]))
             src = "JPX"
+        if ed is None and h["market"] == "日本":
+            # 最終フォールバック: J-Quants 開示履歴からの予測日（±数日ズレうる）
+            ed = jq.get(to_jp_code(h["ticker"]))
+            src = "JQ予測"
         if ed is None:
             missing.append(h)
             log(f"  {h['name']}({h['ticker']}): 決算日が取得できず（スキップ）")

@@ -61,7 +61,12 @@ jobs:
           ARGS=""
           if [ -n "$SHIFT_TO_YEAR" ]; then
             for y in $(echo "$SHIFT_TO_YEAR" | tr ',' ' '); do
-              ARGS="$ARGS --shift-to-year $y"
+              # 入力検証：4桁の数字（西暦年）のみ引数に採用する
+              if echo "$y" | grep -Eq '^[0-9]{4}$'; then
+                ARGS="$ARGS --shift-to-year $y"
+              else
+                echo "::warning::shift_to_year に不正な値 '$y' が含まれるため無視します（4桁の数字のみ有効）"
+              fi
             done
           fi
           python scripts/build_events.py $ARGS
@@ -97,6 +102,24 @@ jobs:
           NOTION_DB_ID: ${{ secrets.NOTION_DB_ID }}
           PORTFOLIO_DB_ID: ${{ secrets.PORTFOLIO_DB_ID }}
         run: python scripts/fetch_earnings.py
+
+      - name: フォールバック使用の可視化（サイレント失敗対策）
+        # 各 fetch スクリプトがフォールバック/スキップに落ちると data/.fetch_warnings に
+        # 印を残す（scripts/common.py の record_fetch_warning）。ジョブは緑のままだが、
+        # ::warning:: 注釈と GITHUB_STEP_SUMMARY で可視化する。
+        if: always()
+        run: |
+          if [ -f data/.fetch_warnings ]; then
+            echo "## ⚠️ フォールバック/取得失敗の警告" >> $GITHUB_STEP_SUMMARY
+            while IFS= read -r line; do
+              [ -z "$line" ] && continue
+              echo "::warning::$line"
+              echo "- $line" >> $GITHUB_STEP_SUMMARY
+            done < data/.fetch_warnings
+          else
+            echo "フォールバック警告なし（全ソース公式取得に成功）"
+            echo "- フォールバック警告なし（全ソース公式取得に成功）" >> $GITHUB_STEP_SUMMARY
+          fi
 
       - name: notion_upsert.py 実行
         env:

@@ -59,7 +59,7 @@ import requests
 from bs4 import BeautifulSoup
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from common import write_tmp, log, load_canonical_events  # noqa: E402
+from common import write_tmp, log, load_canonical_events, record_fetch_warning  # noqa: E402
 
 
 # ----------------------------------------------------------------------
@@ -424,6 +424,7 @@ def pce_fallback() -> list[dict]:
     for (tgt_y, tgt_m), pub_date in US_PCE_TRUTH.items():
         out.append(make_us_event("PCE", "米PCEデフレーター", tgt_m, pub_date, BEA_SOURCE_URL, tgt_y))
     log(f"  fetch_schedules[PCE]: 真値表フォールバックで {len(out)} 件生成")
+    record_fetch_warning("fetch_schedules[PCE]", f"BEA公式から取得できず真値表フォールバック使用（{len(out)} 件）")
     return out
 
 
@@ -482,6 +483,7 @@ def cpi_fallback() -> list[dict]:
     for (tgt_y, tgt_m), pub_date in US_CPI_TRUTH.items():
         out.append(make_us_event("CPI", "米CPI", tgt_m, pub_date, BLS_SOURCE_URL, tgt_y))
     log(f"  fetch_schedules[CPI]: 真値表フォールバックで {len(out)} 件生成")
+    record_fetch_warning("fetch_schedules[CPI]", f"BLS公式から取得できず真値表フォールバック使用（{len(out)} 件）")
     warn_uncovered_targets("fetch_schedules[CPI]", "CPI", "US", US_CPI_TRUTH)
     return out
 
@@ -714,6 +716,7 @@ def ppi_fallback() -> list[dict]:
                 continue
             out.append(make_ppi_event(tgt_y, tgt_m, next_business_day(cpi_d), is_estimated=True))
     log(f"  fetch_schedules[PPI]: フォールバックで {len(out)} 件生成（確定 {len(US_PPI_TRUTH)} 件）")
+    record_fetch_warning("fetch_schedules[PPI]", f"BLS公式から取得できず真値表＋CPI翌営業日近似フォールバック使用（{len(out)} 件）")
     warn_uncovered_targets("fetch_schedules[PPI]", "PPI", "US", US_PPI_TRUTH)
     return out
 
@@ -801,6 +804,7 @@ def gdp_fallback() -> list[dict]:
     """米GDP のフォールバック（BEA真値表からイベント生成）。"""
     out = [make_gdp_event(y, q, kind, d) for (y, q, kind), d in US_GDP_TRUTH.items()]
     log(f"  fetch_schedules[GDP]: 真値表フォールバックで {len(out)} 件生成")
+    record_fetch_warning("fetch_schedules[GDP]", f"BEA公式から取得できず真値表フォールバック使用（{len(out)} 件）")
     return out
 
 
@@ -902,6 +906,7 @@ def retail_fallback() -> list[dict]:
     """米小売売上高のフォールバック（Census真値表からイベント生成）。"""
     out = [make_retail_event(y, m, d) for (y, m), d in US_RETAIL_TRUTH.items()]
     log(f"  fetch_schedules[RETAIL]: 真値表フォールバックで {len(out)} 件生成")
+    record_fetch_warning("fetch_schedules[RETAIL]", f"Census公式から取得できず真値表フォールバック使用（{len(out)} 件）")
     return out
 
 
@@ -1093,41 +1098,49 @@ def collect_schedule_events() -> list[dict]:
         all_events.extend(fetch_bea_pce())
     except Exception as e:
         log(f"  fetch_schedules[PCE]: 想定外の失敗 ({type(e).__name__}: {e}) → スキップ")
+        record_fetch_warning("fetch_schedules[PCE]", f"想定外の失敗 ({type(e).__name__}) → イベント生成なし")
     # 2. 米CPI（独立try/except）
     try:
         all_events.extend(fetch_bls_cpi())
     except Exception as e:
         log(f"  fetch_schedules[CPI]: 想定外の失敗 ({type(e).__name__}: {e}) → スキップ")
+        record_fetch_warning("fetch_schedules[CPI]", f"想定外の失敗 ({type(e).__name__}) → イベント生成なし")
     # 3. 全国CPI（独立try/except、ルール計算）
     try:
         all_events.extend(build_jp_cpi(target_years))
     except Exception as e:
         log(f"  fetch_schedules[JP CPI]: 想定外の失敗 ({type(e).__name__}: {e}) → スキップ")
+        record_fetch_warning("fetch_schedules[JP CPI]", f"想定外の失敗 ({type(e).__name__}) → イベント生成なし")
     # 4. 米雇用統計（独立try/except、ルール計算＝第1金曜）
     try:
         all_events.extend(build_us_jobs(target_years))
     except Exception as e:
         log(f"  fetch_schedules[JOBS]: 想定外の失敗 ({type(e).__name__}: {e}) → スキップ")
+        record_fetch_warning("fetch_schedules[JOBS]", f"想定外の失敗 ({type(e).__name__}) → イベント生成なし")
     # 5. 米PPI（独立try/except、BLS公式→真値表フォールバック）
     try:
         all_events.extend(fetch_bls_ppi())
     except Exception as e:
         log(f"  fetch_schedules[PPI]: 想定外の失敗 ({type(e).__name__}: {e}) → スキップ")
+        record_fetch_warning("fetch_schedules[PPI]", f"想定外の失敗 ({type(e).__name__}) → イベント生成なし")
     # 6. 米GDP（独立try/except、BEA公式→真値表フォールバック）
     try:
         all_events.extend(fetch_bea_gdp())
     except Exception as e:
         log(f"  fetch_schedules[GDP]: 想定外の失敗 ({type(e).__name__}: {e}) → スキップ")
+        record_fetch_warning("fetch_schedules[GDP]", f"想定外の失敗 ({type(e).__name__}) → イベント生成なし")
     # 7. 米小売売上高（独立try/except、Census公式→真値表フォールバック）
     try:
         all_events.extend(fetch_census_retail())
     except Exception as e:
         log(f"  fetch_schedules[RETAIL]: 想定外の失敗 ({type(e).__name__}: {e}) → スキップ")
+        record_fetch_warning("fetch_schedules[RETAIL]", f"想定外の失敗 ({type(e).__name__}) → イベント生成なし")
     # 8. ISM景況指数（独立try/except、ルール計算）
     try:
         all_events.extend(build_us_ism(target_years))
     except Exception as e:
         log(f"  fetch_schedules[ISM]: 想定外の失敗 ({type(e).__name__}: {e}) → スキップ")
+        record_fetch_warning("fetch_schedules[ISM]", f"想定外の失敗 ({type(e).__name__}) → イベント生成なし")
 
     # target_years でフィルタ（datetime_local の年＝公表年で判定）。
     # ただし年跨ぎイベント（2026年12月分の雇用統計＝2027-01-08公表）は公表年が

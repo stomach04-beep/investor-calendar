@@ -15,7 +15,7 @@ import requests
 from bs4 import BeautifulSoup
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from common import write_tmp, log  # noqa: E402
+from common import write_tmp, log, record_fetch_warning  # noqa: E402
 
 
 BOJ_URL = "https://www.boj.or.jp/mopo/mpmsche_minu/index.htm"
@@ -161,14 +161,17 @@ def main() -> int:
     html = fetch_html()
     if not html:
         log("fetch_boj: 日銀サイト取得失敗 → 出力ファイルなし")
+        record_fetch_warning("fetch_boj", "日銀サイト取得失敗 → シード値で継続")
         return 0
     try:
         events = parse_boj_meetings(html)
     except Exception as e:
         log(f"fetch_boj: HTML パース失敗 ({type(e).__name__}: {e}) → 出力ファイルなし")
+        record_fetch_warning("fetch_boj", f"HTMLパース失敗 ({type(e).__name__}) → シード値で継続")
         return 0
     if not events:
         log("fetch_boj: 会合が抽出できず、スキップ")
+        record_fetch_warning("fetch_boj", "抽出ゼロ（サイト構造変化の疑い） → シード値で継続")
         return 0
 
     # 日銀ページは「決定会合日」「議事要旨公表日」「主な意見公表日」が混在するため、
@@ -181,6 +184,7 @@ def main() -> int:
     log(f"fetch_boj: 全 {len(events)} 件 → seed BOJ id と一致＆target_years 内で {len(filtered)} 件")
     if not filtered:
         log("fetch_boj: seed と一致する BOJ 確定情報が抽出できずスキップ（後続は build_events のシード値で継続）")
+        record_fetch_warning("fetch_boj", "seed一致ゼロ（サイト構造変化またはID体系変化の疑い） → シード値で継続")
         return 0
 
     path = write_tmp("fetch_boj_out", {"events": filtered, "fetched_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")})

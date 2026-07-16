@@ -80,6 +80,28 @@ def log(msg: str) -> None:
 
 
 # ----------------------------------------------------------------------
+# フォールバック使用の可視化（サイレント失敗対策）
+# ----------------------------------------------------------------------
+# 各 fetch スクリプトが「公式サイトから取れずフォールバック／スキップに落ちた」
+# ことを示す印ファイル。sync.yml の後段ステップがこのファイルを読んで
+# ::warning:: と GITHUB_STEP_SUMMARY に列挙する（ジョブは緑のまま可視化）。
+FETCH_WARNINGS_FILE = DATA_DIR / ".fetch_warnings"
+
+
+def record_fetch_warning(source: str, reason: str) -> None:
+    """フォールバック使用・取得失敗の印を data/.fetch_warnings に1行追記する。
+
+    印の記録自体が失敗しても本処理（ベストエフォートの fetch）は止めない。
+    """
+    try:
+        FETCH_WARNINGS_FILE.parent.mkdir(parents=True, exist_ok=True)
+        with FETCH_WARNINGS_FILE.open("a", encoding="utf-8") as f:
+            f.write(f"{source}: {reason}\n")
+    except Exception:
+        pass
+
+
+# ----------------------------------------------------------------------
 # 環境変数の読み込み
 # ----------------------------------------------------------------------
 def _clean_secret(value: str | None) -> str:

@@ -21,7 +21,7 @@ import requests
 from bs4 import BeautifulSoup
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from common import write_tmp, log  # noqa: E402
+from common import write_tmp, log, record_fetch_warning  # noqa: E402
 
 
 FRB_URL = "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm"
@@ -149,14 +149,17 @@ def main() -> int:
     html = fetch_html()
     if not html:
         log("fetch_fomc: FRBサイト取得失敗 → 出力ファイルなし（後続は build_events.py 出力のみで継続）")
+        record_fetch_warning("fetch_fomc", "FRBサイト取得失敗 → シード値で継続")
         return 0
     try:
         events = parse_fomc_meetings(html)
     except Exception as e:
         log(f"fetch_fomc: HTML パース失敗 ({type(e).__name__}: {e}) → 出力ファイルなし")
+        record_fetch_warning("fetch_fomc", f"HTMLパース失敗 ({type(e).__name__}) → シード値で継続")
         return 0
     if not events:
         log("fetch_fomc: FOMC 会合が抽出できず、スキップ")
+        record_fetch_warning("fetch_fomc", "抽出ゼロ（サイト構造変化の疑い） → シード値で継続")
         return 0
     # target_years でフィルタ：build_events がカバーしている年のみ採用
     target_years = load_target_years()

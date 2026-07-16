@@ -8,3 +8,6 @@ venv/
 tmp/
 build_events_out.json
 .pytest_cache/
+
+# フォールバック使用の印ファイル（sync.yml が可視化に使う一時ファイル）
+data/.fetch_warnings

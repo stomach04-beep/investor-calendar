@@ -92,6 +92,10 @@ WATCH_HOLDINGS = [
      "page_id": None, "current": None, "date_prop": "次回決算日", "is_watch": True},
     {"name": "ベライゾン", "ticker": "VZ", "market": "米国",
      "page_id": None, "current": None, "date_prop": "次回決算日", "is_watch": True},
+    {"name": "ファクトセット", "ticker": "FDS", "market": "米国",
+     "page_id": None, "current": None, "date_prop": "次回決算日", "is_watch": True},
+    {"name": "ローパーテクノロジーズ", "ticker": "ROP", "market": "米国",
+     "page_id": None, "current": None, "date_prop": "次回決算日", "is_watch": True},
 ]
 
 

@@ -67,10 +67,14 @@ HELD_STATUSES = {"保有継続", "目標達成", "部分達成", "打診買い�
 TZ_JST = ZoneInfo("Asia/Tokyo")
 TZ_ET = ZoneInfo("America/New_York")
 
-# 日本株のデフォルト決算発表時刻（15:00 JST 想定）／米国株は引け後 16:00 ET 想定。
-# yfinance の時刻は不正確なので採用せず、日付＋この既定時刻で表示・通知する。
+# 日本株のデフォルト決算発表時刻（15:00 JST 想定）。
+# 米国株は「寄り前(BMO)＝07:00 ET」「引け後(AMC)・不明＝16:00 ET」で出し分ける。
+#   yfinance の時刻は分単位では不正確だが、寄り前/引け後の別(AM 朝 or PM 16:00)は信頼できる。
+#   実証: AAPL/MSFT/NVDA=16:00(引け後), GS/JPM/KO=朝(寄り前), VZ/CVX=08:00(寄り前)。
+#   → セッション(AM/PM)だけ採用し、代表時刻に丸めて表示・通知する（VZ実際の7:00press/8:30会見に近い）。
 JP_HOUR, JP_MIN = 15, 0
-US_HOUR, US_MIN = 16, 0
+US_HOUR, US_MIN = 16, 0          # 引け後(AMC)・セッション不明時のデフォルト
+US_BMO_HOUR, US_BMO_MIN = 7, 0   # 寄り前(BMO)の代表時刻（プレスリリース想定）
 
 # self-test 用サンプル（Notion 不要でデータ取得を確認するための固定リスト）
 SELF_TEST_HOLDINGS = [
@@ -174,30 +178,67 @@ def to_utc_z(local_iso: str) -> str:
 # ----------------------------------------------------------------------
 # yfinance 取得（主力）
 # ----------------------------------------------------------------------
-def yf_next_earnings(symbol: str) -> date | None:
-    """yfinance で次回決算予定日(date)を返す。取れなければ None。"""
-    if not symbol:
+def _yf_session_for(tk, edate: date) -> str | None:
+    """yfinance の get_earnings_dates から、指定日の発表セッションを返す。
+    'AM'（寄り前 BMO）／'PM'（引け後 AMC）／None（不明）。
+    yfinance の時刻は分単位では不正確だが AM/PM の別は信頼できる（実証済）。
+
+    注意: calendar の日付と get_earnings_dates の日付は、引け後(AMC)銘柄で
+    1日ズレることがある（例 AAPL: calendar=7/31 / earnings_dates=7/30 16:00）。
+    そのため edate と完全一致でなく ±1日の最も近い行を採用する。
+    時刻が 00:00（プレースホルダ＝時刻不明）の行は不明扱い。"""
+    try:
+        df = tk.get_earnings_dates(limit=16)
+        if df is None or len(df) == 0:
+            return None
+        best_ix = None
+        best_diff = 2  # ±1日以内のみ採用
+        for ix in df.index:
+            # ix は America/New_York の tz-aware Timestamp。ET の日付・時で判定する。
+            diff = abs((ix.date() - edate).days)
+            if diff < best_diff:
+                best_diff, best_ix = diff, ix
+        if best_ix is None:
+            return None
+        if best_ix.hour == 0 and best_ix.minute == 0:
+            return None  # 時刻不明のプレースホルダ
+        return "AM" if best_ix.hour < 12 else "PM"
+    except Exception:
         return None
+
+
+def yf_next_earnings(symbol: str, want_session: bool = False) -> tuple[date | None, str | None]:
+    """yfinance で次回決算予定日(date)と発表セッション('AM'/'PM'/None)を返す。
+    取れなければ (None, None)。want_session=False のときはセッション判定を省く
+    （日本株は時刻を使わないので余計な API 呼び出しを避ける）。"""
+    if not symbol:
+        return None, None
     try:
         import yfinance as yf
         tk = yf.Ticker(symbol)
         cal = tk.calendar
         ed = cal.get("Earnings Date") if isinstance(cal, dict) else None
         if not ed:
-            return None
+            return None, None
         if isinstance(ed, (list, tuple)):
             ed = ed[0] if ed else None
+        edate: date | None = None
         if isinstance(ed, datetime):
-            return ed.date()
-        if isinstance(ed, date):
-            return ed
-        try:
-            return date.fromisoformat(str(ed)[:10])
-        except ValueError:
-            return None
+            edate = ed.date()
+        elif isinstance(ed, date):
+            edate = ed
+        else:
+            try:
+                edate = date.fromisoformat(str(ed)[:10])
+            except ValueError:
+                return None, None
+        if edate is None:
+            return None, None
+        session = _yf_session_for(tk, edate) if want_session else None
+        return edate, session
     except Exception as e:
         log(f"  yfinance {symbol} 取得失敗: {type(e).__name__}: {e}")
-        return None
+        return None, None
 
 
 # ----------------------------------------------------------------------
@@ -312,8 +353,13 @@ def build_event(h: dict, edate: date) -> dict:
         country = "US"
         sym = ticker.strip().upper()
         ev_id = f"{prefix}_us_{sym}"
-        off = et_offset_str(edate, US_HOUR, US_MIN)
-        local = f"{edate.isoformat()}T{US_HOUR:02d}:{US_MIN:02d}:00{off}"
+        # 寄り前(AM/BMO)=07:00 ET、引け後(PM/AMC)・不明=16:00 ET で出し分け
+        if h.get("session") == "AM":
+            hh, mm = US_BMO_HOUR, US_BMO_MIN
+        else:
+            hh, mm = US_HOUR, US_MIN
+        off = et_offset_str(edate, hh, mm)
+        local = f"{edate.isoformat()}T{hh:02d}:{mm:02d}:00{off}"
         tz = "America/New_York"
         src = f"https://finance.yahoo.com/quote/{sym}"
     return {
@@ -446,7 +492,9 @@ def _resolve_dates(holds: list[dict]) -> tuple[list[dict], list[dict]]:
     missing: list[dict] = []
     for h in holds:
         sym = to_yf_symbol(h["ticker"], h["market"])
-        ed = yf_next_earnings(sym)
+        # 米国株のみセッション(寄り前/引け後)を判定する（日本株は時刻を使わない）
+        want_session = h["market"] != "日本"
+        ed, session = yf_next_earnings(sym, want_session=want_session)
         src = "yfinance"
         if ed is None and h["market"] == "日本":
             ed = jpx.get(to_jp_code(h["ticker"]))
@@ -462,8 +510,10 @@ def _resolve_dates(holds: list[dict]) -> tuple[list[dict], list[dict]]:
         h2 = dict(h)
         h2["edate"] = ed
         h2["src"] = src
+        h2["session"] = session  # 'AM'/'PM'/None（build_event で米国株の時刻に反映）
         resolved.append(h2)
-        log(f"  {h['name']}({h['ticker']}) -> {ed} [{src}]")
+        sess_label = f" [{session}]" if session else ""
+        log(f"  {h['name']}({h['ticker']}) -> {ed} [{src}]{sess_label}")
     return resolved, missing
 
 

@@ -1,6 +1,6 @@
 {
   "schema_version": "2.0",
-  "generated_at": "2026-07-17T22:23:29Z",
+  "generated_at": "2026-07-18T22:25:01Z",
   "covered_years": [
     2026,
     2027
@@ -1457,6 +1457,20 @@
       "result": null
     },
     {
+      "id": "watch_earnings_us_ROP",
+      "title": "ローパーテクノロジーズ 決算",
+      "category": "EARNINGS",
+      "country": "US",
+      "datetime_utc": "2026-07-23T20:00:00Z",
+      "datetime_local": "2026-07-23T16:00:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": true,
+      "description": "ウォッチ銘柄の決算発表予定（ローパーテクノロジーズ）。予定日は変更される場合があります。",
+      "source_url": "https://finance.yahoo.com/quote/ROP",
+      "result": null
+    },
+    {
       "id": "hold_earnings_us_RTX",
       "title": "RTXコーポレーション 決算",
       "category": "EARNINGS",
@@ -1468,6 +1482,20 @@
       "is_estimated": true,
       "description": "保有株の決算発表予定（RTXコーポレーション）。予定日は変更される場合があります。",
       "source_url": "https://finance.yahoo.com/quote/RTX",
+      "result": null
+    },
+    {
+      "id": "us_tariff_sec122_expiry_2026-07-24",
+      "title": "通商法122条関税の失効・301条への移行",
+      "category": "EVENT",
+      "country": "US",
+      "datetime_utc": "2026-07-24T04:00:00Z",
+      "datetime_local": "2026-07-24T00:00:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": false,
+      "description": "米連邦最高裁のIEEPA関税無効判決(2026/2/20・6対3)を受けて発動された通商法122条の一律課徴金(2/24発効10%、その後15%運用)が法定150日の期限を迎え失効。政権は通商法301条に基づく新関税へ移行する方針。USTRは2026/6/2に日本を含む60カ国・地域への10%または12.5%の追加関税を提案済み、日経(2026/7/17)は日本12.5%案と報道。通商拡大法232条(鉄鋼・アルミ50%、自動車25%、銅50%)は本件と無関係に継続。保有ポートフォリオは内需サービス・国内建設比率が高く関税感応度は低い。感応度が高いのはPPG・ITWの2銘柄(232条自動車25%の需要側)。詳細は教訓28を参照。",
+      "source_url": "https://www.nikkei.com/article/DGXZQOGN140230U6A710C2000000/",
       "result": null
     },
     {
@@ -2252,6 +2280,20 @@
       "is_estimated": false,
       "description": "2日目14:00 ET発表、議長会見14:30 ET。",
       "source_url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
+      "result": null
+    },
+    {
+      "id": "watch_earnings_us_FDS",
+      "title": "ファクトセット 決算",
+      "category": "EARNINGS",
+      "country": "US",
+      "datetime_utc": "2026-09-17T20:00:00Z",
+      "datetime_local": "2026-09-17T16:00:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": true,
+      "description": "ウォッチ銘柄の決算発表予定（ファクトセット）。予定日は変更される場合があります。",
+      "source_url": "https://finance.yahoo.com/quote/FDS",
       "result": null
     },
     {

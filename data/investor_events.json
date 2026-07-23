@@ -1,6 +1,6 @@
 {
   "schema_version": "2.0",
-  "generated_at": "2026-07-22T22:35:00Z",
+  "generated_at": "2026-07-23T22:32:38Z",
   "covered_years": [
     2026,
     2027
@@ -1765,6 +1765,20 @@
       "result": null
     },
     {
+      "id": "hold_earnings_us_KTOS",
+      "title": "クラトス・ディフェンス&セキュリティー・ソリューションズ 決算",
+      "category": "EARNINGS",
+      "country": "US",
+      "datetime_utc": "2026-08-04T20:00:00Z",
+      "datetime_local": "2026-08-04T16:00:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": true,
+      "description": "保有株の決算発表予定（クラトス・ディフェンス&セキュリティー・ソリューションズ）。予定日は変更される場合があります。",
+      "source_url": "https://finance.yahoo.com/quote/KTOS",
+      "result": null
+    },
+    {
       "id": "hold_earnings_us_KMB",
       "title": "キンバリークラーク 決算",
       "category": "EARNINGS",
@@ -1874,20 +1888,6 @@
       "is_estimated": true,
       "description": "保有株の決算発表予定（任天堂）。予定日は変更される場合があります。",
       "source_url": "https://finance.yahoo.co.jp/quote/7974.T",
-      "result": null
-    },
-    {
-      "id": "hold_earnings_us_KTOS",
-      "title": "クラトス・ディフェンス&セキュリティー・ソリューションズ 決算",
-      "category": "EARNINGS",
-      "country": "US",
-      "datetime_utc": "2026-08-06T20:00:00Z",
-      "datetime_local": "2026-08-06T16:00:00-04:00",
-      "timezone": "America/New_York",
-      "importance": 2,
-      "is_estimated": true,
-      "description": "保有株の決算発表予定（クラトス・ディフェンス&セキュリティー・ソリューションズ）。予定日は変更される場合があります。",
-      "source_url": "https://finance.yahoo.com/quote/KTOS",
       "result": null
     },
     {

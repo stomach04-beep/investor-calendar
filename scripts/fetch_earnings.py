@@ -87,12 +87,30 @@ SELF_TEST_HOLDINGS = [
 #   market … "米国" か "日本"
 #   is_watch=True … 保有株(hold_earnings_*)と区別し watch_earnings_* の id にするための目印
 # 保有していないだけなので、ポートフォリオDBの「次回決算日」更新の対象にはしない（page_id=None）。
+# ※保有株になった銘柄をここに残しても二重登録にはならない（main で自動的に抑止する）。
 WATCH_HOLDINGS = [
-    {"name": "シェブロン", "ticker": "CVX", "market": "米国",
-     "page_id": None, "current": None, "date_prop": "次回決算日", "is_watch": True},
     {"name": "ファクトセット", "ticker": "FDS", "market": "米国",
      "page_id": None, "current": None, "date_prop": "次回決算日", "is_watch": True},
     {"name": "ローパーテクノロジーズ", "ticker": "ROP", "market": "米国",
+     "page_id": None, "current": None, "date_prop": "次回決算日", "is_watch": True},
+    # --- 2026-07-25 追加: 米国配当成長株スクリーニングの買い候補（未保有） ---
+    {"name": "アメックス", "ticker": "AXP", "market": "米国",
+     "page_id": None, "current": None, "date_prop": "次回決算日", "is_watch": True},
+    {"name": "ムーディーズ", "ticker": "MCO", "market": "米国",
+     "page_id": None, "current": None, "date_prop": "次回決算日", "is_watch": True},
+    {"name": "マスターカード", "ticker": "MA", "market": "米国",
+     "page_id": None, "current": None, "date_prop": "次回決算日", "is_watch": True},
+    {"name": "ノースロップグラマン", "ticker": "NOC", "market": "米国",
+     "page_id": None, "current": None, "date_prop": "次回決算日", "is_watch": True},
+    {"name": "ロッキードマーチン", "ticker": "LMT", "market": "米国",
+     "page_id": None, "current": None, "date_prop": "次回決算日", "is_watch": True},
+    {"name": "キューリグドクターペッパー", "ticker": "KDP", "market": "米国",
+     "page_id": None, "current": None, "date_prop": "次回決算日", "is_watch": True},
+    {"name": "ヤムブランズ", "ticker": "YUM", "market": "米国",
+     "page_id": None, "current": None, "date_prop": "次回決算日", "is_watch": True},
+    {"name": "ホームデポ", "ticker": "HD", "market": "米国",
+     "page_id": None, "current": None, "date_prop": "次回決算日", "is_watch": True},
+    {"name": "ダラーゼネラル", "ticker": "DG", "market": "米国",
      "page_id": None, "current": None, "date_prop": "次回決算日", "is_watch": True},
 ]
 
@@ -474,9 +492,19 @@ def main() -> int:
     pdb = get_portfolio_db_id()
     holds = fetch_holdings(client, pdb)
     log(f"  保有株（対象）{len(holds)} 件")
-    # 保有はしていないが決算日を載せたいウォッチ銘柄を合流（CVX/VZ 等）
-    holds.extend(WATCH_HOLDINGS)
-    log(f"  ＋ウォッチ銘柄 {len(WATCH_HOLDINGS)} 件 → 合計 {len(holds)} 件")
+    # 保有はしていないが決算日を載せたいウォッチ銘柄を合流（FDS/ROP 等）
+    # ★二重登録ガード: ウォッチ銘柄を実際に買うと、ポートフォリオDB経由の
+    #   hold_earnings_* と watch_earnings_* が両方できてカレンダーに2件並ぶ。
+    #   （VZ=2026-07-19・CVX=2026-07-25 に実際に発生）。保有済みティッカーは
+    #   ここで落とし、残った watch_earnings_* は archive_stale が自動で掃除する。
+    held_tickers = {(h.get("ticker") or "").upper() for h in holds}
+    watch = [w for w in WATCH_HOLDINGS
+             if (w.get("ticker") or "").upper() not in held_tickers]
+    dropped = [w["ticker"] for w in WATCH_HOLDINGS if w not in watch]
+    if dropped:
+        log(f"  ウォッチ銘柄のうち保有済みのため除外: {', '.join(dropped)}")
+    holds.extend(watch)
+    log(f"  ＋ウォッチ銘柄 {len(watch)} 件 → 合計 {len(holds)} 件")
     if not holds:
         log("  対象保有株なし → 何もしない")
         write_tmp("fetch_earnings_out", {"events": [], "fetched_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")})

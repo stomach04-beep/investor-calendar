@@ -1,6 +1,6 @@
 {
   "schema_version": "2.0",
-  "generated_at": "2026-07-24T22:36:16Z",
+  "generated_at": "2026-07-25T22:29:00Z",
   "covered_years": [
     2026,
     2027
@@ -1471,34 +1471,6 @@
       "result": null
     },
     {
-      "id": "watch_earnings_us_AXP",
-      "title": "アメックス 決算",
-      "category": "EARNINGS",
-      "country": "US",
-      "datetime_utc": "2026-07-24T20:00:00Z",
-      "datetime_local": "2026-07-24T16:00:00-04:00",
-      "timezone": "America/New_York",
-      "importance": 2,
-      "is_estimated": true,
-      "description": "ウォッチ銘柄の決算発表予定（アメックス）。予定日は変更される場合があります。",
-      "source_url": "https://finance.yahoo.com/quote/AXP",
-      "result": null
-    },
-    {
-      "id": "hold_earnings_us_VZ",
-      "title": "ベライゾン 決算",
-      "category": "EARNINGS",
-      "country": "US",
-      "datetime_utc": "2026-07-24T20:00:00Z",
-      "datetime_local": "2026-07-24T16:00:00-04:00",
-      "timezone": "America/New_York",
-      "importance": 2,
-      "is_estimated": true,
-      "description": "保有株の決算発表予定（ベライゾン）。予定日は変更される場合があります。",
-      "source_url": "https://finance.yahoo.com/quote/VZ",
-      "result": null
-    },
-    {
       "id": "hold_earnings_jp_5911",
       "title": "横河ブリッジHD 決算",
       "category": "EARNINGS",
@@ -2605,6 +2577,20 @@
       "result": null
     },
     {
+      "id": "hold_earnings_us_VZ",
+      "title": "ベライゾン 決算",
+      "category": "EARNINGS",
+      "country": "US",
+      "datetime_utc": "2026-10-20T20:00:00Z",
+      "datetime_local": "2026-10-20T16:00:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": true,
+      "description": "保有株の決算発表予定（ベライゾン）。予定日は変更される場合があります。",
+      "source_url": "https://finance.yahoo.com/quote/VZ",
+      "result": null
+    },
+    {
       "id": "watch_earnings_us_MCO",
       "title": "ムーディーズ 決算",
       "category": "EARNINGS",
@@ -2644,6 +2630,20 @@
       "is_estimated": false,
       "description": "総務省統計局発表。日銀の利上げ判断材料。",
       "source_url": "https://www.stat.go.jp/data/cpi/",
+      "result": null
+    },
+    {
+      "id": "watch_earnings_us_AXP",
+      "title": "アメックス 決算",
+      "category": "EARNINGS",
+      "country": "US",
+      "datetime_utc": "2026-10-23T20:00:00Z",
+      "datetime_local": "2026-10-23T16:00:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": true,
+      "description": "ウォッチ銘柄の決算発表予定（アメックス）。予定日は変更される場合があります。",
+      "source_url": "https://finance.yahoo.com/quote/AXP",
       "result": null
     },
     {

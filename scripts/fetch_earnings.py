@@ -6,8 +6,9 @@
 する。
 
 データ源:
-  - yfinance（主力・日米両対応）: Ticker.calendar["Earnings Date"]（日付のみ採用）
-  - JPX 決算発表予定Excel（日本株の補完）: yfinance で取れない日本株をコードで補う
+  - JPX 決算発表予定Excel（日本株の第一候補）: 取引所公式の発表予定＝確定扱い(is_estimated=false)。
+    ただし直近約1ヶ月分しか掲載されない
+  - yfinance（米国株の主力・日本株のJPX圏外フォールバック）: Ticker.calendar["Earnings Date"]（日付のみ採用）
   - J-Quants 予測日 data/jq_earnings_jp.json（日本株の最終フォールバック）:
     jquants-bulk/build_earnings_estimates.py が10年開示履歴から生成した
     「昨年同四半期の実開示日+364日」の予測。JPX予定Excelは直近約1ヶ月分しか
@@ -338,6 +339,9 @@ def build_event(h: dict, edate: date) -> dict:
     market = h["market"]
     name = h["name"]
     ticker = h["ticker"]
+    # JPX（取引所公式の発表予定）由来の日付は確定扱い＝is_estimated=false にする。
+    # yfinance / J-Quants予測 由来は従来どおり推定扱い（毎朝の自動更新で追従させる）。
+    confirmed = h.get("src") == "JPX"
     # ウォッチ銘柄（保有外）は id を watch_earnings_* にして保有株と区別する
     prefix = "watch_earnings" if h.get("is_watch") else "hold_earnings"
     kind = "ウォッチ銘柄" if h.get("is_watch") else "保有株"
@@ -371,9 +375,14 @@ def build_event(h: dict, edate: date) -> dict:
         "datetime_local": local,
         "timezone": tz,
         "importance": 2,
-        # 予定日は変わりうるので推定扱い（notion_upsert の保護対象にせず毎朝追従させる）
-        "is_estimated": True,
-        "description": f"{kind}の決算発表予定（{name}）。予定日は変更される場合があります。",
+        # JPX公式由来のみ確定（false）。それ以外は推定（true）で毎朝追従させる。
+        # 確定行の更新可否は notion_upsert 側の決算イベント専用ルールで制御する。
+        "is_estimated": not confirmed,
+        "description": (
+            f"{kind}の決算発表予定（{name}）。JPX公式の発表予定日。"
+            if confirmed
+            else f"{kind}の決算発表予定（{name}）。予定日は変更される場合があります。"
+        ),
         "source_url": src,
         "result": None,
     }
@@ -481,24 +490,35 @@ def archive_stale(client: NotionClient, cal_db_id: str, current_ids: set[str], d
 # メイン
 # ----------------------------------------------------------------------
 def _resolve_dates(holds: list[dict]) -> tuple[list[dict], list[dict]]:
-    """各保有株の決算日を yfinance（主）→JPX→J-Quants予測 の順で解決。
+    """各保有株の決算日を解決する。
+      日本株: JPX公式（確定・約1ヶ月先まで）→ yfinance → J-Quants予測 の順
+      米国株: yfinance のみ
+    JPX は取引所の公式発表予定なので is_estimated=false（確定）として扱える。
     (date付きリスト, 取得失敗リスト) を返す。"""
     jpx: dict[str, date] = {}
     jq: dict[str, date] = {}
     if any(h["market"] == "日本" for h in holds):
         jpx = jpx_earnings_map()
         jq = jq_estimates_map()
+    # JPXのExcelには発表直後の過去日が残っていることがあるため「今日(JST)以降」だけ採用する
+    today_jst = datetime.now(TZ_JST).date()
     resolved: list[dict] = []
     missing: list[dict] = []
     for h in holds:
         sym = to_yf_symbol(h["ticker"], h["market"])
         # 米国株のみセッション(寄り前/引け後)を判定する（日本株は時刻を使わない）
         want_session = h["market"] != "日本"
-        ed, session = yf_next_earnings(sym, want_session=want_session)
-        src = "yfinance"
-        if ed is None and h["market"] == "日本":
-            ed = jpx.get(to_jp_code(h["ticker"]))
-            src = "JPX"
+        ed: date | None = None
+        session: str | None = None
+        src = ""
+        # 日本株はまずJPX公式（確定日）を見る
+        if h["market"] == "日本":
+            jpx_d = jpx.get(to_jp_code(h["ticker"]))
+            if jpx_d is not None and jpx_d >= today_jst:
+                ed, src = jpx_d, "JPX"
+        if ed is None:
+            ed, session = yf_next_earnings(sym, want_session=want_session)
+            src = "yfinance"
         if ed is None and h["market"] == "日本":
             # 最終フォールバック: J-Quants 開示履歴からの予測日（±数日ズレうる）
             ed = jq.get(to_jp_code(h["ticker"]))

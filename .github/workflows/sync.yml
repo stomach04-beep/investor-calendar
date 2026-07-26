@@ -15,6 +15,7 @@ name: Investor Calendar Sync
 #                           米GDP(BEA)/米小売売上高(Census)/ISM(ルール計算) を取得（ベストエフォート）
 #   4b. fetch_anomalies.py: 相場アノマリー（節分天井・セルインメイ等）を暦計算で生成（AI呼び出しなし）
 #   4c. fetch_earnings.py : 保有株/ウォッチ銘柄の決算日を取得
+#   4d. fetch_eia.py      : EIA週次石油在庫（毎週水曜10:30 ET＋EIA公式の祝日繰り下げ）
 #   5. notion_upsert.py   : Notion DB に upsert（is_estimated=false 行は保護）
 #   6. notion_to_json.py  : Notion → data/investor_events.json 再生成
 #   7. git auto-commit    : data/ の差分があればコミット
@@ -102,6 +103,10 @@ jobs:
           NOTION_DB_ID: ${{ secrets.NOTION_DB_ID }}
           PORTFOLIO_DB_ID: ${{ secrets.PORTFOLIO_DB_ID }}
         run: python scripts/fetch_earnings.py
+
+      - name: fetch_eia.py 実行（EIA週次石油在庫の発表予定・ベストエフォート）
+        continue-on-error: true
+        run: python scripts/fetch_eia.py
 
       - name: フォールバック使用の可視化（サイレント失敗対策）
         # 各 fetch スクリプトがフォールバック/スキップに落ちると data/.fetch_warnings に

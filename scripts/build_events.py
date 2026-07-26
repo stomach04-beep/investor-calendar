@@ -71,10 +71,12 @@ def build(target_years: list[int]) -> dict:
     # アノマリー(anomaly_*)も fetch_anomalies.py の専管。暦ベースの固定日付なので
     # 52週シフトすると日付がズレる（節分=2/3 等が崩れる）。決算と同じくシードから除外し、
     # 毎回 fetch_anomalies_out だけが供給元になるようにする。
+    # EIA週次石油在庫(us_eia_*)も fetch_eia.py の専管。毎週水曜のルール＋公式の祝日繰り下げで
+    # 前後ローリング窓ぶんを毎回作り直すため、シード経由で年シフトさせてはいけない。
     seed_events = [
         e for e in seed.get("events", [])
         if not str(e.get("id", "")).startswith(
-            ("hold_earnings_", "watch_earnings_", "anomaly_")
+            ("hold_earnings_", "watch_earnings_", "anomaly_", "us_eia_")
         )
     ]
     covered = set(seed.get("covered_years", []))

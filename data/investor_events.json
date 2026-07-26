@@ -109,6 +109,10 @@
     "RETAIL": {
       "label": "小売売上高",
       "color": "#D81B60"
+    },
+    "EIA": {
+      "label": "EIA原油在庫",
+      "color": "#827717"
     }
   },
   "events": [

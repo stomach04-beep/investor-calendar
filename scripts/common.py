@@ -46,6 +46,7 @@ CATEGORY_TO_NOTION = {
     "GDP": "GDP",
     "ISM": "ISM景況感",
     "RETAIL": "小売売上高",
+    "EIA": "EIA原油在庫",
     "TANKAN": "日銀短観",
     "DIVIDEND": "配当・権利",
     "EARNINGS": "決算",

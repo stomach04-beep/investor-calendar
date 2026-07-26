@@ -139,6 +139,26 @@ def page_to_event(page: dict, name_map: dict[str, str]) -> dict | None:
     }
 
 
+def apply_date_stable_days(events: list[dict], prev: dict, today_utc_str: str) -> None:
+    """各イベントに date_stable_days（日付が何日連続で変わっていないか）を付与する。
+
+    前回生成のJSON(prev)と同じ id・同じ datetime_utc なら前回値+1、
+    日付が変わった／新規なら 0。同日中の再実行では増やさない（1日1カウント）。
+    表示側（朝ブリーフLINE等）が「直前まで日付が安定している決算＝実質確定」と
+    みなして「※推定」表示を抑制するために使う（is_estimated 自体は変えない）。
+    """
+    prev_by_id = {e.get("id"): e for e in prev.get("events", []) if e.get("id")}
+    same_day = (prev.get("generated_at") or "")[:10] == today_utc_str
+    for ev in events:
+        p = prev_by_id.get(ev["id"])
+        if p is not None and p.get("datetime_utc") == ev["datetime_utc"]:
+            days = int(p.get("date_stable_days") or 0)
+            # 同日再実行なら据え置き、日をまたいだら+1（上限99で頭打ち）
+            ev["date_stable_days"] = days if same_day else min(days + 1, 99)
+        else:
+            ev["date_stable_days"] = 0
+
+
 def main() -> int:
     db_id = get_notion_db_id()
     client = NotionClient()
@@ -158,6 +178,10 @@ def main() -> int:
 
     # 既存 JSON の固定メタデータ（schema_version, importance_levels, categories, description）を継承
     seed = load_canonical_events()
+
+    # 前回JSONと突き合わせて日付安定日数を付与（アプリは ignoreUnknownKeys=true なので追加フィールドは無害）
+    apply_date_stable_days(events, seed, datetime.now(timezone.utc).strftime("%Y-%m-%d"))
+
     out = dict(seed)
     out["events"] = events
     out["covered_years"] = sorted({int(e["datetime_utc"][:4]) for e in events})

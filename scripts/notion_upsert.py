@@ -4,6 +4,8 @@ tmp/build_events_out.json + tmp/fetch_*_out.json をマージして Notion DB �
 仕様:
 - ID（rich_text）をユニークキーに upsert
 - 既存ページの `推定日(is_estimated)=false` の行は触らない（人が手動で確定値に補正した行を保護）
+  ※例外: 決算イベント(hold_earnings_*/watch_earnings_*)のみ「incomingも確定(JPX公式)」
+    「既存の発表日時が過去」の場合は更新を許す（allow_confirmed_earnings_update 参照）
 - fetch_* の出力は build_events の同 id を上書き（公式サイトの確定値を優先）
 - 新規 ID は create_pages
 
@@ -37,8 +39,42 @@ from common import (  # noqa: E402
     prop_title,
     prop_url,
     read_checkbox,
+    read_date_start,
     read_rich_text,
 )
+
+# 決算イベントの ID プレフィックス（銘柄ごとに固定 id を使い回すイベント）
+EARNINGS_ID_PREFIXES = ("hold_earnings_", "watch_earnings_")
+
+
+def allow_confirmed_earnings_update(ev: dict, existing_page: dict, name_map: dict,
+                                    now_utc: datetime | None = None) -> bool:
+    """確定行(is_estimated=false)の既存ページを例外的に更新してよいか判定する。
+
+    対象は決算イベント（hold_earnings_*/watch_earnings_*）のみ。決算 id は
+    銘柄ごとに固定で使い回すため、確定のまま完全凍結すると決算通過後も
+    過去日付のまま二度と次の四半期へ進まなくなる（ゾンビ化）。それを防ぐ:
+      (1) incoming も確定（JPX公式）→ 公式の日程変更・再確定に追従してよい
+      (2) 既存の発表日時がすでに過去 → 決算は終わったので次四半期の推定日へ進めてよい
+    上記以外（未来の確定行に推定値が来た）は従来どおり保護する。
+    非決算イベントはこの関数を通らず、無条件で保護（従来仕様のまま）。
+    """
+    if not str(ev.get("id", "")).startswith(EARNINGS_ID_PREFIXES):
+        return False
+    # (1) 公式(false)→公式(false): JPXの日程変更に追従
+    if not ev.get("is_estimated", True):
+        return True
+    # (2) 既存イベントの発表日時が過去なら、次四半期の推定日への前進を許す
+    dt_str = read_date_start(existing_page.get("properties", {}).get(name_map["datetime"], {}))
+    if not dt_str:
+        return False
+    try:
+        dt = datetime.fromisoformat(dt_str)
+    except ValueError:
+        return False
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    return dt < (now_utc or datetime.now(timezone.utc))
 
 
 def find_id_property_name(client: NotionClient, db_id: str) -> tuple[dict, str]:
@@ -187,8 +223,11 @@ def main() -> int:
                 existing_page.get("properties", {}).get(name_map["is_estimated"], {})
             )
             if not existing_is_estimated:
-                protected += 1
-                continue
+                # 決算イベントのみ例外あり（JPX公式の追従・決算通過後の前進）。
+                # 非決算イベントは従来どおり無条件で保護。
+                if not allow_confirmed_earnings_update(ev, existing_page, name_map):
+                    protected += 1
+                    continue
 
             if args.dry_run:
                 updated += 1

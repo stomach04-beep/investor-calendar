@@ -117,6 +117,15 @@ WATCH_HOLDINGS = [
      "page_id": None, "current": None, "date_prop": "次回決算日", "is_watch": True},
     {"name": "ダラーゼネラル", "ticker": "DG", "market": "米国",
      "page_id": None, "current": None, "date_prop": "次回決算日", "is_watch": True},
+    # --- 2026-07-29 追加: S&P500+MidCap400の903銘柄スクリーニング通過24銘柄のうち、
+    #     打診ラダーと「決算の合格条件」を事前登録した3銘柄。
+    #     決算がそのままエントリー判定のゲートになるため、日付を必ずカレンダーへ出す。
+    {"name": "ブロードリッジ", "ticker": "BR", "market": "米国",
+     "page_id": None, "current": None, "date_prop": "次回決算日", "is_watch": True},
+    {"name": "インターコンチネンタル取引所", "ticker": "ICE", "market": "米国",
+     "page_id": None, "current": None, "date_prop": "次回決算日", "is_watch": True},
+    {"name": "インテュイット", "ticker": "INTU", "market": "米国",
+     "page_id": None, "current": None, "date_prop": "次回決算日", "is_watch": True},
 ]
 
 

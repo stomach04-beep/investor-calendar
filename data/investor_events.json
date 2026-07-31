@@ -1,6 +1,6 @@
 {
   "schema_version": "2.0",
-  "generated_at": "2026-07-30T22:38:34Z",
+  "generated_at": "2026-07-31T22:35:28Z",
   "covered_years": [
     2026,
     2027
@@ -129,7 +129,7 @@
       "description": "非農業部門雇用者数(NFP)、失業率、平均時給。FRB政策の最重要指標。",
       "source_url": "https://www.bls.gov/schedule/news_release/empsit.htm",
       "result": "非農業部門雇用者数 前月比-1.7万人 / 失業率 4.4%（2025年12月分）",
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "anomaly_us_january_barometer_2026",
@@ -144,7 +144,7 @@
       "description": "January Barometer（1月の株価で1年が決まる）＋ January Effect（小型株が1月に上昇しやすい）。米国を代表するアノマリー。",
       "source_url": null,
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "jp_market_2026-01-05",
@@ -159,7 +159,7 @@
       "description": "東証年初取引日。NISA年間枠リセット。",
       "source_url": null,
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "anomaly_jp_january_effect_2026",
@@ -174,7 +174,7 @@
       "description": "1月（特に小型株）は値上がりしやすいとされる経験則。新年の新規資金流入や、前年末の節税売り（損出し）一巡後の買い戻しが背景とされる。",
       "source_url": null,
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_ism_mfg_2025-12",
@@ -189,7 +189,7 @@
       "description": "全米の製造業購買担当者への調査（PMI）。50が好況/不況の分かれ目。月初一番乗りの景況指標で相場が動きやすい。",
       "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_ism_svc_2025-12",
@@ -204,7 +204,7 @@
       "description": "サービス業など非製造業の購買担当者調査（PMI）。50が好況/不況の分かれ目。米経済はサービス業が主体のため注目度が高い。",
       "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_cpi_2026-01-12",
@@ -219,7 +219,7 @@
       "description": "消費者物価指数。FRB利下げ織り込みに直結。",
       "source_url": "https://www.bls.gov/cpi/",
       "result": "CPI 前年比+2.7% / コア+2.6%（2025年12月分）",
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_retail_2025-10",
@@ -234,7 +234,7 @@
       "description": "米国の小売・飲食サービス売上高（前月比）。米経済の約7割を占める個人消費の強さを測る速報。CPI級に相場が動く月もある。",
       "source_url": "https://www.census.gov/retail/",
       "result": "小売売上高 前月比-0.0%（2025年12月分）",
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_ppi_2026-01-14",
@@ -249,7 +249,7 @@
       "description": "生産者物価指数。卸売段階のインフレ先行指標。",
       "source_url": "https://www.bls.gov/ppi/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_beige_2026-01-14",
@@ -264,7 +264,7 @@
       "description": "地区連銀経済報告（Beige Book）。FOMC会合の2週間前(水)14:00 ET公表。全12地区の景況感まとめで、利上げ/利下げ判断の地ならし材料。",
       "source_url": "https://www.federalreserve.gov/monetarypolicy/publications/beige-book-default.htm",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_earnings_2026-01-14",
@@ -279,7 +279,7 @@
       "description": "JPモルガン等の大手金融機関の決算で実質的にシーズン開始。マグニフィセント7決算は2-3週後。",
       "source_url": null,
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "jp_cpi_2026-01-23",
@@ -294,7 +294,7 @@
       "description": "総務省統計局発表。日銀の利上げ判断材料。",
       "source_url": "https://www.stat.go.jp/data/cpi/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "jp_boj_2026-01-23",
@@ -309,7 +309,7 @@
       "description": "結果発表は最終日の正午頃、総裁会見は15:30頃。",
       "source_url": "https://www.boj.or.jp/mopo/mpmsche_minu/index.htm",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_pce_2026-01-26",
@@ -324,7 +324,7 @@
       "description": "個人消費支出物価指数。FRBが最重視するインフレ指標。",
       "source_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index",
       "result": "PCE 前年比+2.9% / コア+3.0%（2025年12月分）",
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_fomc_2026-01-28",
@@ -339,7 +339,7 @@
       "description": "2日目14:00 ET発表、議長会見14:30 ET。",
       "source_url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "result": "政策金利 3.50–3.75%（据え置き）",
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_ism_mfg_2026-01",
@@ -354,7 +354,7 @@
       "description": "全米の製造業購買担当者への調査（PMI）。50が好況/不況の分かれ目。月初一番乗りの景況指標で相場が動きやすい。",
       "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "anomaly_jp_setsubun_tenjo_2026",
@@ -369,7 +369,7 @@
       "description": "「節分天井・彼岸底」の天井側。2月上旬（節分ごろ）に高値をつけやすいという古くからの経験則。年明けの上昇が一服しやすい時期とされる。",
       "source_url": null,
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_ism_svc_2026-01",
@@ -384,7 +384,7 @@
       "description": "サービス業など非製造業の購買担当者調査（PMI）。50が好況/不況の分かれ目。米経済はサービス業が主体のため注目度が高い。",
       "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_nfp_2026-02-06",
@@ -399,7 +399,7 @@
       "description": "非農業部門雇用者数(NFP)、失業率、平均時給。FRB政策の最重要指標。",
       "source_url": "https://www.bls.gov/schedule/news_release/empsit.htm",
       "result": "非農業部門雇用者数 前月比+16.0万人 / 失業率 4.3%（2026年1月分）",
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_retail_2025-11",
@@ -414,7 +414,7 @@
       "description": "米国の小売・飲食サービス売上高（前月比）。米経済の約7割を占める個人消費の強さを測る速報。CPI級に相場が動く月もある。",
       "source_url": "https://www.census.gov/retail/",
       "result": "小売売上高 前月比-0.0%（2026年1月分）",
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_cpi_2026-02-11",
@@ -429,7 +429,7 @@
       "description": "消費者物価指数。FRB利下げ織り込みに直結。",
       "source_url": "https://www.bls.gov/cpi/",
       "result": "CPI 前年比+2.4% / コア+2.5%（2026年1月分）",
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "jp_gdp_2026-02-16",
@@ -444,7 +444,7 @@
       "description": "内閣府発表。",
       "source_url": "https://www.esri.cao.go.jp/jp/sna/menu.html",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_fomc_minutes_2026-02-18",
@@ -459,7 +459,7 @@
       "description": "FOMC議事要旨（Minutes）。会合の3週間後(水)14:00 ET公表。利上げ/利下げ議論の内訳が分かり、タカ派/ハト派サプライズで相場が動くことがある。",
       "source_url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "jp_cpi_2026-02-20",
@@ -474,7 +474,7 @@
       "description": "総務省統計局発表。日銀の利上げ判断材料。",
       "source_url": "https://www.stat.go.jp/data/cpi/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_pce_2026-02-26",
@@ -489,7 +489,7 @@
       "description": "個人消費支出物価指数。FRBが最重視するインフレ指標。",
       "source_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index",
       "result": "PCE 前年比+2.9% / コア+3.1%（2026年1月分）",
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_ppi_2026-02-27",
@@ -504,7 +504,7 @@
       "description": "生産者物価指数。卸売段階のインフレ先行指標。",
       "source_url": "https://www.bls.gov/ppi/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_ism_mfg_2026-02",
@@ -519,7 +519,7 @@
       "description": "全米の製造業購買担当者への調査（PMI）。50が好況/不況の分かれ目。月初一番乗りの景況指標で相場が動きやすい。",
       "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_ism_svc_2026-02",
@@ -534,7 +534,7 @@
       "description": "サービス業など非製造業の購買担当者調査（PMI）。50が好況/不況の分かれ目。米経済はサービス業が主体のため注目度が高い。",
       "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_beige_2026-03-04",
@@ -549,7 +549,7 @@
       "description": "地区連銀経済報告（Beige Book）。FOMC会合の2週間前(水)14:00 ET公表。全12地区の景況感まとめで、利上げ/利下げ判断の地ならし材料。",
       "source_url": "https://www.federalreserve.gov/monetarypolicy/publications/beige-book-default.htm",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_retail_2025-12",
@@ -564,7 +564,7 @@
       "description": "米国の小売・飲食サービス売上高（前月比）。米経済の約7割を占める個人消費の強さを測る速報。CPI級に相場が動く月もある。",
       "source_url": "https://www.census.gov/retail/",
       "result": "小売売上高 前月比+0.9%（2026年2月分）",
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_nfp_2026-03-06",
@@ -579,7 +579,7 @@
       "description": "非農業部門雇用者数(NFP)、失業率、平均時給。FRB政策の最重要指標。",
       "source_url": "https://www.bls.gov/schedule/news_release/empsit.htm",
       "result": "非農業部門雇用者数 前月比-15.6万人 / 失業率 4.4%（2026年2月分）",
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "jp_gdp_2026-03-09",
@@ -594,7 +594,7 @@
       "description": "内閣府発表。",
       "source_url": "https://www.esri.cao.go.jp/jp/sna/menu.html",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "jp_shunto_2026",
@@ -609,7 +609,7 @@
       "description": "大手企業の賃上げ回答が集中。賃上げ率は日銀の利上げ判断に直結。",
       "source_url": null,
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_cpi_2026-03-11",
@@ -624,7 +624,7 @@
       "description": "消費者物価指数。FRB利下げ織り込みに直結。",
       "source_url": "https://www.bls.gov/cpi/",
       "result": "CPI 前年比+2.4% / コア+2.5%（2026年2月分）",
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_ppi_2026-03-12",
@@ -639,7 +639,7 @@
       "description": "生産者物価指数。卸売段階のインフレ先行指標。",
       "source_url": "https://www.bls.gov/ppi/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "jp_majorsq_2026-03-13",
@@ -654,7 +654,7 @@
       "description": "日経225先物・TOPIX先物・指数オプションの特別清算指数（SQ）算出日（第2金曜日 09:00 寄り付き）。算出値は寄り付きの板で決まる。",
       "source_url": null,
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "anomaly_jp_higan_zoko_2026",
@@ -669,7 +669,7 @@
       "description": "「節分天井・彼岸底」の底側。春の彼岸（3月中旬〜下旬）に安値をつけやすいとされる。年度末の益出し・損出し売りが一巡し、反発に向かいやすい時期。",
       "source_url": null,
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_fomc_2026-03-18",
@@ -684,7 +684,7 @@
       "description": "2日目14:00 ET発表、議長会見14:30 ET。",
       "source_url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "result": "政策金利 3.50–3.75%（据え置き）",
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "jp_boj_2026-03-19",
@@ -699,7 +699,7 @@
       "description": "結果発表は最終日の正午頃、総裁会見は15:30頃。",
       "source_url": "https://www.boj.or.jp/mopo/mpmsche_minu/index.htm",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "jp_cpi_2026-03-19",
@@ -714,7 +714,7 @@
       "description": "総務省統計局発表。日銀の利上げ判断材料。",
       "source_url": "https://www.stat.go.jp/data/cpi/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_quadwitch_2026-03-20",
@@ -729,7 +729,7 @@
       "description": "米国株価指数先物・指数オプション・個別株先物・個別株オプションが同時満期（第3金曜日）。引け前後のボラティリティ上昇と出来高急増に注意。",
       "source_url": null,
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_pce_2026-03-26",
@@ -744,7 +744,7 @@
       "description": "個人消費支出物価指数。FRBが最重視するインフレ指標。",
       "source_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index",
       "result": "PCE 前年比+2.9% / コア+3.0%（2026年2月分）",
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "jp_exdiv_2026-03-27",
@@ -759,7 +759,7 @@
       "description": "配当・株主優待の権利確定。NISA高配当株仕込みの最重要日。",
       "source_url": null,
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "jp_tankan_2026-04-01",
@@ -774,7 +774,7 @@
       "description": "企業短期経済観測調査。企業マインドの最重要指標。",
       "source_url": "https://www.boj.or.jp/statistics/tk/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_retail_2026-01",
@@ -789,7 +789,7 @@
       "description": "米国の小売・飲食サービス売上高（前月比）。米経済の約7割を占める個人消費の強さを測る速報。CPI級に相場が動く月もある。",
       "source_url": "https://www.census.gov/retail/",
       "result": "小売売上高 前月比+1.7%（2026年3月分）",
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_ism_mfg_2026-03",
@@ -804,7 +804,7 @@
       "description": "全米の製造業購買担当者への調査（PMI）。50が好況/不況の分かれ目。月初一番乗りの景況指標で相場が動きやすい。",
       "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_nfp_2026-04-03",
@@ -819,7 +819,7 @@
       "description": "非農業部門雇用者数(NFP)、失業率、平均時給。FRB政策の最重要指標。",
       "source_url": "https://www.bls.gov/schedule/news_release/empsit.htm",
       "result": "非農業部門雇用者数 前月比+21.4万人 / 失業率 4.3%（2026年3月分）",
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_ism_svc_2026-03",
@@ -834,7 +834,7 @@
       "description": "サービス業など非製造業の購買担当者調査（PMI）。50が好況/不況の分かれ目。米経済はサービス業が主体のため注目度が高い。",
       "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_fomc_minutes_2026-04-08",
@@ -849,7 +849,7 @@
       "description": "FOMC議事要旨（Minutes）。会合の3週間後(水)14:00 ET公表。利上げ/利下げ議論の内訳が分かり、タカ派/ハト派サプライズで相場が動くことがある。",
       "source_url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_cpi_2026-04-13",
@@ -864,7 +864,7 @@
       "description": "消費者物価指数。FRB利下げ織り込みに直結。",
       "source_url": "https://www.bls.gov/cpi/",
       "result": "CPI 前年比+3.3% / コア+2.6%（2026年3月分）",
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_ppi_2026-04-14",
@@ -879,7 +879,7 @@
       "description": "生産者物価指数。卸売段階のインフレ先行指標。",
       "source_url": "https://www.bls.gov/ppi/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_earnings_2026-04-14",
@@ -894,7 +894,7 @@
       "description": "JPモルガン等の大手金融機関の決算で実質的にシーズン開始。マグニフィセント7決算は2-3週後。",
       "source_url": null,
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_beige_2026-04-15",
@@ -909,7 +909,7 @@
       "description": "地区連銀経済報告（Beige Book）。FOMC会合の2週間前(水)14:00 ET公表。全12地区の景況感まとめで、利上げ/利下げ判断の地ならし材料。",
       "source_url": "https://www.federalreserve.gov/monetarypolicy/publications/beige-book-default.htm",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "jp_cpi_2026-04-24",
@@ -924,7 +924,7 @@
       "description": "総務省統計局発表。日銀の利上げ判断材料。",
       "source_url": "https://www.stat.go.jp/data/cpi/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_retail_2026-02",
@@ -939,7 +939,7 @@
       "description": "米国の小売・飲食サービス売上高（前月比）。米経済の約7割を占める個人消費の強さを測る速報。CPI級に相場が動く月もある。",
       "source_url": "https://www.census.gov/retail/",
       "result": "小売売上高 前月比+1.7%（2026年3月分）",
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_pce_2026-04-24",
@@ -954,7 +954,7 @@
       "description": "個人消費支出物価指数。FRBが最重視するインフレ指標。",
       "source_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index",
       "result": "PCE 前年比+3.5% / コア+3.2%（2026年3月分）",
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "jp_boj_2026-04-28",
@@ -969,7 +969,7 @@
       "description": "結果発表は最終日の正午頃、総裁会見は15:30頃。",
       "source_url": "https://www.boj.or.jp/mopo/mpmsche_minu/index.htm",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_fomc_2026-04-29",
@@ -984,7 +984,7 @@
       "description": "2日目14:00 ET発表、議長会見14:30 ET。",
       "source_url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "result": "政策金利 3.50–3.75%（据え置き）",
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "anomaly_jp_sell_in_may_2026",
@@ -999,7 +999,7 @@
       "description": "「Sell in May（5月に売れ）」。5月〜夏にかけて株価が軟調になりやすいという経験則。原文は『Sell in May and go away, come back on St. Leger's day（9月中旬）』。",
       "source_url": null,
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_nfp_2026-05-01",
@@ -1014,7 +1014,7 @@
       "description": "非農業部門雇用者数(NFP)、失業率、平均時給。FRB政策の最重要指標。",
       "source_url": "https://www.bls.gov/schedule/news_release/empsit.htm",
       "result": "非農業部門雇用者数 前月比+14.8万人 / 失業率 4.3%（2026年4月分）",
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_ism_mfg_2026-04",
@@ -1029,7 +1029,7 @@
       "description": "全米の製造業購買担当者への調査（PMI）。50が好況/不況の分かれ目。月初一番乗りの景況指標で相場が動きやすい。",
       "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_ism_svc_2026-04",
@@ -1044,7 +1044,7 @@
       "description": "サービス業など非製造業の購買担当者調査（PMI）。50が好況/不況の分かれ目。米経済はサービス業が主体のため注目度が高い。",
       "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_cpi_2026-05-11",
@@ -1059,7 +1059,7 @@
       "description": "消費者物価指数。FRB利下げ織り込みに直結。",
       "source_url": "https://www.bls.gov/cpi/",
       "result": "CPI 前年比+3.8% / コア+2.7%（2026年4月分）",
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_ppi_2026-05-13",
@@ -1074,7 +1074,7 @@
       "description": "生産者物価指数。卸売段階のインフレ先行指標。",
       "source_url": "https://www.bls.gov/ppi/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_retail_2026-03",
@@ -1089,7 +1089,7 @@
       "description": "米国の小売・飲食サービス売上高（前月比）。米経済の約7割を占める個人消費の強さを測る速報。CPI級に相場が動く月もある。",
       "source_url": "https://www.census.gov/retail/",
       "result": "小売売上高 前月比+0.4%（2026年4月分）",
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "jp_gdp_2026-05-19",
@@ -1104,7 +1104,7 @@
       "description": "内閣府発表。",
       "source_url": "https://www.esri.cao.go.jp/jp/sna/menu.html",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_fomc_minutes_2026-05-20",
@@ -1119,7 +1119,7 @@
       "description": "FOMC議事要旨（Minutes）。会合の3週間後(水)14:00 ET公表。利上げ/利下げ議論の内訳が分かり、タカ派/ハト派サプライズで相場が動くことがある。",
       "source_url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "jp_cpi_2026-05-22",
@@ -1134,7 +1134,7 @@
       "description": "総務省統計局発表。日銀の利上げ判断材料。",
       "source_url": "https://www.stat.go.jp/data/cpi/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_pce_2026-05-26",
@@ -1149,7 +1149,7 @@
       "description": "個人消費支出物価指数。FRBが最重視するインフレ指標。",
       "source_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index",
       "result": "PCE 前年比+3.8% / コア+3.3%（2026年4月分）",
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_ism_mfg_2026-05",
@@ -1164,7 +1164,7 @@
       "description": "全米の製造業購買担当者への調査（PMI）。50が好況/不況の分かれ目。月初一番乗りの景況指標で相場が動きやすい。",
       "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_ism_svc_2026-05",
@@ -1179,7 +1179,7 @@
       "description": "サービス業など非製造業の購買担当者調査（PMI）。50が好況/不況の分かれ目。米経済はサービス業が主体のため注目度が高い。",
       "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_beige_2026-06-03",
@@ -1194,7 +1194,7 @@
       "description": "地区連銀経済報告（Beige Book）。FOMC会合の2週間前(水)14:00 ET公表。全12地区の景況感まとめで、利上げ/利下げ判断の地ならし材料。",
       "source_url": "https://www.federalreserve.gov/monetarypolicy/publications/beige-book-default.htm",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_nfp_2026-06-05",
@@ -1209,7 +1209,7 @@
       "description": "非農業部門雇用者数(NFP)、失業率、平均時給。FRB政策の最重要指標。",
       "source_url": "https://www.bls.gov/schedule/news_release/empsit.htm",
       "result": "非農業部門雇用者数 前月比+12.9万人 / 失業率 4.3%（2026年5月分）",
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "jp_gdp_2026-06-08",
@@ -1224,7 +1224,7 @@
       "description": "内閣府発表。",
       "source_url": "https://www.esri.cao.go.jp/jp/sna/menu.html",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_cpi_2026-06-11",
@@ -1239,7 +1239,7 @@
       "description": "消費者物価指数。FRB利下げ織り込みに直結。",
       "source_url": "https://www.bls.gov/cpi/",
       "result": "CPI 前年比+4.2% / コア+2.8%（2026年5月分）",
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_ppi_2026-06-11",
@@ -1254,7 +1254,7 @@
       "description": "生産者物価指数。卸売段階のインフレ先行指標。",
       "source_url": "https://www.bls.gov/ppi/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "jp_majorsq_2026-06-12",
@@ -1269,7 +1269,7 @@
       "description": "日経225先物・TOPIX先物・指数オプションの特別清算指数（SQ）算出日（第2金曜日 09:00 寄り付き）。算出値は寄り付きの板で決まる。",
       "source_url": null,
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "jp_boj_2026-06-16",
@@ -1284,7 +1284,7 @@
       "description": "結果発表は最終日の正午頃、総裁会見は15:30頃。",
       "source_url": "https://www.boj.or.jp/mopo/mpmsche_minu/index.htm",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_retail_2026-04",
@@ -1299,7 +1299,7 @@
       "description": "米国の小売・飲食サービス売上高（前月比）。米経済の約7割を占める個人消費の強さを測る速報。CPI級に相場が動く月もある。",
       "source_url": "https://www.census.gov/retail/",
       "result": "小売売上高 前月比+0.9%（2026年5月分）",
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_fomc_2026-06-17",
@@ -1314,7 +1314,7 @@
       "description": "2日目14:00 ET発表、議長会見14:30 ET。",
       "source_url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "result": "政策金利 3.50–3.75%（据え置き）",
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "jp_cpi_2026-06-26",
@@ -1329,7 +1329,7 @@
       "description": "総務省統計局発表。日銀の利上げ判断材料。",
       "source_url": "https://www.stat.go.jp/data/cpi/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_quadwitch_2026-06-19",
@@ -1344,7 +1344,7 @@
       "description": "米国株価指数先物・指数オプション・個別株先物・個別株オプションが同時満期（第3金曜日）。引け前後のボラティリティ上昇と出来高急増に注意。",
       "source_url": null,
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_pce_2026-06-26",
@@ -1359,7 +1359,7 @@
       "description": "個人消費支出物価指数。FRBが最重視するインフレ指標。",
       "source_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index",
       "result": "PCE 前年比+4.1% / コア+3.4%（2026年5月分）",
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "jp_exdiv_2026-06-26",
@@ -1374,7 +1374,7 @@
       "description": "配当・株主優待の権利確定。NISA高配当株仕込みの最重要日。",
       "source_url": null,
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "jp_tankan_2026-07-01",
@@ -1389,7 +1389,7 @@
       "description": "企業短期経済観測調査。企業マインドの最重要指標。",
       "source_url": "https://www.boj.or.jp/statistics/tk/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_ism_mfg_2026-06",
@@ -1404,7 +1404,7 @@
       "description": "全米の製造業購買担当者への調査（PMI）。50が好況/不況の分かれ目。月初一番乗りの景況指標で相場が動きやすい。",
       "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_nfp_2026-07-02",
@@ -1419,7 +1419,7 @@
       "description": "非農業部門雇用者数(NFP)、失業率、平均時給。FRB政策の最重要指標。",
       "source_url": "https://www.bls.gov/schedule/news_release/empsit.htm",
       "result": "非農業部門雇用者数 前月比+5.7万人 / 失業率 4.2%（2026年6月分）",
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_ism_svc_2026-06",
@@ -1434,7 +1434,7 @@
       "description": "サービス業など非製造業の購買担当者調査（PMI）。50が好況/不況の分かれ目。米経済はサービス業が主体のため注目度が高い。",
       "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "anomaly_jp_etf_bunpai_2026",
@@ -1449,7 +1449,7 @@
       "description": "国内の日経平均・TOPIX連動ETFの決算が7月上旬（7/8・7/10）に集中し、運用会社が分配金の原資を作るための機械的な先物売りが出やすい。数千億円規模の需給イベントで、例年7/7〜7/10ごろは上値が重くなりやすいとされる。",
       "source_url": null,
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_fomc_minutes_2026-07-08",
@@ -1464,7 +1464,7 @@
       "description": "FOMC議事要旨（Minutes）。会合の3週間後(水)14:00 ET公表。利上げ/利下げ議論の内訳が分かり、タカ派/ハト派サプライズで相場が動くことがある。",
       "source_url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_cpi_2026-07-13",
@@ -1479,7 +1479,7 @@
       "description": "消費者物価指数。FRB利下げ織り込みに直結。",
       "source_url": "https://www.bls.gov/cpi/",
       "result": "CPI 前年比+3.5% / コア+2.6%（2026年6月分）",
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_earnings_2026-07-14",
@@ -1494,7 +1494,7 @@
       "description": "JPモルガン等の大手金融機関の決算で実質的にシーズン開始。マグニフィセント7決算は2-3週後。",
       "source_url": null,
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_ppi_2026-07-15",
@@ -1509,7 +1509,7 @@
       "description": "生産者物価指数。卸売段階のインフレ先行指標。",
       "source_url": "https://www.bls.gov/ppi/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_eia_2026-07-10",
@@ -1524,7 +1524,7 @@
       "description": "米エネルギー情報局(EIA)の週次石油在庫統計（対象週: 2026-07-10 まで）。原油・ガソリン・留出油の在庫増減が発表され、原油(WTI)価格が最も素直に反応する定例イベント。",
       "source_url": "https://www.eia.gov/petroleum/supply/weekly/",
       "result": null,
-      "date_stable_days": 4
+      "date_stable_days": 5
     },
     {
       "id": "us_beige_2026-07-15",
@@ -1539,7 +1539,7 @@
       "description": "地区連銀経済報告（Beige Book）。FOMC会合の2週間前(水)14:00 ET公表。全12地区の景況感まとめで、利上げ/利下げ判断の地ならし材料。",
       "source_url": "https://www.federalreserve.gov/monetarypolicy/publications/beige-book-default.htm",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_retail_2026-05",
@@ -1554,7 +1554,7 @@
       "description": "米国の小売・飲食サービス売上高（前月比）。米経済の約7割を占める個人消費の強さを測る速報。CPI級に相場が動く月もある。",
       "source_url": "https://www.census.gov/retail/",
       "result": "小売売上高 前月比+0.2%（2026年6月分）",
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "jp_cpi_2026-07-24",
@@ -1569,7 +1569,7 @@
       "description": "総務省統計局発表。日銀の利上げ判断材料。",
       "source_url": "https://www.stat.go.jp/data/cpi/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_eia_2026-07-17",
@@ -1584,7 +1584,7 @@
       "description": "米エネルギー情報局(EIA)の週次石油在庫統計（対象週: 2026-07-17 まで）。原油・ガソリン・留出油の在庫増減が発表され、原油(WTI)価格が最も素直に反応する定例イベント。",
       "source_url": "https://www.eia.gov/petroleum/supply/weekly/",
       "result": null,
-      "date_stable_days": 4
+      "date_stable_days": 5
     },
     {
       "id": "us_tariff_sec122_expiry_2026-07-24",
@@ -1599,7 +1599,7 @@
       "description": "米連邦最高裁のIEEPA関税無効判決(2026/2/20・6対3)を受けて発動された通商法122条の一律課徴金(2/24発効10%、その後15%運用)が法定150日の期限を迎え失効。政権は通商法301条に基づく新関税へ移行する方針。USTRは2026/6/2に日本を含む60カ国・地域への10%または12.5%の追加関税を提案済み、日経(2026/7/17)は日本12.5%案と報道。通商拡大法232条(鉄鋼・アルミ50%、自動車25%、銅50%)は本件と無関係に継続。保有ポートフォリオは内需サービス・国内建設比率が高く関税感応度は低い。感応度が高いのはPPG・ITWの2銘柄(232条自動車25%の需要側)。詳細は教訓28を参照。",
       "source_url": "https://www.nikkei.com/article/DGXZQOGN140230U6A710C2000000/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_eia_2026-07-24",
@@ -1614,7 +1614,7 @@
       "description": "米エネルギー情報局(EIA)の週次石油在庫統計（対象週: 2026-07-24 まで）。原油・ガソリン・留出油の在庫増減が発表され、原油(WTI)価格が最も素直に反応する定例イベント。",
       "source_url": "https://www.eia.gov/petroleum/supply/weekly/",
       "result": null,
-      "date_stable_days": 4
+      "date_stable_days": 5
     },
     {
       "id": "us_fomc_2026-07-29",
@@ -1629,7 +1629,7 @@
       "description": "2日目14:00 ET発表、議長会見14:30 ET。",
       "source_url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "result": "政策金利 3.50–3.75%（据え置き）",
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_gdp_2026q2_adv",
@@ -1644,7 +1644,7 @@
       "description": "米実質GDP成長率（前期比年率）の速報値。速報値は四半期終了の約1ヶ月後に公表され、サプライズで相場が動きやすい。",
       "source_url": "https://www.bea.gov/data/gdp/gross-domestic-product",
       "result": "実質GDP +1.5%（2026年Q2・年率）",
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_pce_2026-07-24",
@@ -1659,22 +1659,7 @@
       "description": "個人消費支出物価指数。FRBが最重視するインフレ指標。",
       "source_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index",
       "result": "PCE 前年比+3.7% / コア+3.3%（2026年6月分）",
-      "date_stable_days": 5
-    },
-    {
-      "id": "watch_earnings_us_ICE",
-      "title": "インターコンチネンタル取引所 決算",
-      "category": "EARNINGS",
-      "country": "US",
-      "datetime_utc": "2026-07-30T20:00:00Z",
-      "datetime_local": "2026-07-30T16:00:00-04:00",
-      "timezone": "America/New_York",
-      "importance": 2,
-      "is_estimated": true,
-      "description": "ウォッチ銘柄の決算発表予定（インターコンチネンタル取引所）。予定日は変更される場合があります。",
-      "source_url": "https://finance.yahoo.com/quote/ICE",
-      "result": null,
-      "date_stable_days": 0
+      "date_stable_days": 6
     },
     {
       "id": "watch_earnings_us_YUM",
@@ -1689,37 +1674,7 @@
       "description": "ウォッチ銘柄の決算発表予定（ヤムブランズ）。予定日は変更される場合があります。",
       "source_url": "https://finance.yahoo.com/quote/YUM",
       "result": null,
-      "date_stable_days": 5
-    },
-    {
-      "id": "watch_earnings_us_MA",
-      "title": "マスターカード 決算",
-      "category": "EARNINGS",
-      "country": "US",
-      "datetime_utc": "2026-07-30T20:00:00Z",
-      "datetime_local": "2026-07-30T16:00:00-04:00",
-      "timezone": "America/New_York",
-      "importance": 2,
-      "is_estimated": true,
-      "description": "ウォッチ銘柄の決算発表予定（マスターカード）。予定日は変更される場合があります。",
-      "source_url": "https://finance.yahoo.com/quote/MA",
-      "result": null,
-      "date_stable_days": 5
-    },
-    {
-      "id": "hold_earnings_us_AAPL",
-      "title": "アップル 決算",
-      "category": "EARNINGS",
-      "country": "US",
-      "datetime_utc": "2026-07-30T20:00:00Z",
-      "datetime_local": "2026-07-30T16:00:00-04:00",
-      "timezone": "America/New_York",
-      "importance": 2,
-      "is_estimated": true,
-      "description": "保有株の決算発表予定（アップル）。予定日は変更される場合があります。",
-      "source_url": "https://finance.yahoo.com/quote/AAPL",
-      "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "jp_boj_2026-07-31",
@@ -1734,7 +1689,7 @@
       "description": "結果発表は最終日の正午頃、総裁会見は15:30頃。",
       "source_url": "https://www.boj.or.jp/mopo/mpmsche_minu/index.htm",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "hold_earnings_us_CVX",
@@ -1749,7 +1704,7 @@
       "description": "保有株の決算発表予定（シェブロン）。予定日は変更される場合があります。",
       "source_url": "https://finance.yahoo.com/quote/CVX",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "hold_earnings_us_ABBV",
@@ -1764,7 +1719,7 @@
       "description": "保有株の決算発表予定（アッヴィ）。予定日は変更される場合があります。",
       "source_url": "https://finance.yahoo.com/quote/ABBV",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_ism_mfg_2026-07",
@@ -1779,7 +1734,7 @@
       "description": "全米の製造業購買担当者への調査（PMI）。50が好況/不況の分かれ目。月初一番乗りの景況指標で相場が動きやすい。",
       "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "hold_earnings_jp_8031",
@@ -1794,7 +1749,7 @@
       "description": "保有株の決算発表予定（三井物産）。JPX公式の発表予定日。",
       "source_url": "https://finance.yahoo.co.jp/quote/8031.T",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "watch_earnings_us_BR",
@@ -1809,7 +1764,7 @@
       "description": "ウォッチ銘柄の決算発表予定（ブロードリッジ）。予定日は変更される場合があります。",
       "source_url": "https://finance.yahoo.com/quote/BR",
       "result": null,
-      "date_stable_days": 0
+      "date_stable_days": 1
     },
     {
       "id": "hold_earnings_us_KTOS",
@@ -1824,7 +1779,7 @@
       "description": "保有株の決算発表予定（クラトス・ディフェンス&セキュリティー・ソリューションズ）。予定日は変更される場合があります。",
       "source_url": "https://finance.yahoo.com/quote/KTOS",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "hold_earnings_us_KMB",
@@ -1839,7 +1794,7 @@
       "description": "保有株の決算発表予定（キンバリークラーク）。予定日は変更される場合があります。",
       "source_url": "https://finance.yahoo.com/quote/KMB",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "hold_earnings_us_MCD",
@@ -1854,7 +1809,7 @@
       "description": "保有株の決算発表予定（マクドナルド）。予定日は変更される場合があります。",
       "source_url": "https://finance.yahoo.com/quote/MCD",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "hold_earnings_jp_1980",
@@ -1869,7 +1824,7 @@
       "description": "保有株の決算発表予定（ダイダン）。JPX公式の発表予定日。",
       "source_url": "https://finance.yahoo.co.jp/quote/1980.T",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "hold_earnings_jp_1926",
@@ -1884,7 +1839,7 @@
       "description": "保有株の決算発表予定（ライト工業）。JPX公式の発表予定日。",
       "source_url": "https://finance.yahoo.co.jp/quote/1926.T",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_ism_svc_2026-07",
@@ -1899,7 +1854,7 @@
       "description": "サービス業など非製造業の購買担当者調査（PMI）。50が好況/不況の分かれ目。米経済はサービス業が主体のため注目度が高い。",
       "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_eia_2026-07-31",
@@ -1914,7 +1869,7 @@
       "description": "米エネルギー情報局(EIA)の週次石油在庫統計（対象週: 2026-07-31 まで）。原油・ガソリン・留出油の在庫増減が発表され、原油(WTI)価格が最も素直に反応する定例イベント。",
       "source_url": "https://www.eia.gov/petroleum/supply/weekly/",
       "result": null,
-      "date_stable_days": 4
+      "date_stable_days": 5
     },
     {
       "id": "hold_earnings_us_DIS",
@@ -1929,7 +1884,7 @@
       "description": "保有株の決算発表予定（ディズニー）。予定日は変更される場合があります。",
       "source_url": "https://finance.yahoo.com/quote/DIS",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "hold_earnings_jp_9432",
@@ -1944,7 +1899,7 @@
       "description": "保有株の決算発表予定（NTT）。JPX公式の発表予定日。",
       "source_url": "https://finance.yahoo.co.jp/quote/9432.T",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "hold_earnings_jp_7974",
@@ -1959,7 +1914,7 @@
       "description": "保有株の決算発表予定（任天堂）。JPX公式の発表予定日。",
       "source_url": "https://finance.yahoo.co.jp/quote/7974.T",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "watch_earnings_us_KDP",
@@ -1974,7 +1929,7 @@
       "description": "ウォッチ銘柄の決算発表予定（キューリグドクターペッパー）。予定日は変更される場合があります。",
       "source_url": "https://finance.yahoo.com/quote/KDP",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "hold_earnings_us_ZTS",
@@ -1989,7 +1944,7 @@
       "description": "保有株の決算発表予定（ゾエティス）。予定日は変更される場合があります。",
       "source_url": "https://finance.yahoo.com/quote/ZTS",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "hold_earnings_jp_7466",
@@ -2004,7 +1959,7 @@
       "description": "保有株の決算発表予定（三洋SPK）。JPX公式の発表予定日。",
       "source_url": "https://finance.yahoo.co.jp/quote/7466.T",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "hold_earnings_jp_8593",
@@ -2019,7 +1974,7 @@
       "description": "保有株の決算発表予定（三菱HCキャピタル）。JPX公式の発表予定日。",
       "source_url": "https://finance.yahoo.co.jp/quote/8593.T",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_nfp_2026-08-07",
@@ -2034,7 +1989,7 @@
       "description": "非農業部門雇用者数(NFP)、失業率、平均時給。FRB政策の最重要指標。",
       "source_url": "https://www.bls.gov/schedule/news_release/empsit.htm",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "anomaly_jp_natsugare_2026",
@@ -2049,7 +2004,7 @@
       "description": "夏枯れ相場。お盆前後は機関投資家の夏休みで市場参加者が減り出来高が細る。値動きが軽くなり、薄商いの中で突発材料に振れやすい。",
       "source_url": null,
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_cpi_2026-08-11",
@@ -2064,7 +2019,7 @@
       "description": "消費者物価指数。FRB利下げ織り込みに直結。",
       "source_url": "https://www.bls.gov/cpi/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_eia_2026-08-07",
@@ -2079,7 +2034,7 @@
       "description": "米エネルギー情報局(EIA)の週次石油在庫統計（対象週: 2026-08-07 まで）。原油・ガソリン・留出油の在庫増減が発表され、原油(WTI)価格が最も素直に反応する定例イベント。",
       "source_url": "https://www.eia.gov/petroleum/supply/weekly/",
       "result": null,
-      "date_stable_days": 4
+      "date_stable_days": 5
     },
     {
       "id": "us_ppi_2026-08-12",
@@ -2094,7 +2049,7 @@
       "description": "生産者物価指数。卸売段階のインフレ先行指標。",
       "source_url": "https://www.bls.gov/ppi/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "hold_earnings_jp_8725",
@@ -2109,7 +2064,7 @@
       "description": "保有株の決算発表予定（MS&ADインシュアランス）。JPX公式の発表予定日。",
       "source_url": "https://finance.yahoo.co.jp/quote/8725.T",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_retail_2026-06",
@@ -2124,7 +2079,7 @@
       "description": "米国の小売・飲食サービス売上高（前月比）。米経済の約7割を占める個人消費の強さを測る速報。CPI級に相場が動く月もある。",
       "source_url": "https://www.census.gov/retail/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "jp_gdp_2026-08-17",
@@ -2139,7 +2094,7 @@
       "description": "内閣府発表。",
       "source_url": "https://www.esri.cao.go.jp/jp/sna/menu.html",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "watch_earnings_us_HD",
@@ -2154,7 +2109,7 @@
       "description": "ウォッチ銘柄の決算発表予定（ホームデポ）。予定日は変更される場合があります。",
       "source_url": "https://finance.yahoo.com/quote/HD",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_eia_2026-08-14",
@@ -2169,7 +2124,7 @@
       "description": "米エネルギー情報局(EIA)の週次石油在庫統計（対象週: 2026-08-14 まで）。原油・ガソリン・留出油の在庫増減が発表され、原油(WTI)価格が最も素直に反応する定例イベント。",
       "source_url": "https://www.eia.gov/petroleum/supply/weekly/",
       "result": null,
-      "date_stable_days": 4
+      "date_stable_days": 5
     },
     {
       "id": "us_fomc_minutes_2026-08-19",
@@ -2184,7 +2139,7 @@
       "description": "FOMC議事要旨（Minutes）。会合の3週間後(水)14:00 ET公表。利上げ/利下げ議論の内訳が分かり、タカ派/ハト派サプライズで相場が動くことがある。",
       "source_url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "jp_cpi_2026-08-21",
@@ -2199,7 +2154,7 @@
       "description": "総務省統計局発表。日銀の利上げ判断材料。",
       "source_url": "https://www.stat.go.jp/data/cpi/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "watch_earnings_us_INTU",
@@ -2214,7 +2169,7 @@
       "description": "ウォッチ銘柄の決算発表予定（インテュイット）。予定日は変更される場合があります。",
       "source_url": "https://finance.yahoo.com/quote/INTU",
       "result": null,
-      "date_stable_days": 0
+      "date_stable_days": 1
     },
     {
       "id": "us_gdp_2026q2_2nd",
@@ -2229,7 +2184,7 @@
       "description": "米実質GDP成長率（前期比年率）の改定値。速報値は四半期終了の約1ヶ月後に公表され、サプライズで相場が動きやすい。",
       "source_url": "https://www.bea.gov/data/gdp/gross-domestic-product",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_pce_2026-08-26",
@@ -2244,7 +2199,7 @@
       "description": "個人消費支出物価指数。FRBが最重視するインフレ指標。",
       "source_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_eia_2026-08-21",
@@ -2259,7 +2214,7 @@
       "description": "米エネルギー情報局(EIA)の週次石油在庫統計（対象週: 2026-08-21 まで）。原油・ガソリン・留出油の在庫増減が発表され、原油(WTI)価格が最も素直に反応する定例イベント。",
       "source_url": "https://www.eia.gov/petroleum/supply/weekly/",
       "result": null,
-      "date_stable_days": 4
+      "date_stable_days": 5
     },
     {
       "id": "hold_earnings_us_NVDA",
@@ -2274,7 +2229,7 @@
       "description": "保有株の決算発表予定（エヌビディア）。予定日は変更される場合があります。",
       "source_url": "https://finance.yahoo.com/quote/NVDA",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_jacksonhole_2026",
@@ -2289,7 +2244,7 @@
       "description": "カンザスシティ連銀主催。FRB議長講演で金融政策の方向性が示されることが多い。",
       "source_url": "https://www.kansascityfed.org/research/jackson-hole-economic-symposium/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "watch_earnings_us_DG",
@@ -2304,7 +2259,7 @@
       "description": "ウォッチ銘柄の決算発表予定（ダラーゼネラル）。予定日は変更される場合があります。",
       "source_url": "https://finance.yahoo.com/quote/DG",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "anomaly_us_september_effect_2026",
@@ -2319,7 +2274,7 @@
       "description": "September Effect。9月は歴史的に米国株が最も弱い月とされる経験則。",
       "source_url": null,
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_ism_mfg_2026-08",
@@ -2334,7 +2289,7 @@
       "description": "全米の製造業購買担当者への調査（PMI）。50が好況/不況の分かれ目。月初一番乗りの景況指標で相場が動きやすい。",
       "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_eia_2026-08-28",
@@ -2349,7 +2304,7 @@
       "description": "米エネルギー情報局(EIA)の週次石油在庫統計（対象週: 2026-08-28 まで）。原油・ガソリン・留出油の在庫増減が発表され、原油(WTI)価格が最も素直に反応する定例イベント。",
       "source_url": "https://www.eia.gov/petroleum/supply/weekly/",
       "result": null,
-      "date_stable_days": 4
+      "date_stable_days": 5
     },
     {
       "id": "us_beige_2026-09-02",
@@ -2364,7 +2319,7 @@
       "description": "地区連銀経済報告（Beige Book）。FOMC会合の2週間前(水)14:00 ET公表。全12地区の景況感まとめで、利上げ/利下げ判断の地ならし材料。",
       "source_url": "https://www.federalreserve.gov/monetarypolicy/publications/beige-book-default.htm",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_ism_svc_2026-08",
@@ -2379,7 +2334,7 @@
       "description": "サービス業など非製造業の購買担当者調査（PMI）。50が好況/不況の分かれ目。米経済はサービス業が主体のため注目度が高い。",
       "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_nfp_2026-09-04",
@@ -2394,7 +2349,7 @@
       "description": "非農業部門雇用者数(NFP)、失業率、平均時給。FRB政策の最重要指標。",
       "source_url": "https://www.bls.gov/schedule/news_release/empsit.htm",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "jp_gdp_2026-09-08",
@@ -2409,7 +2364,7 @@
       "description": "内閣府発表。",
       "source_url": "https://www.esri.cao.go.jp/jp/sna/menu.html",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_ppi_2026-09-14",
@@ -2424,7 +2379,7 @@
       "description": "生産者物価指数。卸売段階のインフレ先行指標。",
       "source_url": "https://www.bls.gov/ppi/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_eia_2026-09-04",
@@ -2439,7 +2394,7 @@
       "description": "米エネルギー情報局(EIA)の週次石油在庫統計（対象週: 2026-09-04 まで）。原油・ガソリン・留出油の在庫増減が発表され、原油(WTI)価格が最も素直に反応する定例イベント。 ※Labor Dayのため通常の水曜から繰り下げ（公式スケジュールによる確定日）。",
       "source_url": "https://www.eia.gov/petroleum/supply/weekly/",
       "result": null,
-      "date_stable_days": 4
+      "date_stable_days": 5
     },
     {
       "id": "jp_majorsq_2026-09-11",
@@ -2454,7 +2409,7 @@
       "description": "日経225先物・TOPIX先物・指数オプションの特別清算指数（SQ）算出日（第2金曜日 09:00 寄り付き）。算出値は寄り付きの板で決まる。",
       "source_url": null,
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_cpi_2026-09-11",
@@ -2469,7 +2424,7 @@
       "description": "消費者物価指数。FRB利下げ織り込みに直結。",
       "source_url": "https://www.bls.gov/cpi/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_retail_2026-07",
@@ -2484,7 +2439,7 @@
       "description": "米国の小売・飲食サービス売上高（前月比）。米経済の約7割を占める個人消費の強さを測る速報。CPI級に相場が動く月もある。",
       "source_url": "https://www.census.gov/retail/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_eia_2026-09-11",
@@ -2499,7 +2454,7 @@
       "description": "米エネルギー情報局(EIA)の週次石油在庫統計（対象週: 2026-09-11 まで）。原油・ガソリン・留出油の在庫増減が発表され、原油(WTI)価格が最も素直に反応する定例イベント。",
       "source_url": "https://www.eia.gov/petroleum/supply/weekly/",
       "result": null,
-      "date_stable_days": 4
+      "date_stable_days": 5
     },
     {
       "id": "us_fomc_2026-09-16",
@@ -2514,7 +2469,7 @@
       "description": "2日目14:00 ET発表、議長会見14:30 ET。",
       "source_url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "watch_earnings_us_FDS",
@@ -2529,7 +2484,7 @@
       "description": "ウォッチ銘柄の決算発表予定（ファクトセット）。予定日は変更される場合があります。",
       "source_url": "https://finance.yahoo.com/quote/FDS",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "jp_cpi_2026-09-25",
@@ -2544,7 +2499,7 @@
       "description": "総務省統計局発表。日銀の利上げ判断材料。",
       "source_url": "https://www.stat.go.jp/data/cpi/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "jp_boj_2026-09-18",
@@ -2559,7 +2514,7 @@
       "description": "結果発表は最終日の正午頃、総裁会見は15:30頃。",
       "source_url": "https://www.boj.or.jp/mopo/mpmsche_minu/index.htm",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_quadwitch_2026-09-18",
@@ -2574,7 +2529,7 @@
       "description": "米国株価指数先物・指数オプション・個別株先物・個別株オプションが同時満期（第3金曜日）。引け前後のボラティリティ上昇と出来高急増に注意。",
       "source_url": null,
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_eia_2026-09-18",
@@ -2589,7 +2544,7 @@
       "description": "米エネルギー情報局(EIA)の週次石油在庫統計（対象週: 2026-09-18 まで）。原油・ガソリン・留出油の在庫増減が発表され、原油(WTI)価格が最も素直に反応する定例イベント。",
       "source_url": "https://www.eia.gov/petroleum/supply/weekly/",
       "result": null,
-      "date_stable_days": 4
+      "date_stable_days": 5
     },
     {
       "id": "jp_exdiv_2026-09-28",
@@ -2604,7 +2559,7 @@
       "description": "配当・株主優待の権利確定。NISA高配当株仕込みの最重要日。",
       "source_url": null,
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_pce_2026-09-25",
@@ -2619,7 +2574,7 @@
       "description": "個人消費支出物価指数。FRBが最重視するインフレ指標。",
       "source_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_eia_2026-09-25",
@@ -2634,7 +2589,7 @@
       "description": "米エネルギー情報局(EIA)の週次石油在庫統計（対象週: 2026-09-25 まで）。原油・ガソリン・留出油の在庫増減が発表され、原油(WTI)価格が最も素直に反応する定例イベント。",
       "source_url": "https://www.eia.gov/petroleum/supply/weekly/",
       "result": null,
-      "date_stable_days": 4
+      "date_stable_days": 5
     },
     {
       "id": "jp_tankan_2026-10-01",
@@ -2649,7 +2604,7 @@
       "description": "企業短期経済観測調査。企業マインドの最重要指標。",
       "source_url": "https://www.boj.or.jp/statistics/tk/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_ism_mfg_2026-09",
@@ -2664,7 +2619,7 @@
       "description": "全米の製造業購買担当者への調査（PMI）。50が好況/不況の分かれ目。月初一番乗りの景況指標で相場が動きやすい。",
       "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_nfp_2026-10-02",
@@ -2679,7 +2634,7 @@
       "description": "非農業部門雇用者数(NFP)、失業率、平均時給。FRB政策の最重要指標。",
       "source_url": "https://www.bls.gov/schedule/news_release/empsit.htm",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_ism_svc_2026-09",
@@ -2694,7 +2649,7 @@
       "description": "サービス業など非製造業の購買担当者調査（PMI）。50が好況/不況の分かれ目。米経済はサービス業が主体のため注目度が高い。",
       "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_eia_2026-10-02",
@@ -2709,7 +2664,7 @@
       "description": "米エネルギー情報局(EIA)の週次石油在庫統計（対象週: 2026-10-02 まで）。原油・ガソリン・留出油の在庫増減が発表され、原油(WTI)価格が最も素直に反応する定例イベント。",
       "source_url": "https://www.eia.gov/petroleum/supply/weekly/",
       "result": null,
-      "date_stable_days": 4
+      "date_stable_days": 5
     },
     {
       "id": "us_fomc_minutes_2026-10-07",
@@ -2724,7 +2679,7 @@
       "description": "FOMC議事要旨（Minutes）。会合の3週間後(水)14:00 ET公表。利上げ/利下げ議論の内訳が分かり、タカ派/ハト派サプライズで相場が動くことがある。",
       "source_url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "hold_earnings_us_PEP",
@@ -2739,7 +2694,7 @@
       "description": "保有株の決算発表予定（ペプシコ）。予定日は変更される場合があります。",
       "source_url": "https://finance.yahoo.com/quote/PEP",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "hold_earnings_us_JNJ",
@@ -2754,7 +2709,7 @@
       "description": "保有株の決算発表予定（ジョンソン・エンド・ジョンソン）。予定日は変更される場合があります。",
       "source_url": "https://finance.yahoo.com/quote/JNJ",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_cpi_2026-10-13",
@@ -2769,7 +2724,7 @@
       "description": "消費者物価指数。FRB利下げ織り込みに直結。",
       "source_url": "https://www.bls.gov/cpi/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_earnings_2026-10-14",
@@ -2784,7 +2739,7 @@
       "description": "JPモルガン等の大手金融機関の決算で実質的にシーズン開始。マグニフィセント7決算は2-3週後。",
       "source_url": null,
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_beige_2026-10-14",
@@ -2799,7 +2754,7 @@
       "description": "地区連銀経済報告（Beige Book）。FOMC会合の2週間前(水)14:00 ET公表。全12地区の景況感まとめで、利上げ/利下げ判断の地ならし材料。",
       "source_url": "https://www.federalreserve.gov/monetarypolicy/publications/beige-book-default.htm",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_retail_2026-08",
@@ -2814,7 +2769,7 @@
       "description": "米国の小売・飲食サービス売上高（前月比）。米経済の約7割を占める個人消費の強さを測る速報。CPI級に相場が動く月もある。",
       "source_url": "https://www.census.gov/retail/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_ppi_2026-10-14",
@@ -2829,7 +2784,7 @@
       "description": "生産者物価指数。卸売段階のインフレ先行指標。",
       "source_url": "https://www.bls.gov/ppi/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_eia_2026-10-09",
@@ -2844,7 +2799,7 @@
       "description": "米エネルギー情報局(EIA)の週次石油在庫統計（対象週: 2026-10-09 まで）。原油・ガソリン・留出油の在庫増減が発表され、原油(WTI)価格が最も素直に反応する定例イベント。 ※Columbus Dayのため通常の水曜から繰り下げ（公式スケジュールによる確定日）。",
       "source_url": "https://www.eia.gov/petroleum/supply/weekly/",
       "result": null,
-      "date_stable_days": 4
+      "date_stable_days": 5
     },
     {
       "id": "watch_earnings_us_LMT",
@@ -2859,7 +2814,7 @@
       "description": "ウォッチ銘柄の決算発表予定（ロッキードマーチン）。予定日は変更される場合があります。",
       "source_url": "https://finance.yahoo.com/quote/LMT",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "watch_earnings_us_NOC",
@@ -2874,7 +2829,7 @@
       "description": "ウォッチ銘柄の決算発表予定（ノースロップグラマン）。予定日は変更される場合があります。",
       "source_url": "https://finance.yahoo.com/quote/NOC",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "hold_earnings_us_RTX",
@@ -2889,7 +2844,7 @@
       "description": "保有株の決算発表予定（RTXコーポレーション）。予定日は変更される場合があります。",
       "source_url": "https://finance.yahoo.com/quote/RTX",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "hold_earnings_us_VZ",
@@ -2904,7 +2859,7 @@
       "description": "保有株の決算発表予定（ベライゾン）。予定日は変更される場合があります。",
       "source_url": "https://finance.yahoo.com/quote/VZ",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "hold_earnings_us_KO",
@@ -2919,7 +2874,7 @@
       "description": "保有株の決算発表予定（コカ・コーラ）。予定日は変更される場合があります。",
       "source_url": "https://finance.yahoo.com/quote/KO",
       "result": null,
-      "date_stable_days": 1
+      "date_stable_days": 2
     },
     {
       "id": "us_eia_2026-10-16",
@@ -2934,7 +2889,7 @@
       "description": "米エネルギー情報局(EIA)の週次石油在庫統計（対象週: 2026-10-16 まで）。原油・ガソリン・留出油の在庫増減が発表され、原油(WTI)価格が最も素直に反応する定例イベント。",
       "source_url": "https://www.eia.gov/petroleum/supply/weekly/",
       "result": null,
-      "date_stable_days": 4
+      "date_stable_days": 5
     },
     {
       "id": "watch_earnings_us_MCO",
@@ -2949,7 +2904,7 @@
       "description": "ウォッチ銘柄の決算発表予定（ムーディーズ）。予定日は変更される場合があります。",
       "source_url": "https://finance.yahoo.com/quote/MCO",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "watch_earnings_us_ROP",
@@ -2964,7 +2919,7 @@
       "description": "ウォッチ銘柄の決算発表予定（ローパーテクノロジーズ）。予定日は変更される場合があります。",
       "source_url": "https://finance.yahoo.com/quote/ROP",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "hold_earnings_us_PG",
@@ -2979,7 +2934,7 @@
       "description": "保有株の決算発表予定（プロクター・アンド・ギャンブル）。予定日は変更される場合があります。",
       "source_url": "https://finance.yahoo.com/quote/PG",
       "result": null,
-      "date_stable_days": 0
+      "date_stable_days": 1
     },
     {
       "id": "jp_cpi_2026-10-23",
@@ -2994,7 +2949,7 @@
       "description": "総務省統計局発表。日銀の利上げ判断材料。",
       "source_url": "https://www.stat.go.jp/data/cpi/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "watch_earnings_us_AXP",
@@ -3009,7 +2964,7 @@
       "description": "ウォッチ銘柄の決算発表予定（アメックス）。予定日は変更される場合があります。",
       "source_url": "https://finance.yahoo.com/quote/AXP",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "hold_earnings_us_ITW",
@@ -3024,7 +2979,7 @@
       "description": "保有株の決算発表予定（イリノイ・ツール・ワークス）。予定日は変更される場合があります。",
       "source_url": "https://finance.yahoo.com/quote/ITW",
       "result": null,
-      "date_stable_days": 1
+      "date_stable_days": 2
     },
     {
       "id": "hold_earnings_us_CAKE",
@@ -3039,7 +2994,7 @@
       "description": "保有株の決算発表予定（チーズケーキファクトリー）。予定日は変更される場合があります。",
       "source_url": "https://finance.yahoo.com/quote/CAKE",
       "result": null,
-      "date_stable_days": 1
+      "date_stable_days": 2
     },
     {
       "id": "hold_earnings_us_ARCC",
@@ -3054,7 +3009,7 @@
       "description": "保有株の決算発表予定（エイリスキャピタル）。予定日は変更される場合があります。",
       "source_url": "https://finance.yahoo.com/quote/ARCC",
       "result": null,
-      "date_stable_days": 0
+      "date_stable_days": 1
     },
     {
       "id": "hold_earnings_us_PPG",
@@ -3069,7 +3024,7 @@
       "description": "保有株の決算発表予定（PPG Industries）。予定日は変更される場合があります。",
       "source_url": "https://finance.yahoo.com/quote/PPG",
       "result": null,
-      "date_stable_days": 1
+      "date_stable_days": 2
     },
     {
       "id": "hold_earnings_jp_5911",
@@ -3084,7 +3039,7 @@
       "description": "保有株の決算発表予定（横河ブリッジHD）。予定日は変更される場合があります。",
       "source_url": "https://finance.yahoo.co.jp/quote/5911.T",
       "result": null,
-      "date_stable_days": 2
+      "date_stable_days": 3
     },
     {
       "id": "us_eia_2026-10-23",
@@ -3099,7 +3054,7 @@
       "description": "米エネルギー情報局(EIA)の週次石油在庫統計（対象週: 2026-10-23 まで）。原油・ガソリン・留出油の在庫増減が発表され、原油(WTI)価格が最も素直に反応する定例イベント。",
       "source_url": "https://www.eia.gov/petroleum/supply/weekly/",
       "result": null,
-      "date_stable_days": 4
+      "date_stable_days": 5
     },
     {
       "id": "us_fomc_2026-10-28",
@@ -3114,7 +3069,7 @@
       "description": "2日目14:00 ET発表、議長会見14:30 ET。",
       "source_url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "hold_earnings_us_ADP",
@@ -3129,7 +3084,7 @@
       "description": "保有株の決算発表予定（オートマチック・データ・プロセッシング）。予定日は変更される場合があります。",
       "source_url": "https://finance.yahoo.com/quote/ADP",
       "result": null,
-      "date_stable_days": 0
+      "date_stable_days": 1
     },
     {
       "id": "us_gdp_2026q3_adv",
@@ -3144,7 +3099,7 @@
       "description": "米実質GDP成長率（前期比年率）の速報値。速報値は四半期終了の約1ヶ月後に公表され、サプライズで相場が動きやすい。",
       "source_url": "https://www.bea.gov/data/gdp/gross-domestic-product",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_pce_2026-10-26",
@@ -3159,7 +3114,52 @@
       "description": "個人消費支出物価指数。FRBが最重視するインフレ指標。",
       "source_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
+    },
+    {
+      "id": "watch_earnings_us_ICE",
+      "title": "インターコンチネンタル取引所 決算",
+      "category": "EARNINGS",
+      "country": "US",
+      "datetime_utc": "2026-10-29T20:00:00Z",
+      "datetime_local": "2026-10-29T16:00:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": true,
+      "description": "ウォッチ銘柄の決算発表予定（インターコンチネンタル取引所）。予定日は変更される場合があります。",
+      "source_url": "https://finance.yahoo.com/quote/ICE",
+      "result": null,
+      "date_stable_days": 0
+    },
+    {
+      "id": "watch_earnings_us_MA",
+      "title": "マスターカード 決算",
+      "category": "EARNINGS",
+      "country": "US",
+      "datetime_utc": "2026-10-29T20:00:00Z",
+      "datetime_local": "2026-10-29T16:00:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": true,
+      "description": "ウォッチ銘柄の決算発表予定（マスターカード）。予定日は変更される場合があります。",
+      "source_url": "https://finance.yahoo.com/quote/MA",
+      "result": null,
+      "date_stable_days": 0
+    },
+    {
+      "id": "hold_earnings_us_AAPL",
+      "title": "アップル 決算",
+      "category": "EARNINGS",
+      "country": "US",
+      "datetime_utc": "2026-10-29T20:00:00Z",
+      "datetime_local": "2026-10-29T16:00:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": true,
+      "description": "保有株の決算発表予定（アップル）。予定日は変更される場合があります。",
+      "source_url": "https://finance.yahoo.com/quote/AAPL",
+      "result": null,
+      "date_stable_days": 0
     },
     {
       "id": "jp_boj_2026-10-30",
@@ -3174,7 +3174,7 @@
       "description": "結果発表は最終日の正午頃、総裁会見は15:30頃。",
       "source_url": "https://www.boj.or.jp/mopo/mpmsche_minu/index.htm",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "anomaly_jp_halloween_2026",
@@ -3189,7 +3189,7 @@
       "description": "ハロウィン効果。10月末〜翌年4月は相対的に株価パフォーマンスが良いとされる（『Sell in May』の裏返し）。10月末は買い場とする見方。",
       "source_url": null,
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_ism_mfg_2026-10",
@@ -3204,7 +3204,7 @@
       "description": "全米の製造業購買担当者への調査（PMI）。50が好況/不況の分かれ目。月初一番乗りの景況指標で相場が動きやすい。",
       "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_ism_svc_2026-10",
@@ -3219,7 +3219,7 @@
       "description": "サービス業など非製造業の購買担当者調査（PMI）。50が好況/不況の分かれ目。米経済はサービス業が主体のため注目度が高い。",
       "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_eia_2026-10-30",
@@ -3234,7 +3234,7 @@
       "description": "米エネルギー情報局(EIA)の週次石油在庫統計（対象週: 2026-10-30 まで）。原油・ガソリン・留出油の在庫増減が発表され、原油(WTI)価格が最も素直に反応する定例イベント。",
       "source_url": "https://www.eia.gov/petroleum/supply/weekly/",
       "result": null,
-      "date_stable_days": 4
+      "date_stable_days": 5
     },
     {
       "id": "us_nfp_2026-11-06",
@@ -3249,7 +3249,7 @@
       "description": "非農業部門雇用者数(NFP)、失業率、平均時給。FRB政策の最重要指標。",
       "source_url": "https://www.bls.gov/schedule/news_release/empsit.htm",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_cpi_2026-11-12",
@@ -3264,7 +3264,7 @@
       "description": "消費者物価指数。FRB利下げ織り込みに直結。",
       "source_url": "https://www.bls.gov/cpi/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_eia_2026-11-06",
@@ -3279,7 +3279,7 @@
       "description": "米エネルギー情報局(EIA)の週次石油在庫統計（対象週: 2026-11-06 まで）。原油・ガソリン・留出油の在庫増減が発表され、原油(WTI)価格が最も素直に反応する定例イベント。 ※Veterans Dayのため通常の水曜から繰り下げ（公式スケジュールによる確定日）。",
       "source_url": "https://www.eia.gov/petroleum/supply/weekly/",
       "result": null,
-      "date_stable_days": 4
+      "date_stable_days": 5
     },
     {
       "id": "us_ppi_2026-11-13",
@@ -3294,7 +3294,7 @@
       "description": "生産者物価指数。卸売段階のインフレ先行指標。",
       "source_url": "https://www.bls.gov/ppi/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "jp_gdp_2026-11-17",
@@ -3309,7 +3309,7 @@
       "description": "内閣府発表。",
       "source_url": "https://www.esri.cao.go.jp/jp/sna/menu.html",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_retail_2026-09",
@@ -3324,7 +3324,7 @@
       "description": "米国の小売・飲食サービス売上高（前月比）。米経済の約7割を占める個人消費の強さを測る速報。CPI級に相場が動く月もある。",
       "source_url": "https://www.census.gov/retail/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_eia_2026-11-13",
@@ -3339,7 +3339,7 @@
       "description": "米エネルギー情報局(EIA)の週次石油在庫統計（対象週: 2026-11-13 まで）。原油・ガソリン・留出油の在庫増減が発表され、原油(WTI)価格が最も素直に反応する定例イベント。",
       "source_url": "https://www.eia.gov/petroleum/supply/weekly/",
       "result": null,
-      "date_stable_days": 4
+      "date_stable_days": 5
     },
     {
       "id": "us_fomc_minutes_2026-11-18",
@@ -3354,7 +3354,7 @@
       "description": "FOMC議事要旨（Minutes）。会合の3週間後(水)14:00 ET公表。利上げ/利下げ議論の内訳が分かり、タカ派/ハト派サプライズで相場が動くことがある。",
       "source_url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "jp_cpi_2026-11-20",
@@ -3369,7 +3369,7 @@
       "description": "総務省統計局発表。日銀の利上げ判断材料。",
       "source_url": "https://www.stat.go.jp/data/cpi/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_gdp_2026q3_2nd",
@@ -3384,7 +3384,7 @@
       "description": "米実質GDP成長率（前期比年率）の改定値。速報値は四半期終了の約1ヶ月後に公表され、サプライズで相場が動きやすい。",
       "source_url": "https://www.bea.gov/data/gdp/gross-domestic-product",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_pce_2026-11-25",
@@ -3399,7 +3399,7 @@
       "description": "個人消費支出物価指数。FRBが最重視するインフレ指標。",
       "source_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_eia_2026-11-20",
@@ -3414,7 +3414,7 @@
       "description": "米エネルギー情報局(EIA)の週次石油在庫統計（対象週: 2026-11-20 まで）。原油・ガソリン・留出油の在庫増減が発表され、原油(WTI)価格が最も素直に反応する定例イベント。",
       "source_url": "https://www.eia.gov/petroleum/supply/weekly/",
       "result": null,
-      "date_stable_days": 2
+      "date_stable_days": 3
     },
     {
       "id": "us_beige_2026-11-25",
@@ -3429,7 +3429,7 @@
       "description": "地区連銀経済報告（Beige Book）。FOMC会合の2週間前(水)14:00 ET公表。全12地区の景況感まとめで、利上げ/利下げ判断の地ならし材料。",
       "source_url": "https://www.federalreserve.gov/monetarypolicy/publications/beige-book-default.htm",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_ism_mfg_2026-11",
@@ -3444,7 +3444,7 @@
       "description": "全米の製造業購買担当者への調査（PMI）。50が好況/不況の分かれ目。月初一番乗りの景況指標で相場が動きやすい。",
       "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_ism_svc_2026-11",
@@ -3459,7 +3459,7 @@
       "description": "サービス業など非製造業の購買担当者調査（PMI）。50が好況/不況の分かれ目。米経済はサービス業が主体のため注目度が高い。",
       "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_nfp_2026-12-04",
@@ -3474,7 +3474,7 @@
       "description": "非農業部門雇用者数(NFP)、失業率、平均時給。FRB政策の最重要指標。",
       "source_url": "https://www.bls.gov/schedule/news_release/empsit.htm",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "jp_gdp_2026-12-08",
@@ -3489,7 +3489,7 @@
       "description": "内閣府発表。",
       "source_url": "https://www.esri.cao.go.jp/jp/sna/menu.html",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_fomc_2026-12-09",
@@ -3504,7 +3504,7 @@
       "description": "2日目14:00 ET発表、議長会見14:30 ET。",
       "source_url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_cpi_2026-12-11",
@@ -3519,7 +3519,7 @@
       "description": "消費者物価指数。FRB利下げ織り込みに直結。",
       "source_url": "https://www.bls.gov/cpi/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "jp_tankan_2026-12-11",
@@ -3534,7 +3534,7 @@
       "description": "企業短期経済観測調査。企業マインドの最重要指標。",
       "source_url": "https://www.boj.or.jp/statistics/tk/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "jp_majorsq_2026-12-11",
@@ -3549,7 +3549,7 @@
       "description": "日経225先物・TOPIX先物・指数オプションの特別清算指数（SQ）算出日（第2金曜日 09:00 寄り付き）。算出値は寄り付きの板で決まる。",
       "source_url": null,
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "jp_tax_reform_2026",
@@ -3564,7 +3564,7 @@
       "description": "与党発表。NISA等の制度改正動向を確認。",
       "source_url": null,
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_ppi_2026-12-14",
@@ -3579,7 +3579,7 @@
       "description": "生産者物価指数。卸売段階のインフレ先行指標。",
       "source_url": "https://www.bls.gov/ppi/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_retail_2026-11",
@@ -3594,7 +3594,7 @@
       "description": "米国の小売・飲食サービス売上高（前月比）。米経済の約7割を占める個人消費の強さを測る速報。CPI級に相場が動く月もある。",
       "source_url": "https://www.census.gov/retail/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_retail_2026-10",
@@ -3609,7 +3609,7 @@
       "description": "米国の小売・飲食サービス売上高（前月比）。米経済の約7割を占める個人消費の強さを測る速報。CPI級に相場が動く月もある。",
       "source_url": "https://www.census.gov/retail/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "jp_cpi_2026-12-25",
@@ -3624,7 +3624,7 @@
       "description": "総務省統計局発表。日銀の利上げ判断材料。",
       "source_url": "https://www.stat.go.jp/data/cpi/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "jp_boj_2026-12-18",
@@ -3639,7 +3639,7 @@
       "description": "結果発表は最終日の正午頃、総裁会見は15:30頃。",
       "source_url": "https://www.boj.or.jp/mopo/mpmsche_minu/index.htm",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_quadwitch_2026-12-18",
@@ -3654,7 +3654,7 @@
       "description": "米国株価指数先物・指数オプション・個別株先物・個別株オプションが同時満期（第3金曜日）。引け前後のボラティリティ上昇と出来高急増に注意。",
       "source_url": null,
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_pce_2026-12-24",
@@ -3669,7 +3669,7 @@
       "description": "個人消費支出物価指数。FRBが最重視するインフレ指標。",
       "source_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "anomaly_us_santa_rally_2026",
@@ -3684,7 +3684,7 @@
       "description": "Santa Claus Rally。12月最終5営業日〜翌年1月最初の2営業日にかけて株価が上昇しやすいとされる経験則。",
       "source_url": null,
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "anomaly_jp_toubi_2026",
@@ -3699,7 +3699,7 @@
       "description": "掉尾（とうび）の一振。年末最終週に株価が上昇しやすいとされる経験則。節税売り一巡・新年への期待・大納会に向けたご祝儀相場が背景。",
       "source_url": null,
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "jp_exdiv_2026-12-29",
@@ -3714,7 +3714,7 @@
       "description": "配当・株主優待の権利確定。NISA高配当株仕込みの最重要日。",
       "source_url": null,
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "jp_market_2026-12-31",
@@ -3729,7 +3729,7 @@
       "description": "東証年最終取引日。年内最終売買。",
       "source_url": null,
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_fomc_minutes_2026-12-30",
@@ -3744,7 +3744,7 @@
       "description": "FOMC議事要旨（Minutes）。会合の3週間後(水)14:00 ET公表。利上げ/利下げ議論の内訳が分かり、タカ派/ハト派サプライズで相場が動くことがある。",
       "source_url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "anomaly_us_january_barometer_2027",
@@ -3759,7 +3759,7 @@
       "description": "January Barometer（1月の株価で1年が決まる）＋ January Effect（小型株が1月に上昇しやすい）。米国を代表するアノマリー。",
       "source_url": null,
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "anomaly_jp_january_effect_2027",
@@ -3774,7 +3774,7 @@
       "description": "1月（特に小型株）は値上がりしやすいとされる経験則。新年の新規資金流入や、前年末の節税売り（損出し）一巡後の買い戻しが背景とされる。",
       "source_url": null,
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_ism_mfg_2026-12",
@@ -3789,7 +3789,7 @@
       "description": "全米の製造業購買担当者への調査（PMI）。50が好況/不況の分かれ目。月初一番乗りの景況指標で相場が動きやすい。",
       "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_ism_svc_2026-12",
@@ -3804,7 +3804,7 @@
       "description": "サービス業など非製造業の購買担当者調査（PMI）。50が好況/不況の分かれ目。米経済はサービス業が主体のため注目度が高い。",
       "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_nfp_2026-12-31",
@@ -3819,7 +3819,7 @@
       "description": "非農業部門雇用者数(NFP)、失業率、平均時給。FRB政策の最重要指標。",
       "source_url": "https://www.bls.gov/schedule/news_release/empsit.htm",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_beige_2027-01-13",
@@ -3834,7 +3834,7 @@
       "description": "地区連銀経済報告（Beige Book）。FOMC会合の2週間前(水)14:00 ET公表。全12地区の景況感まとめで、利上げ/利下げ判断の地ならし材料。",
       "source_url": "https://www.federalreserve.gov/monetarypolicy/publications/beige-book-default.htm",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "jp_cpi_2027-01-22",
@@ -3849,7 +3849,7 @@
       "description": "総務省統計局発表。日銀の利上げ判断材料。",
       "source_url": "https://www.stat.go.jp/data/cpi/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_fomc_2027-01-27",
@@ -3864,7 +3864,7 @@
       "description": "2日目14:00 ET発表、議長会見14:30 ET。",
       "source_url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_ism_mfg_2027-01",
@@ -3879,7 +3879,7 @@
       "description": "全米の製造業購買担当者への調査（PMI）。50が好況/不況の分かれ目。月初一番乗りの景況指標で相場が動きやすい。",
       "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "anomaly_jp_setsubun_tenjo_2027",
@@ -3894,7 +3894,7 @@
       "description": "「節分天井・彼岸底」の天井側。2月上旬（節分ごろ）に高値をつけやすいという古くからの経験則。年明けの上昇が一服しやすい時期とされる。",
       "source_url": null,
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_ism_svc_2027-01",
@@ -3909,7 +3909,7 @@
       "description": "サービス業など非製造業の購買担当者調査（PMI）。50が好況/不況の分かれ目。米経済はサービス業が主体のため注目度が高い。",
       "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_nfp_2027-02-05",
@@ -3924,7 +3924,7 @@
       "description": "非農業部門雇用者数(NFP)、失業率、平均時給。FRB政策の最重要指標。",
       "source_url": "https://www.bls.gov/schedule/news_release/empsit.htm",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_fomc_minutes_2027-02-17",
@@ -3939,7 +3939,7 @@
       "description": "FOMC議事要旨（Minutes）。会合の3週間後(水)14:00 ET公表。利上げ/利下げ議論の内訳が分かり、タカ派/ハト派サプライズで相場が動くことがある。",
       "source_url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "jp_cpi_2027-02-19",
@@ -3954,7 +3954,7 @@
       "description": "総務省統計局発表。日銀の利上げ判断材料。",
       "source_url": "https://www.stat.go.jp/data/cpi/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_ism_mfg_2027-02",
@@ -3969,7 +3969,7 @@
       "description": "全米の製造業購買担当者への調査（PMI）。50が好況/不況の分かれ目。月初一番乗りの景況指標で相場が動きやすい。",
       "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_ism_svc_2027-02",
@@ -3984,7 +3984,7 @@
       "description": "サービス業など非製造業の購買担当者調査（PMI）。50が好況/不況の分かれ目。米経済はサービス業が主体のため注目度が高い。",
       "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_beige_2027-03-03",
@@ -3999,7 +3999,7 @@
       "description": "地区連銀経済報告（Beige Book）。FOMC会合の2週間前(水)14:00 ET公表。全12地区の景況感まとめで、利上げ/利下げ判断の地ならし材料。",
       "source_url": "https://www.federalreserve.gov/monetarypolicy/publications/beige-book-default.htm",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_nfp_2027-03-05",
@@ -4014,7 +4014,7 @@
       "description": "非農業部門雇用者数(NFP)、失業率、平均時給。FRB政策の最重要指標。",
       "source_url": "https://www.bls.gov/schedule/news_release/empsit.htm",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_fomc_2027-03-17",
@@ -4029,7 +4029,7 @@
       "description": "2日目14:00 ET発表、議長会見14:30 ET。",
       "source_url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "anomaly_jp_higan_zoko_2027",
@@ -4044,7 +4044,7 @@
       "description": "「節分天井・彼岸底」の底側。春の彼岸（3月中旬〜下旬）に安値をつけやすいとされる。年度末の益出し・損出し売りが一巡し、反発に向かいやすい時期。",
       "source_url": null,
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "jp_cpi_2027-03-19",
@@ -4059,7 +4059,7 @@
       "description": "総務省統計局発表。日銀の利上げ判断材料。",
       "source_url": "https://www.stat.go.jp/data/cpi/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_ism_mfg_2027-03",
@@ -4074,7 +4074,7 @@
       "description": "全米の製造業購買担当者への調査（PMI）。50が好況/不況の分かれ目。月初一番乗りの景況指標で相場が動きやすい。",
       "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_nfp_2027-04-02",
@@ -4089,7 +4089,7 @@
       "description": "非農業部門雇用者数(NFP)、失業率、平均時給。FRB政策の最重要指標。",
       "source_url": "https://www.bls.gov/schedule/news_release/empsit.htm",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_ism_svc_2027-03",
@@ -4104,7 +4104,7 @@
       "description": "サービス業など非製造業の購買担当者調査（PMI）。50が好況/不況の分かれ目。米経済はサービス業が主体のため注目度が高い。",
       "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_fomc_minutes_2027-04-07",
@@ -4119,7 +4119,7 @@
       "description": "FOMC議事要旨（Minutes）。会合の3週間後(水)14:00 ET公表。利上げ/利下げ議論の内訳が分かり、タカ派/ハト派サプライズで相場が動くことがある。",
       "source_url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_beige_2027-04-14",
@@ -4134,7 +4134,7 @@
       "description": "地区連銀経済報告（Beige Book）。FOMC会合の2週間前(水)14:00 ET公表。全12地区の景況感まとめで、利上げ/利下げ判断の地ならし材料。",
       "source_url": "https://www.federalreserve.gov/monetarypolicy/publications/beige-book-default.htm",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "jp_cpi_2027-04-23",
@@ -4149,7 +4149,7 @@
       "description": "総務省統計局発表。日銀の利上げ判断材料。",
       "source_url": "https://www.stat.go.jp/data/cpi/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_fomc_2027-04-28",
@@ -4164,7 +4164,7 @@
       "description": "2日目14:00 ET発表、議長会見14:30 ET。",
       "source_url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "anomaly_jp_sell_in_may_2027",
@@ -4179,7 +4179,7 @@
       "description": "「Sell in May（5月に売れ）」。5月〜夏にかけて株価が軟調になりやすいという経験則。原文は『Sell in May and go away, come back on St. Leger's day（9月中旬）』。",
       "source_url": null,
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_ism_mfg_2027-04",
@@ -4194,7 +4194,7 @@
       "description": "全米の製造業購買担当者への調査（PMI）。50が好況/不況の分かれ目。月初一番乗りの景況指標で相場が動きやすい。",
       "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_ism_svc_2027-04",
@@ -4209,7 +4209,7 @@
       "description": "サービス業など非製造業の購買担当者調査（PMI）。50が好況/不況の分かれ目。米経済はサービス業が主体のため注目度が高い。",
       "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_nfp_2027-05-07",
@@ -4224,7 +4224,7 @@
       "description": "非農業部門雇用者数(NFP)、失業率、平均時給。FRB政策の最重要指標。",
       "source_url": "https://www.bls.gov/schedule/news_release/empsit.htm",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_fomc_minutes_2027-05-19",
@@ -4239,7 +4239,7 @@
       "description": "FOMC議事要旨（Minutes）。会合の3週間後(水)14:00 ET公表。利上げ/利下げ議論の内訳が分かり、タカ派/ハト派サプライズで相場が動くことがある。",
       "source_url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "jp_cpi_2027-05-21",
@@ -4254,7 +4254,7 @@
       "description": "総務省統計局発表。日銀の利上げ判断材料。",
       "source_url": "https://www.stat.go.jp/data/cpi/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_beige_2027-05-26",
@@ -4269,7 +4269,7 @@
       "description": "地区連銀経済報告（Beige Book）。FOMC会合の2週間前(水)14:00 ET公表。全12地区の景況感まとめで、利上げ/利下げ判断の地ならし材料。",
       "source_url": "https://www.federalreserve.gov/monetarypolicy/publications/beige-book-default.htm",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_ism_mfg_2027-05",
@@ -4284,7 +4284,7 @@
       "description": "全米の製造業購買担当者への調査（PMI）。50が好況/不況の分かれ目。月初一番乗りの景況指標で相場が動きやすい。",
       "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_ism_svc_2027-05",
@@ -4299,7 +4299,7 @@
       "description": "サービス業など非製造業の購買担当者調査（PMI）。50が好況/不況の分かれ目。米経済はサービス業が主体のため注目度が高い。",
       "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_nfp_2027-06-04",
@@ -4314,7 +4314,7 @@
       "description": "非農業部門雇用者数(NFP)、失業率、平均時給。FRB政策の最重要指標。",
       "source_url": "https://www.bls.gov/schedule/news_release/empsit.htm",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_fomc_2027-06-09",
@@ -4329,7 +4329,7 @@
       "description": "2日目14:00 ET発表、議長会見14:30 ET。",
       "source_url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "jp_cpi_2027-06-18",
@@ -4344,7 +4344,7 @@
       "description": "総務省統計局発表。日銀の利上げ判断材料。",
       "source_url": "https://www.stat.go.jp/data/cpi/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_fomc_minutes_2027-06-30",
@@ -4359,7 +4359,7 @@
       "description": "FOMC議事要旨（Minutes）。会合の3週間後(水)14:00 ET公表。利上げ/利下げ議論の内訳が分かり、タカ派/ハト派サプライズで相場が動くことがある。",
       "source_url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_ism_mfg_2027-06",
@@ -4374,7 +4374,7 @@
       "description": "全米の製造業購買担当者への調査（PMI）。50が好況/不況の分かれ目。月初一番乗りの景況指標で相場が動きやすい。",
       "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_nfp_2027-07-02",
@@ -4389,7 +4389,7 @@
       "description": "非農業部門雇用者数(NFP)、失業率、平均時給。FRB政策の最重要指標。",
       "source_url": "https://www.bls.gov/schedule/news_release/empsit.htm",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_ism_svc_2027-06",
@@ -4404,7 +4404,7 @@
       "description": "サービス業など非製造業の購買担当者調査（PMI）。50が好況/不況の分かれ目。米経済はサービス業が主体のため注目度が高い。",
       "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "anomaly_jp_etf_bunpai_2027",
@@ -4419,7 +4419,7 @@
       "description": "国内の日経平均・TOPIX連動ETFの決算が7月上旬（7/8・7/10）に集中し、運用会社が分配金の原資を作るための機械的な先物売りが出やすい。数千億円規模の需給イベントで、例年7/7〜7/10ごろは上値が重くなりやすいとされる。",
       "source_url": null,
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_beige_2027-07-14",
@@ -4434,7 +4434,7 @@
       "description": "地区連銀経済報告（Beige Book）。FOMC会合の2週間前(水)14:00 ET公表。全12地区の景況感まとめで、利上げ/利下げ判断の地ならし材料。",
       "source_url": "https://www.federalreserve.gov/monetarypolicy/publications/beige-book-default.htm",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "jp_cpi_2027-07-23",
@@ -4449,7 +4449,7 @@
       "description": "総務省統計局発表。日銀の利上げ判断材料。",
       "source_url": "https://www.stat.go.jp/data/cpi/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_fomc_2027-07-28",
@@ -4464,7 +4464,7 @@
       "description": "2日目14:00 ET発表、議長会見14:30 ET。",
       "source_url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_ism_mfg_2027-07",
@@ -4479,7 +4479,7 @@
       "description": "全米の製造業購買担当者への調査（PMI）。50が好況/不況の分かれ目。月初一番乗りの景況指標で相場が動きやすい。",
       "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_ism_svc_2027-07",
@@ -4494,7 +4494,7 @@
       "description": "サービス業など非製造業の購買担当者調査（PMI）。50が好況/不況の分かれ目。米経済はサービス業が主体のため注目度が高い。",
       "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_nfp_2027-08-06",
@@ -4509,7 +4509,7 @@
       "description": "非農業部門雇用者数(NFP)、失業率、平均時給。FRB政策の最重要指標。",
       "source_url": "https://www.bls.gov/schedule/news_release/empsit.htm",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "anomaly_jp_natsugare_2027",
@@ -4524,7 +4524,7 @@
       "description": "夏枯れ相場。お盆前後は機関投資家の夏休みで市場参加者が減り出来高が細る。値動きが軽くなり、薄商いの中で突発材料に振れやすい。",
       "source_url": null,
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_fomc_minutes_2027-08-18",
@@ -4539,7 +4539,7 @@
       "description": "FOMC議事要旨（Minutes）。会合の3週間後(水)14:00 ET公表。利上げ/利下げ議論の内訳が分かり、タカ派/ハト派サプライズで相場が動くことがある。",
       "source_url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "jp_cpi_2027-08-20",
@@ -4554,7 +4554,7 @@
       "description": "総務省統計局発表。日銀の利上げ判断材料。",
       "source_url": "https://www.stat.go.jp/data/cpi/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "anomaly_us_september_effect_2027",
@@ -4569,7 +4569,7 @@
       "description": "September Effect。9月は歴史的に米国株が最も弱い月とされる経験則。",
       "source_url": null,
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_ism_mfg_2027-08",
@@ -4584,7 +4584,7 @@
       "description": "全米の製造業購買担当者への調査（PMI）。50が好況/不況の分かれ目。月初一番乗りの景況指標で相場が動きやすい。",
       "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_beige_2027-09-01",
@@ -4599,7 +4599,7 @@
       "description": "地区連銀経済報告（Beige Book）。FOMC会合の2週間前(水)14:00 ET公表。全12地区の景況感まとめで、利上げ/利下げ判断の地ならし材料。",
       "source_url": "https://www.federalreserve.gov/monetarypolicy/publications/beige-book-default.htm",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_nfp_2027-09-03",
@@ -4614,7 +4614,7 @@
       "description": "非農業部門雇用者数(NFP)、失業率、平均時給。FRB政策の最重要指標。",
       "source_url": "https://www.bls.gov/schedule/news_release/empsit.htm",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_ism_svc_2027-08",
@@ -4629,7 +4629,7 @@
       "description": "サービス業など非製造業の購買担当者調査（PMI）。50が好況/不況の分かれ目。米経済はサービス業が主体のため注目度が高い。",
       "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_fomc_2027-09-15",
@@ -4644,7 +4644,7 @@
       "description": "2日目14:00 ET発表、議長会見14:30 ET。",
       "source_url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "jp_cpi_2027-09-17",
@@ -4659,7 +4659,7 @@
       "description": "総務省統計局発表。日銀の利上げ判断材料。",
       "source_url": "https://www.stat.go.jp/data/cpi/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_nfp_2027-10-01",
@@ -4674,7 +4674,7 @@
       "description": "非農業部門雇用者数(NFP)、失業率、平均時給。FRB政策の最重要指標。",
       "source_url": "https://www.bls.gov/schedule/news_release/empsit.htm",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_ism_mfg_2027-09",
@@ -4689,7 +4689,7 @@
       "description": "全米の製造業購買担当者への調査（PMI）。50が好況/不況の分かれ目。月初一番乗りの景況指標で相場が動きやすい。",
       "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_ism_svc_2027-09",
@@ -4704,7 +4704,7 @@
       "description": "サービス業など非製造業の購買担当者調査（PMI）。50が好況/不況の分かれ目。米経済はサービス業が主体のため注目度が高い。",
       "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_fomc_minutes_2027-10-06",
@@ -4719,7 +4719,7 @@
       "description": "FOMC議事要旨（Minutes）。会合の3週間後(水)14:00 ET公表。利上げ/利下げ議論の内訳が分かり、タカ派/ハト派サプライズで相場が動くことがある。",
       "source_url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_beige_2027-10-13",
@@ -4734,7 +4734,7 @@
       "description": "地区連銀経済報告（Beige Book）。FOMC会合の2週間前(水)14:00 ET公表。全12地区の景況感まとめで、利上げ/利下げ判断の地ならし材料。",
       "source_url": "https://www.federalreserve.gov/monetarypolicy/publications/beige-book-default.htm",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "jp_cpi_2027-10-22",
@@ -4749,7 +4749,7 @@
       "description": "総務省統計局発表。日銀の利上げ判断材料。",
       "source_url": "https://www.stat.go.jp/data/cpi/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_fomc_2027-10-27",
@@ -4764,7 +4764,7 @@
       "description": "2日目14:00 ET発表、議長会見14:30 ET。",
       "source_url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "anomaly_jp_halloween_2027",
@@ -4779,7 +4779,7 @@
       "description": "ハロウィン効果。10月末〜翌年4月は相対的に株価パフォーマンスが良いとされる（『Sell in May』の裏返し）。10月末は買い場とする見方。",
       "source_url": null,
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_ism_mfg_2027-10",
@@ -4794,7 +4794,7 @@
       "description": "全米の製造業購買担当者への調査（PMI）。50が好況/不況の分かれ目。月初一番乗りの景況指標で相場が動きやすい。",
       "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_ism_svc_2027-10",
@@ -4809,7 +4809,7 @@
       "description": "サービス業など非製造業の購買担当者調査（PMI）。50が好況/不況の分かれ目。米経済はサービス業が主体のため注目度が高い。",
       "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_nfp_2027-11-05",
@@ -4824,7 +4824,7 @@
       "description": "非農業部門雇用者数(NFP)、失業率、平均時給。FRB政策の最重要指標。",
       "source_url": "https://www.bls.gov/schedule/news_release/empsit.htm",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_fomc_minutes_2027-11-17",
@@ -4839,7 +4839,7 @@
       "description": "FOMC議事要旨（Minutes）。会合の3週間後(水)14:00 ET公表。利上げ/利下げ議論の内訳が分かり、タカ派/ハト派サプライズで相場が動くことがある。",
       "source_url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "jp_cpi_2027-11-19",
@@ -4854,7 +4854,7 @@
       "description": "総務省統計局発表。日銀の利上げ判断材料。",
       "source_url": "https://www.stat.go.jp/data/cpi/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_beige_2027-11-24",
@@ -4869,7 +4869,7 @@
       "description": "地区連銀経済報告（Beige Book）。FOMC会合の2週間前(水)14:00 ET公表。全12地区の景況感まとめで、利上げ/利下げ判断の地ならし材料。",
       "source_url": "https://www.federalreserve.gov/monetarypolicy/publications/beige-book-default.htm",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_ism_mfg_2027-11",
@@ -4884,7 +4884,7 @@
       "description": "全米の製造業購買担当者への調査（PMI）。50が好況/不況の分かれ目。月初一番乗りの景況指標で相場が動きやすい。",
       "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_nfp_2027-12-03",
@@ -4899,7 +4899,7 @@
       "description": "非農業部門雇用者数(NFP)、失業率、平均時給。FRB政策の最重要指標。",
       "source_url": "https://www.bls.gov/schedule/news_release/empsit.htm",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_ism_svc_2027-11",
@@ -4914,7 +4914,7 @@
       "description": "サービス業など非製造業の購買担当者調査（PMI）。50が好況/不況の分かれ目。米経済はサービス業が主体のため注目度が高い。",
       "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_fomc_2027-12-08",
@@ -4929,7 +4929,7 @@
       "description": "2日目14:00 ET発表、議長会見14:30 ET。",
       "source_url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "jp_cpi_2027-12-17",
@@ -4944,7 +4944,7 @@
       "description": "総務省統計局発表。日銀の利上げ判断材料。",
       "source_url": "https://www.stat.go.jp/data/cpi/",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "anomaly_us_santa_rally_2027",
@@ -4959,7 +4959,7 @@
       "description": "Santa Claus Rally。12月最終5営業日〜翌年1月最初の2営業日にかけて株価が上昇しやすいとされる経験則。",
       "source_url": null,
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "anomaly_jp_toubi_2027",
@@ -4974,7 +4974,7 @@
       "description": "掉尾（とうび）の一振。年末最終週に株価が上昇しやすいとされる経験則。節税売り一巡・新年への期待・大納会に向けたご祝儀相場が背景。",
       "source_url": null,
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     },
     {
       "id": "us_fomc_minutes_2027-12-29",
@@ -4989,7 +4989,7 @@
       "description": "FOMC議事要旨（Minutes）。会合の3週間後(水)14:00 ET公表。利上げ/利下げ議論の内訳が分かり、タカ派/ハト派サプライズで相場が動くことがある。",
       "source_url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "result": null,
-      "date_stable_days": 5
+      "date_stable_days": 6
     }
   ]
 }

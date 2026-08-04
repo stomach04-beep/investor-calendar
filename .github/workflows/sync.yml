@@ -14,7 +14,9 @@ name: Investor Calendar Sync
 #   4. fetch_schedules.py : 米PCE(BEA)/米CPI(BLS)/全国CPI(ルール計算)/米雇用統計/米PPI/
 #                           米GDP(BEA)/米小売売上高(Census)/ISM(ルール計算) を取得（ベストエフォート）
 #   4b. fetch_anomalies.py: 相場アノマリー（節分天井・セルインメイ等）を暦計算で生成（AI呼び出しなし）
-#   4c. fetch_earnings.py : 保有株/ウォッチ銘柄の決算日を取得
+#   4c. fetch_earnings.py : 保有株/ウォッチ銘柄の決算日時を取得
+#                           （日付=JPX公式/Nasdaq公式/yfinance/J-Quants予測、
+#                             時刻=J-Quants開示実績・SEC EDGARの8-K受理実績）
 #   4d. fetch_eia.py      : EIA週次石油在庫（毎週水曜10:30 ET＋EIA公式の祝日繰り下げ）
 #   5. notion_upsert.py   : Notion DB に upsert（is_estimated=false 行は保護）
 #   6. notion_to_json.py  : Notion → data/investor_events.json 再生成
@@ -102,6 +104,9 @@ jobs:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
           NOTION_DB_ID: ${{ secrets.NOTION_DB_ID }}
           PORTFOLIO_DB_ID: ${{ secrets.PORTFOLIO_DB_ID }}
+          # SEC EDGAR は連絡先メール入りの User-Agent を要求する（形式が違うと403）。
+          # 未設定でもプレースホルダで動くが、設定しておくのが SEC の作法。
+          SEC_CONTACT_EMAIL: ${{ secrets.SEC_CONTACT_EMAIL }}
         run: python scripts/fetch_earnings.py
 
       - name: fetch_eia.py 実行（EIA週次石油在庫の発表予定・ベストエフォート）

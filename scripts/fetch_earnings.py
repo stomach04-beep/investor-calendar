@@ -5,14 +5,24 @@
   (B) 投資家カレンダー用の「決算」イベントを tmp/fetch_earnings_out.json に出力
 する。
 
-データ源:
+データ源（日付）:
   - JPX 決算発表予定Excel（日本株の第一候補）: 取引所公式の発表予定＝確定扱い(is_estimated=false)。
     ただし直近約1ヶ月分しか掲載されない
-  - yfinance（米国株の主力・日本株のJPX圏外フォールバック）: Ticker.calendar["Earnings Date"]（日付のみ採用）
+  - Nasdaq 公式決算カレンダー（米国株の第一候補・scripts/nasdaq_earnings.py）:
+    約5週間先まで掲載。寄り前/引け後の別も分かる
+  - yfinance（上記の圏外フォールバック）: Ticker.calendar["Earnings Date"]（日付のみ採用）
   - J-Quants 予測日 data/jq_earnings_jp.json（日本株の最終フォールバック）:
     jquants-bulk/build_earnings_estimates.py が10年開示履歴から生成した
     「昨年同四半期の実開示日+364日」の予測。JPX予定Excelは直近約1ヶ月分しか
     無いため、決算通過後〜次回掲載までの空白期間もイベントが消えないようにする
+
+データ源（時刻）:
+  未来の発表時刻を事前公表する公式ソースは存在しない（会社が出すのは日付だけ）ため、
+  「その銘柄が過去いつも何時に出しているか」から埋める。何ヶ月先の予定にも使える。
+  - 日本株: J-Quants の開示時刻実績 data/jq_earnings_jp.json の disc_times
+    （実績では 15:30 が45%・16:00 が15%で、従来の決め打ち 15:00 は7%しかなかった）
+  - 米国株: SEC EDGAR の 8-K(Item 2.02) 受理時刻の実績（scripts/us_earnings_time.py）
+    取れない銘柄は寄り前=07:00 ET / 引け後・不明=16:00 ET の既定値
 
 役割分担（既存パイプラインの思想を踏襲）:
   - 投資家カレンダーDB への「決算」イベント登録は notion_upsert.py が
@@ -46,6 +56,8 @@ from zoneinfo import ZoneInfo
 import requests
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+from nasdaq_earnings import nasdaq_earnings_map  # noqa: E402
+from us_earnings_time import us_earnings_time_map  # noqa: E402
 from common import (  # noqa: E402
     NotionClient,
     get_notion_db_id,
@@ -68,11 +80,12 @@ HELD_STATUSES = {"保有継続", "目標達成", "部分達成", "打診買い�
 TZ_JST = ZoneInfo("Asia/Tokyo")
 TZ_ET = ZoneInfo("America/New_York")
 
-# 日本株のデフォルト決算発表時刻（15:00 JST 想定）。
-# 米国株は「寄り前(BMO)＝07:00 ET」「引け後(AMC)・不明＝16:00 ET」で出し分ける。
-#   yfinance の時刻は分単位では不正確だが、寄り前/引け後の別(AM 朝 or PM 16:00)は信頼できる。
-#   実証: AAPL/MSFT/NVDA=16:00(引け後), GS/JPM/KO=朝(寄り前), VZ/CVX=08:00(寄り前)。
-#   → セッション(AM/PM)だけ採用し、代表時刻に丸めて表示・通知する（VZ実際の7:00press/8:30会見に近い）。
+# 決算発表時刻のデフォルト（銘柄ごとの実績が取れなかったときだけ使う）。
+#   日本株 … J-Quants の開示実績（jq_earnings_jp.json の disc_times）を優先。
+#            実績では 15:30 が45%・16:00 が15%で、15:00 ちょうどは7%しかない。
+#   米国株 … SEC EDGAR の 8-K(Item 2.02) 受理時刻の実績を優先。
+#            取れなければ寄り前(BMO)=07:00 ET / 引け後(AMC)・不明=16:00 ET。
+#            セッションは Nasdaq 公式カレンダー（約5週間先まで）→ yfinance の順で判定。
 JP_HOUR, JP_MIN = 15, 0
 US_HOUR, US_MIN = 16, 0          # 引け後(AMC)・セッション不明時のデフォルト
 US_BMO_HOUR, US_BMO_MIN = 7, 0   # 寄り前(BMO)の代表時刻（プレスリリース想定）
@@ -340,9 +353,39 @@ def jq_estimates_map(today: date | None = None) -> dict[str, date]:
     return out
 
 
+def jq_disc_time_map() -> dict[str, str]:
+    """
+    data/jq_earnings_jp.json の disc_times（銘柄ごとの開示時刻の実績）を読み、
+    {4桁コード: "HH:MM"} を返す。無ければ空 dict（＝従来の 15:00 デフォルトに落ちる）。
+
+    決算発表の「時刻」を事前公表する公式ソースは存在しないため、
+    その銘柄が過去いつも何時に開示しているか（J-Quants の DiscTime 実績）で埋める。
+    """
+    out: dict[str, str] = {}
+    try:
+        payload = json.loads(JQ_ESTIMATES_PATH.read_text(encoding="utf-8"))
+        for code, v in (payload.get("disc_times") or {}).items():
+            t = (v or {}).get("time")
+            if isinstance(t, str) and re.fullmatch(r"\d{2}:\d{2}", t):
+                out[code] = t
+        log(f"  J-Quants 開示時刻マップ {len(out)} 件")
+    except FileNotFoundError:
+        log("  J-Quants 予測ファイルなし → 日本株の時刻は既定値で継続")
+    except Exception as e:
+        log(f"  J-Quants 開示時刻読込失敗: {type(e).__name__}: {e} → 既定値で継続")
+    return out
+
+
 # ----------------------------------------------------------------------
 # イベント生成
 # ----------------------------------------------------------------------
+def _split_hhmm(hhmm: str | None, def_h: int, def_m: int) -> tuple[int, int]:
+    """"HH:MM" を (時, 分) に分解する。取れていなければ既定値を返す。"""
+    if isinstance(hhmm, str) and re.fullmatch(r"\d{2}:\d{2}", hhmm):
+        return int(hhmm[:2]), int(hhmm[3:])
+    return def_h, def_m
+
+
 def build_event(h: dict, edate: date) -> dict:
     """保有株/ウォッチ銘柄1件 + 決算日 から 投資家カレンダー用イベント dict を作る。"""
     market = h["market"]
@@ -354,23 +397,27 @@ def build_event(h: dict, edate: date) -> dict:
     # ウォッチ銘柄（保有外）は id を watch_earnings_* にして保有株と区別する
     prefix = "watch_earnings" if h.get("is_watch") else "hold_earnings"
     kind = "ウォッチ銘柄" if h.get("is_watch") else "保有株"
+    # 銘柄ごとの実績から求めた発表時刻（"HH:MM"）。無ければ市場ごとの既定値。
+    hhmm = h.get("time_hhmm")
     if market == "日本":
         country = "JP"
         code = to_jp_code(ticker)
         # id は銘柄ごとに固定（日付を含めない＝決算日が動いても upsert で更新・重複しない）
         ev_id = f"{prefix}_jp_{code}"
-        local = f"{edate.isoformat()}T{JP_HOUR:02d}:{JP_MIN:02d}:00+09:00"
+        hh, mm = _split_hhmm(hhmm, JP_HOUR, JP_MIN)
+        local = f"{edate.isoformat()}T{hh:02d}:{mm:02d}:00+09:00"
         tz = "Asia/Tokyo"
         src = f"https://finance.yahoo.co.jp/quote/{code}.T"
     else:
         country = "US"
         sym = ticker.strip().upper()
         ev_id = f"{prefix}_us_{sym}"
+        # 実績時刻があればそれを使い、無ければ
         # 寄り前(AM/BMO)=07:00 ET、引け後(PM/AMC)・不明=16:00 ET で出し分け
         if h.get("session") == "AM":
-            hh, mm = US_BMO_HOUR, US_BMO_MIN
+            hh, mm = _split_hhmm(hhmm, US_BMO_HOUR, US_BMO_MIN)
         else:
-            hh, mm = US_HOUR, US_MIN
+            hh, mm = _split_hhmm(hhmm, US_HOUR, US_MIN)
         off = et_offset_str(edate, hh, mm)
         local = f"{edate.isoformat()}T{hh:02d}:{mm:02d}:00{off}"
         tz = "America/New_York"
@@ -499,39 +546,78 @@ def archive_stale(client: NotionClient, cal_db_id: str, current_ids: set[str], d
 # メイン
 # ----------------------------------------------------------------------
 def _resolve_dates(holds: list[dict]) -> tuple[list[dict], list[dict]]:
-    """各保有株の決算日を解決する。
+    """各保有株の決算「日」と「時刻」を解決する。
+
+    日付:
       日本株: JPX公式（確定・約1ヶ月先まで）→ yfinance → J-Quants予測 の順
-      米国株: yfinance のみ
+      米国株: Nasdaq公式カレンダー（約5週間先まで）→ yfinance の順
+    時刻（未来の時刻を事前公表する公式ソースは無いので実績から推定）:
+      日本株: J-Quants の開示時刻実績（銘柄ごと）→ 既定 15:00 JST
+      米国株: SEC EDGAR の 8-K(2.02) 受理時刻実績 → セッション既定(07:00/16:00 ET)
     JPX は取引所の公式発表予定なので is_estimated=false（確定）として扱える。
     (date付きリスト, 取得失敗リスト) を返す。"""
     jpx: dict[str, date] = {}
     jq: dict[str, date] = {}
+    jq_times: dict[str, str] = {}
     if any(h["market"] == "日本" for h in holds):
         jpx = jpx_earnings_map()
         jq = jq_estimates_map()
+        jq_times = jq_disc_time_map()
+    us_syms = sorted({(h["ticker"] or "").strip().upper()
+                      for h in holds if h["market"] != "日本"})
+    nas: dict[str, dict] = {}
+    edgar: dict[str, dict] = {}
+    if us_syms:
+        nas = nasdaq_earnings_map()
+        edgar = us_earnings_time_map(us_syms)
     # JPXのExcelには発表直後の過去日が残っていることがあるため「今日(JST)以降」だけ採用する
     today_jst = datetime.now(TZ_JST).date()
     resolved: list[dict] = []
     missing: list[dict] = []
     for h in holds:
         sym = to_yf_symbol(h["ticker"], h["market"])
-        # 米国株のみセッション(寄り前/引け後)を判定する（日本株は時刻を使わない）
-        want_session = h["market"] != "日本"
+        is_jp = h["market"] == "日本"
         ed: date | None = None
         session: str | None = None
+        time_hhmm: str | None = None
         src = ""
-        # 日本株はまずJPX公式（確定日）を見る
-        if h["market"] == "日本":
-            jpx_d = jpx.get(to_jp_code(h["ticker"]))
+        time_src = "既定"
+        if is_jp:
+            code = to_jp_code(h["ticker"])
+            # 日本株はまずJPX公式（確定日）を見る
+            jpx_d = jpx.get(code)
             if jpx_d is not None and jpx_d >= today_jst:
                 ed, src = jpx_d, "JPX"
-        if ed is None:
-            ed, session = yf_next_earnings(sym, want_session=want_session)
-            src = "yfinance"
-        if ed is None and h["market"] == "日本":
-            # 最終フォールバック: J-Quants 開示履歴からの予測日（±数日ズレうる）
-            ed = jq.get(to_jp_code(h["ticker"]))
-            src = "JQ予測"
+            if ed is None:
+                ed, _ = yf_next_earnings(sym, want_session=False)
+                src = "yfinance"
+            if ed is None:
+                # 最終フォールバック: J-Quants 開示履歴からの予測日（±数日ズレうる）
+                ed = jq.get(code)
+                src = "JQ予測"
+            # 時刻は日付の出どころに関係なく、その銘柄の開示実績を使う
+            if jq_times.get(code):
+                time_hhmm, time_src = jq_times[code], "JQ実績"
+        else:
+            usym = (h["ticker"] or "").strip().upper()
+            nrow = nas.get(usym)
+            if nrow:
+                # Nasdaq 公式カレンダー（掲載範囲内＝約5週間先まで）を優先
+                ed, session, src = nrow["date"], nrow["session"], "Nasdaq"
+            else:
+                ed, session = yf_next_earnings(sym, want_session=True)
+                src = "yfinance"
+            erow = edgar.get(usym)
+            if erow:
+                # セッションが分かっていて EDGAR 実績と食い違う銘柄は信用しない
+                # （プレスから遅れて 8-K を出す会社を誤って拾わないため）
+                if session and erow.get("session") and erow["session"] != session:
+                    log(f"    {usym}: EDGAR実績({erow['session']})とカレンダー({session})が"
+                        f"不一致 → 時刻は既定値を使用")
+                else:
+                    session = session or erow.get("session")
+                    if erow.get("time"):
+                        time_hhmm, time_src = erow["time"], "EDGAR実績"
         if ed is None:
             missing.append(h)
             log(f"  {h['name']}({h['ticker']}): 決算日が取得できず（スキップ）")
@@ -539,10 +625,12 @@ def _resolve_dates(holds: list[dict]) -> tuple[list[dict], list[dict]]:
         h2 = dict(h)
         h2["edate"] = ed
         h2["src"] = src
-        h2["session"] = session  # 'AM'/'PM'/None（build_event で米国株の時刻に反映）
+        h2["session"] = session      # 'AM'/'PM'/None（時刻の既定値の出し分けに使う）
+        h2["time_hhmm"] = time_hhmm  # "HH:MM"/None（build_event が使う）
         resolved.append(h2)
         sess_label = f" [{session}]" if session else ""
-        log(f"  {h['name']}({h['ticker']}) -> {ed} [{src}]{sess_label}")
+        log(f"  {h['name']}({h['ticker']}) -> {ed} [{src}]{sess_label} "
+            f"時刻={time_hhmm or '既定'}({time_src})")
     return resolved, missing
 
 

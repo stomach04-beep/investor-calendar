@@ -159,6 +159,15 @@ def apply_date_stable_days(events: list[dict], prev: dict, today_utc_str: str) -
             ev["date_stable_days"] = 0
 
 
+#: 公開JSONから除外するイベントIDの接頭辞。
+#: fetch_earnings.py が銘柄ごとに作る決算イベントが該当する。
+#:   hold_earnings_*  … 保有株（例: hold_earnings_us_AAPL）
+#:   watch_earnings_* … 監視銘柄（例: watch_earnings_us_MA）
+#: どちらも「どの会社に関心があるか」そのものなので公開しない。
+#: 変えるときは fetch_earnings.py の prefix 生成側（is_watch 分岐）と必ず揃えること。
+PRIVATE_ID_PREFIXES = ("hold_earnings_", "watch_earnings_")
+
+
 def main() -> int:
     db_id = get_notion_db_id()
     client = NotionClient()
@@ -169,10 +178,25 @@ def main() -> int:
     log(f"  Notion DB から {len(pages)} ページ取得")
 
     events: list[dict] = []
+    private_count = 0
     for page in pages:
         ev = page_to_event(page, name_map)
-        if ev is not None:
-            events.append(ev)
+        if ev is None:
+            continue
+        # 銘柄ごとの個別決算は公開JSONに載せない（このリポジトリは PUBLIC）。
+        # fetch_earnings.py が作る hold_earnings_* / watch_earnings_* は
+        # 「どの会社の株を持っているか・見ているか」そのものなので、
+        # raw.githubusercontent.com 経由で誰でも読める場所へ出すと
+        # ポートフォリオの構成が公開されてしまう。
+        # アプリ側は Notion を直接読んで取得する（設定画面のNotionトークンが必要）。
+        # 「決算シーズン開始」のような一般イベントは id が違うので残る。
+        if str(ev.get("id", "")).startswith(PRIVATE_ID_PREFIXES):
+            private_count += 1
+            continue
+        events.append(ev)
+
+    if private_count:
+        log(f"  非公開のため除外: {private_count} 件（銘柄ごとの個別決算）")
 
     events.sort(key=lambda e: e["datetime_utc"])
 

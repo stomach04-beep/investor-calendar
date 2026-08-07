@@ -1,6 +1,6 @@
 {
   "schema_version": "2.0",
-  "generated_at": "2026-08-07T01:07:27Z",
+  "generated_at": "2026-08-07T22:09:50Z",
   "covered_years": [
     2026,
     2027,
@@ -1749,7 +1749,7 @@
       "is_estimated": false,
       "description": "非農業部門雇用者数(NFP)、失業率、平均時給。FRB政策の最重要指標。",
       "source_url": "https://www.bls.gov/schedule/news_release/empsit.htm",
-      "result": null,
+      "result": "非農業部門雇用者数 前月比-2.3万人 / 失業率 4.1%（2026年7月分）",
       "date_stable_days": 12
     },
     {

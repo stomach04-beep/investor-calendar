@@ -303,6 +303,40 @@ def warn_uncovered_targets(label: str, category: str, country: str,
         )
 
 
+TRUTH_RUNWAY_MIN_MONTHS = 2   # 真値表の残りがこの月数を切ったら警告（BLS の翌年分は例年10〜11月に公表）
+
+
+def warn_truth_runway(label: str, truth: dict, today: date | None = None,
+                      min_months: int = TRUTH_RUNWAY_MIN_MONTHS) -> bool:
+    """
+    真値表の「残り月数」を見て、切れる前に警告する（2026-08-22 追加）。
+
+    warn_uncovered_targets は真値表が切れた「後」にしか鳴らない（切れた月が来て初めて
+    分かる）。BLS の公式取得は海外IPからの 403 で恒常的に失敗しており、真値表が
+    事実上の唯一の日付源なので、切れる前に追記の催促が必要。
+    真値表の最終対象月 (y, m) と今日の差が min_months 未満なら警告して True を返す。
+    キーの先頭2要素を (年, 月) として扱う（GDP の (年, 四半期, 種別) は四半期→月に換算）。
+    """
+    if not truth:
+        warn(f"{label}: 真値表が空です")
+        return True
+    today = today or datetime.now(TZ_ET).date()
+    last = (0, 0)
+    for key in truth:
+        y, second = key[0], key[1]
+        m = second * 3 if len(key) >= 3 else second   # GDP は四半期 → その四半期の末月
+        last = max(last, (y, m))
+    remaining = (last[0] - today.year) * 12 + (last[1] - today.month)
+    if remaining < min_months:
+        warn(
+            f"{label}: 真値表の残りが {remaining} か月（最終対象月 {last[0]}-{last[1]:02d}）。"
+            f"BLS/BEA の翌年分公表スケジュールを確認して真値表を追記してください"
+            f"（切れると古い日付が残り続けます）。"
+        )
+        return True
+    return False
+
+
 def et_offset_str(d: date, hour: int = 8, minute: int = 30) -> str:
     """指定日の ET(America/New_York) のUTCオフセット文字列（例 '-04:00'）を返す。"""
     aware = datetime(d.year, d.month, d.day, hour, minute, tzinfo=TZ_ET)
@@ -424,6 +458,7 @@ def pce_fallback() -> list[dict]:
     for (tgt_y, tgt_m), pub_date in US_PCE_TRUTH.items():
         out.append(make_us_event("PCE", "米PCEデフレーター", tgt_m, pub_date, BEA_SOURCE_URL, tgt_y))
     log(f"  fetch_schedules[PCE]: 真値表フォールバックで {len(out)} 件生成")
+    warn_truth_runway("fetch_schedules[PCE]", US_PCE_TRUTH)
     record_fetch_warning("fetch_schedules[PCE]", f"BEA公式から取得できず真値表フォールバック使用（{len(out)} 件）")
     return out
 
@@ -485,6 +520,7 @@ def cpi_fallback() -> list[dict]:
     log(f"  fetch_schedules[CPI]: 真値表フォールバックで {len(out)} 件生成")
     record_fetch_warning("fetch_schedules[CPI]", f"BLS公式から取得できず真値表フォールバック使用（{len(out)} 件）")
     warn_uncovered_targets("fetch_schedules[CPI]", "CPI", "US", US_CPI_TRUTH)
+    warn_truth_runway("fetch_schedules[CPI]", US_CPI_TRUTH)
     return out
 
 
@@ -718,6 +754,7 @@ def ppi_fallback() -> list[dict]:
     log(f"  fetch_schedules[PPI]: フォールバックで {len(out)} 件生成（確定 {len(US_PPI_TRUTH)} 件）")
     record_fetch_warning("fetch_schedules[PPI]", f"BLS公式から取得できず真値表＋CPI翌営業日近似フォールバック使用（{len(out)} 件）")
     warn_uncovered_targets("fetch_schedules[PPI]", "PPI", "US", US_PPI_TRUTH)
+    warn_truth_runway("fetch_schedules[PPI]", US_PPI_TRUTH)
     return out
 
 
@@ -804,6 +841,7 @@ def gdp_fallback() -> list[dict]:
     """米GDP のフォールバック（BEA真値表からイベント生成）。"""
     out = [make_gdp_event(y, q, kind, d) for (y, q, kind), d in US_GDP_TRUTH.items()]
     log(f"  fetch_schedules[GDP]: 真値表フォールバックで {len(out)} 件生成")
+    warn_truth_runway("fetch_schedules[GDP]", US_GDP_TRUTH)
     record_fetch_warning("fetch_schedules[GDP]", f"BEA公式から取得できず真値表フォールバック使用（{len(out)} 件）")
     return out
 
@@ -906,6 +944,7 @@ def retail_fallback() -> list[dict]:
     """米小売売上高のフォールバック（Census真値表からイベント生成）。"""
     out = [make_retail_event(y, m, d) for (y, m), d in US_RETAIL_TRUTH.items()]
     log(f"  fetch_schedules[RETAIL]: 真値表フォールバックで {len(out)} 件生成")
+    warn_truth_runway("fetch_schedules[RETAIL]", US_RETAIL_TRUTH)
     record_fetch_warning("fetch_schedules[RETAIL]", f"Census公式から取得できず真値表フォールバック使用（{len(out)} 件）")
     return out
 

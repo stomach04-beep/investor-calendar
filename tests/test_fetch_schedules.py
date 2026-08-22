@@ -193,3 +193,30 @@ def test_seed_alias_covers_all_truth_months():
         assert ("CPI", "US", tgt_y, tgt_m) in fs._SEED_ID_ALIAS, f"CPI {tgt_y}-{tgt_m}"
     for (tgt_y, tgt_m) in fs.US_PPI_TRUTH:
         assert ("PPI", "US", tgt_y, tgt_m) in fs._SEED_ID_ALIAS, f"PPI {tgt_y}-{tgt_m}"
+
+
+# ── 真値表の残り月数 警告（2026-08-22 追加）────────────────────────────
+def test_truth_runway_warns_when_under_two_months():
+    """最終対象月 2026-11 に対し今日が 2026-10 なら残り1か月 → 警告する"""
+    truth = {(2026, 10): date(2026, 11, 10), (2026, 11): date(2026, 12, 10)}
+    assert fs.warn_truth_runway("test[CPI]", truth, today=date(2026, 10, 1)) is True
+
+
+def test_truth_runway_quiet_when_enough():
+    """最終対象月 2026-11 に対し今日が 2026-08 なら残り3か月 → 鳴らない"""
+    truth = {(2026, 10): date(2026, 11, 10), (2026, 11): date(2026, 12, 10)}
+    assert fs.warn_truth_runway("test[CPI]", truth, today=date(2026, 8, 22)) is False
+
+
+def test_truth_runway_handles_gdp_quarter_keys():
+    """GDP の (年, 四半期, 種別) キーは四半期末月に換算する（Q2→6月）"""
+    truth = {(2026, 2, "advance"): date(2026, 7, 30)}
+    assert fs.warn_truth_runway("test[GDP]", truth, today=date(2026, 3, 1)) is False   # 残り3か月
+    assert fs.warn_truth_runway("test[GDP]", truth, today=date(2026, 5, 1)) is True    # 残り1か月
+
+
+def test_truth_runway_runs_on_real_tables():
+    """本番の5つの真値表に対して例外なく動くこと（切れかけの警告自体はCIを落とさない。
+    実運用では sync の ::warning:: → health-watchdog の注釈監視 → LINE で届く）"""
+    for name in ("US_CPI_TRUTH", "US_PPI_TRUTH", "US_PCE_TRUTH", "US_RETAIL_TRUTH", "US_GDP_TRUTH"):
+        assert fs.warn_truth_runway(f"test[{name}]", getattr(fs, name), today=date(2026, 8, 22)) in (True, False)

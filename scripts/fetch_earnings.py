@@ -81,6 +81,11 @@ CROSS_CHECK_TOLERANCE_DAYS = 4
 # 1四半期の日数の目安（次の決算がどのあたりに来るかの当たりを付けるのに使う）
 QUARTER_DAYS = 91
 
+# 起点（前回発表日）から次の四半期を数えるときの猶予日数。
+# 決算当日〜直後は「前回発表 + 91日」がまだ今日より手前なので、そのまま数えると
+# 1つ先へ飛んでしまう。今日の15日前までは「まだその四半期」とみなす。
+ANCHOR_GRACE_DAYS = 15
+
 # J-Quants 予測ファイルがこの日数より古くなったら警告する（約1年ぶんの予測しかない）
 JQ_ESTIMATES_MAX_AGE_DAYS = 300
 
@@ -391,19 +396,42 @@ JQ_ESTIMATES_PATH = Path(__file__).resolve().parents[1] / "data" / "jq_earnings_
 def jq_estimates_map(today: date | None = None) -> dict[str, date]:
     """
     data/jq_earnings_jp.json（J-Quants 開示履歴からの予測日）を読み、
-    {4桁コード: 今日以降で最も近い予測日} を返す。ベストエフォート（無ければ空 dict）。
-    予測は「昨年同四半期の実開示日+364日」なので±数日ズレうる（is_estimated=true 前提）。
+    {4桁コード: 次回の予測日} を返す。ベストエフォート（無ければ空 dict）。
+
+    ファイルには銘柄ごとに4四半期ぶんの候補日（昨年同四半期の実開示日+364日）と、
+    起点になる last_disc（最後の実開示日）が入っている。候補を1つに絞る計算は
+    米国株の EDGAR 予測とまったく同じ pick_next_date（anchored）で行う。
+    last_disc が無い古いファイルのときだけ「今日以降で最も早い候補」に落ちる。
+    予測なので±数日ズレうる（is_estimated=true 前提）。
     """
     out: dict[str, date] = {}
     today = today or date.today()
     try:
         payload = json.loads(JQ_ESTIMATES_PATH.read_text(encoding="utf-8"))
+        last_disc = payload.get("last_disc") or {}
+        n_no_anchor = 0
         for code, dates in payload.get("estimates", {}).items():
-            future = sorted(d for d in dates if d >= today.isoformat())
-            if future:
-                out[code] = date.fromisoformat(future[0])
+            cands = []
+            for d in dates:
+                try:
+                    cands.append(date.fromisoformat(str(d)[:10]))
+                except (ValueError, TypeError):
+                    continue
+            anchor = None
+            try:
+                anchor = date.fromisoformat(str(last_disc[code])[:10])
+            except (KeyError, ValueError, TypeError):
+                n_no_anchor += 1
+            picked = pick_next_date(cands, today, anchor=anchor)
+            if picked is not None:
+                out[code] = picked
         gen = str(payload.get("generated_at") or "")
         log(f"  J-Quants 予測マップ {len(out)} 件 (generated_at={gen})")
+        if n_no_anchor:
+            # 起点が無い＝生成側が古い。素朴版に落ちているので数を出しておく
+            # （全滅なら build_earnings_estimates.py を作り直すサイン）
+            log(f"  ::warning::起点(last_disc)が無い銘柄 {n_no_anchor} 件 → "
+                f"その銘柄だけ「最も早い候補」で代用")
         # このファイルは手動再生成（jquants-bulk/build_earnings_estimates.py）で
         # 約1年ぶんの予測しか入っていない。切れると日本株の最終フォールバックが
         # 黙って効かなくなるので、古くなったら警告を出す（→ health-watchdog が LINE 通知）。
@@ -423,22 +451,44 @@ def jq_estimates_map(today: date | None = None) -> dict[str, date]:
     return out
 
 
+def pick_next_date(cands, today: date, anchor: date | None = None,
+                   rule: str = "anchored") -> date | None:
+    """候補日の中から「次回の決算発表日」を1つ選ぶ（日米・全ソース共通のロジック）。
+
+    cands  … 候補日（各過去実績 +364日）。今日より前のものは捨てる
+    anchor … 前回の実発表日。anchored ルールで「次の四半期の位置」を見積もる起点
+    rule="anchored"（既定）:
+      「anchor + 91日×n」（今日の15日前以降になる最小の n）に最も近い候補を選ぶ。
+      素朴に「今日以降で最も早い候補」を採ると、履歴に決算以外の開示が1件混ざる
+      だけで3ヶ月手前の日付を拾ってしまう。
+    rule="nearest" または anchor が無いとき:
+      今日以降で最も早い候補（比較検証用の素朴版・起点が取れないときの保険）。
+
+    アウトオブサンプル検証の差（2026-08-27 実測・詳細は README）:
+      米国株454件  ピタリ 44.1%→49.3% / ±7日 82.8%→91.2% / 平均ズレ 12.1日→4.9日
+      日本株137,593件 ピタリ 30.8%→33.4% / ±7日 89.2%→96.2% / 平均ズレ 8.9日→2.5日
+    """
+    future = sorted(c for c in set(cands) if c >= today)
+    if not future:
+        return None
+    if rule == "nearest" or anchor is None:
+        return future[0]
+    # 前回発表からいくつ四半期を進めれば「次の決算」になるかを見積もる。
+    # 15日の猶予は「決算日当日〜直後」にまだ前の四半期を指してしまうのを防ぐため。
+    n = 1
+    while anchor + timedelta(days=QUARTER_DAYS * n) < today - timedelta(days=ANCHOR_GRACE_DAYS):
+        n += 1
+    target = anchor + timedelta(days=QUARTER_DAYS * n)
+    return min(future, key=lambda c: abs((c - target).days))
+
+
 def next_from_history(past_dates: list[str], today: date,
                       cycle_days: int = 364, rule: str = "anchored") -> date | None:
     """過去の決算発表日（"YYYY-MM-DD" のリスト）から次回発表日を予測する。
 
-    土台は日本株の J-Quants 予測と同じ「昨年の同じ四半期の実発表日 + 364日」。
+    ルールは「昨年の同じ四半期の実発表日 + 364日」。
     364 = 52週ちょうどなので曜日が保たれる（決算発表は曜日のクセが強い）。
-
-    rule="anchored"（既定）:
-      候補（各過去日 + 364日）のうち、「前回発表日 + 91日×n」で見積もった
-      次の四半期の位置に最も近いものを選ぶ。
-      素朴に「今日以降で最も早い候補」を採ると、履歴に決算以外の開示が
-      1件混ざるだけで3ヶ月手前の日付を拾ってしまう。
-      米国株454件のアウトオブサンプル検証でピタリ率 44.1%→49.3%、
-      ±7日 82.8%→91.2%、平均ズレ 12.1日→4.9日。
-    rule="nearest":
-      今日以降で最も早い候補（比較検証用の素朴版）。
+    候補の絞り込みは pick_next_date（日米共通）に任せる。
 
     過去4本ぶん（＝1年分）に満たないときは予測しない（当てずっぽうになるため）。
     """
@@ -450,19 +500,9 @@ def next_from_history(past_dates: list[str], today: date,
             continue
     if len(days) < 4:
         return None
-    cands = sorted({d + timedelta(days=cycle_days) for d in days})
-    future = [c for c in cands if c >= today]
-    if not future:
-        return None
-    if rule == "nearest":
-        return future[0]
-    # 前回発表からいくつ四半期を進めれば「次の決算」になるかを見積もる
-    latest = max(days)
-    n = 1
-    while latest + timedelta(days=QUARTER_DAYS * n) < today - timedelta(days=15):
-        n += 1
-    target = latest + timedelta(days=QUARTER_DAYS * n)
-    return min(future, key=lambda c: abs((c - target).days))
+    # 候補は「各過去実績 +364日」。起点は最後に発表した日
+    return pick_next_date((d + timedelta(days=cycle_days) for d in days),
+                          today, anchor=max(days), rule=rule)
 
 
 JP_HOLIDAYS_PATH = Path(__file__).resolve().parents[1] / "data" / "jp_market_holidays.json"

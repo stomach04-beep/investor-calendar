@@ -125,40 +125,76 @@ def interpret_acceptance(acc: str) -> tuple[datetime | None, bool]:
     return None, False
 
 
-def earnings_times_for(cik: str) -> dict | None:
-    """1銘柄ぶんの発表時刻を推定して {"time":"HH:MM","n":件数,"hit":安定度} を返す。"""
+def _recent_8k_202(cik: str) -> list[dict]:
+    """8-K の Item 2.02（＝決算プレス）の提出を新しい順に返す。
+
+    返す各行: {"date": "YYYY-MM-DD"（発表日）, "acc": 受理時刻の生文字列}
+    日付は 8-K の reportDate（＝報告対象イベントの日＝発表日）を最優先で使う。
+    EDGAR は 17:30 ET 以降に受理した提出を翌営業日付で filingDate にするため、
+    filingDate をそのまま使うと引け後発表が1日後ろにズレることがある。
+    """
     try:
         d = _get_json(SUBMISSIONS_URL.format(cik=cik))
     except Exception as e:
         log(f"  EDGAR CIK{cik} 取得失敗: {type(e).__name__}: {e}")
-        return None
+        return []
     recent = (d.get("filings") or {}).get("recent") or {}
     forms = recent.get("form") or []
     items = recent.get("items") or []
     accs = recent.get("acceptanceDateTime") or []
-    times: list[str] = []
-    intraday = 0
-    seen = 0
+    reps = recent.get("reportDate") or []
+    fils = recent.get("filingDate") or []
+    rows: list[dict] = []
     for i, form in enumerate(forms):
         item = (items[i] if i < len(items) else "") or ""
         # Item 2.02 = Results of Operations（決算プレスの8-K）。"12.02" 等の誤検出を避ける
         if form != "8-K" or "2.02" not in item.split(","):
             continue
-        t, is_intraday = interpret_acceptance(accs[i] if i < len(accs) else "")
+        day = (reps[i] if i < len(reps) else "") or (fils[i] if i < len(fils) else "")
+        rows.append({"date": (day or "")[:10],
+                     "acc": (accs[i] if i < len(accs) else "") or ""})
+        if len(rows) >= SAMPLES:
+            break
+    return rows
+
+
+def earnings_facts_for(cik: str) -> dict | None:
+    """1銘柄ぶんの決算プレスの実績をまとめて返す。
+
+      {"time":"HH:MM"|None, "session":"AM"|"PM"|None, "n":件数, "spread":ブレ分,
+       "dates":["YYYY-MM-DD", ...]}   ← dates は新しい順の過去の発表日
+
+    時刻が推定できなくても dates（次回決算日の予測に使う）は返す。
+    """
+    rows = _recent_8k_202(cik)
+    if not rows:
+        return None
+    times: list[str] = []
+    intraday = 0
+    for r in rows:
+        t, is_intraday = interpret_acceptance(r["acc"])
         if t is not None:
             times.append(t.strftime("%H:%M"))
         elif is_intraday:
             intraday += 1
-        seen += 1
-        if seen >= SAMPLES:
-            break
     if len(times) >= MIN_SAMPLES:
-        return summarize_times(times)
-    if intraday >= MIN_SAMPLES:
+        out = summarize_times(times) or {}
+    elif intraday >= MIN_SAMPLES:
         # 分単位は分からないが「朝に発表している」ことは分かる（PEP 等）。
         # 時刻は呼び出し側の寄り前デフォルトに任せる。
-        return {"time": None, "session": "AM", "n": intraday, "spread": None}
-    return None
+        out = {"time": None, "session": "AM", "n": intraday, "spread": None}
+    else:
+        out = {"time": None, "session": None, "n": 0, "spread": None}
+    out["dates"] = [r["date"] for r in rows if r["date"]]
+    return out
+
+
+def earnings_times_for(cik: str) -> dict | None:
+    """発表時刻だけが要るとき用の薄いラッパ（時刻もセッションも不明なら None）。"""
+    r = earnings_facts_for(cik)
+    if not r or (r.get("time") is None and r.get("session") is None):
+        return None
+    return r
 
 
 def summarize_times(times: list[str]) -> dict | None:
@@ -192,25 +228,32 @@ def summarize_times(times: list[str]) -> dict | None:
 
 
 def us_earnings_time_map(symbols: list[str]) -> dict[str, dict]:
-    """{ティッカー: {"time":"HH:MM"(ET), "n":..., "hit":...}} を返す。ベストエフォート。"""
+    """{ティッカー: {"time","session","n","spread","dates"}} を返す。ベストエフォート。
+
+    時刻が推定できなかった銘柄も、過去の発表日（dates）が取れていれば返す
+    （fetch_earnings 側が「次回決算日の予測」に使うため）。
+    """
     cik = ticker_to_cik()
     if not cik:
         return {}
     out: dict[str, dict] = {}
     miss: list[str] = []
+    n_time = 0
     for sym in sorted({s.strip().upper() for s in symbols if s}):
         c = cik.get(sym)
         if not c:
             miss.append(sym)
             continue
-        r = earnings_times_for(c)
+        r = earnings_facts_for(c)
         if r:
             out[sym] = r
+            if r.get("time") or r.get("session"):
+                n_time += 1
         else:
             miss.append(sym)
         time.sleep(SLEEP_SEC)
-    log(f"  EDGAR 発表時刻: {len(out)} 銘柄で推定 / 不明 {len(miss)} 件"
-        + (f"（{', '.join(miss[:10])}）" if miss else ""))
+    log(f"  EDGAR 8-K実績: {len(out)} 銘柄取得（うち発表時刻を推定できたもの {n_time}）"
+        f" / 不明 {len(miss)} 件")
     return out
 
 

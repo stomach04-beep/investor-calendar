@@ -429,9 +429,13 @@ def jq_estimates_map(today: date | None = None) -> dict[str, date]:
         log(f"  J-Quants 予測マップ {len(out)} 件 (generated_at={gen})")
         if n_no_anchor:
             # 起点が無い＝生成側が古い。素朴版に落ちているので数を出しておく
-            # （全滅なら build_earnings_estimates.py を作り直すサイン）
-            log(f"  ::warning::起点(last_disc)が無い銘柄 {n_no_anchor} 件 → "
-                f"その銘柄だけ「最も早い候補」で代用")
+            # （全滅なら build_earnings_estimates.py を作り直すサイン）。
+            # ::warning:: は行頭でないと Actions が注釈として拾わないので字下げしない
+            msg = (f"J-Quants 予測の起点(last_disc)が無い銘柄 {n_no_anchor} 件 → "
+                   f"その銘柄だけ「最も早い候補」で代用。"
+                   f"jquants-bulk/build_earnings_estimates.py を実行して更新すること")
+            log(f"::warning::{msg}")
+            record_fetch_warning("fetch_earnings", msg)
         # このファイルは手動再生成（jquants-bulk/build_earnings_estimates.py）で
         # 約1年ぶんの予測しか入っていない。切れると日本株の最終フォールバックが
         # 黙って効かなくなるので、古くなったら警告を出す（→ health-watchdog が LINE 通知）。

@@ -1,6 +1,6 @@
 {
   "schema_version": "2.0",
-  "generated_at": "2026-09-01T00:47:40Z",
+  "generated_at": "2026-09-01T23:32:28Z",
   "covered_years": [
     2026,
     2027,
@@ -3191,6 +3191,21 @@
       "source_url": null,
       "result": null,
       "date_stable_days": 36
+    },
+    {
+      "id": "us_eia_2026-12-25",
+      "title": "EIA週次原油在庫",
+      "category": "EIA",
+      "country": "US",
+      "datetime_utc": "2026-12-30T15:30:00Z",
+      "datetime_local": "2026-12-30T10:30:00-05:00",
+      "timezone": "America/New_York",
+      "importance": 1,
+      "is_estimated": true,
+      "description": "米エネルギー情報局(EIA)の週次石油在庫統計（対象週: 2026-12-25 まで）。原油・ガソリン・留出油の在庫増減が発表され、原油(WTI)価格が最も素直に反応する定例イベント。",
+      "source_url": "https://www.eia.gov/petroleum/supply/weekly/",
+      "result": null,
+      "date_stable_days": 0
     },
     {
       "id": "us_fomc_minutes_2026-12-30",

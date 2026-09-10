@@ -114,6 +114,10 @@
     "EIA": {
       "label": "EIA原油在庫",
       "color": "#827717"
+    },
+    "GAMEEVENT": {
+      "label": "ゲーム発表会",
+      "color": "#AA00FF"
     }
   },
   "events": [

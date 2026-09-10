@@ -54,6 +54,7 @@ CATEGORY_TO_NOTION = {
     "BEIGE": "ベージュブック",
     "ANOMALY": "アノマリー",
     "EVENT": "その他イベント",
+    "GAMEEVENT": "ゲーム発表会",
 }
 NOTION_TO_CATEGORY = {v: k for k, v in CATEGORY_TO_NOTION.items()}
 

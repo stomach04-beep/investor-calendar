@@ -113,6 +113,10 @@ jobs:
         continue-on-error: true
         run: python scripts/fetch_eia.py
 
+      - name: fetch_nintendo_direct.py 実行（ニンテンドーダイレクトの放送予定・ベストエフォート）
+        continue-on-error: true
+        run: python scripts/fetch_nintendo_direct.py
+
       - name: フォールバック使用の可視化（サイレント失敗対策）
         # 各 fetch スクリプトがフォールバック/スキップに落ちると data/.fetch_warnings に
         # 印を残す（scripts/common.py の record_fetch_warning）。ジョブは緑のままだが、

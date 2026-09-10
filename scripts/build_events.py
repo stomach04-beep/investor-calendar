@@ -76,7 +76,8 @@ def build(target_years: list[int]) -> dict:
     seed_events = [
         e for e in seed.get("events", [])
         if not str(e.get("id", "")).startswith(
-            ("hold_earnings_", "watch_earnings_", "anomaly_", "us_eia_")
+            ("hold_earnings_", "watch_earnings_", "anomaly_", "us_eia_",
+             "nintendo_direct_")
         )
     ]
     covered = set(seed.get("covered_years", []))

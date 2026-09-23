@@ -133,3 +133,16 @@ def test_main_runs_offline(tmp_path, monkeypatch):
     summary = pd.read_csv(out / "summary.csv", encoding="utf-8-sig")
     assert {"A&B", "L&A&B", "C", "V"} <= set(summary["条件"])
     assert (out / "episodes.csv").exists()
+
+
+def test_summarize_separates_unresolved_episodes():
+    """直近の点灯（63日後がまだ無い）は 件数 に入るが 評価済件数 には入らない。"""
+    idx = pd.bdate_range("2020-01-01", periods=300)
+    spx = pd.Series(np.linspace(100, 130, 300), index=idx)
+    fwd = bb.forward_metrics(spx)
+    starts = pd.Series(False, index=idx)
+    starts.iloc[[10, 100, 290]] = True  # 290 は末尾から10日目＝未確定
+    universe = pd.Series(True, index=idx)
+    row = bb.summarize(fwd, starts, universe, 50, np.random.default_rng(0))
+    assert row["件数"] == 3
+    assert row["評価済件数"] == 2

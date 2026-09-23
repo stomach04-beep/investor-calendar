@@ -157,3 +157,19 @@ python scripts/fetch_boj.py
 python scripts/notion_upsert.py
 python scripts/notion_to_json.py
 ```
+
+## 研究用: S&P500 内部悪化シグナルのバックテスト
+
+`scripts/backtest_breadth.py` は Actions では動かさず、PC で手動実行する。
+「200日線上比率の急低下 × 指数高値圏」「COR1M 超低水準→急反転」などの後に
+S&P500 が平常時より悪かったかを、全営業日を基準線にして比較する。
+
+```bash
+pip install -r requirements.txt
+# S5TH（200日線上比率）の日足を TradingView / Barchart から CSV で書き出して渡す
+python scripts/backtest_breadth.py --breadth S5TH.csv --out backtest_out
+```
+
+- S&P500・VIX は yfinance、COR1M は Cboe 公式 CSV（失敗時 yfinance）から自動取得
+- `--breadth` を省くと breadth 系の条件はスキップし、COR1M・VIX だけで集計する
+- 条件の閾値は `--breadth-drop` `--cor-low` `--cor-high` などで変更できる（`-h` で一覧）

@@ -216,7 +216,8 @@ def summarize(fwd: pd.DataFrame, starts: pd.Series, universe: pd.Series,
     """universe（その条件が評価可能な日）を基準線にして比較する。"""
     base = fwd[universe]
     ev = fwd[starts & universe]
-    row = {"件数": int(len(ev))}
+    # 件数 は直近の未確定エピソードも含む。結果が出ているのは 評価済件数（63日後が確定した分）
+    row = {"件数": int(len(ev)), "評価済件数": int(ev[f"maxdd_{DD_WINDOW}d"].notna().sum())}
     for h in HORIZONS:
         col = f"ret_{h}d"
         e, b = ev[col].dropna().to_numpy(), base[col].dropna().to_numpy()
@@ -261,7 +262,7 @@ def print_summary(summary: pd.DataFrame) -> None:
     if summary.empty:
         print("評価できる条件がありません（データ不足）")
         return
-    show = ["条件", "件数"]
+    show = ["条件", "件数", "評価済件数"]
     for h in HORIZONS:
         show += [f"{h}日後平均%", f"{h}日後_基準%", f"{h}日後_p値"]
     show += ["最大下落_平均%", "最大下落_基準%", "10%下落率%", "10%下落_基準%"]
@@ -273,7 +274,7 @@ def print_summary(summary: pd.DataFrame) -> None:
         print(f"  {r['条件']:<8} {r['内容']}")
     print("\n読み方: 基準% はその条件を評価できた全営業日の平均。p値 は「シグナル後の平均が"
           "無作為抽出より低い」片側検定（小さいほど弱気シグナルとして有意）。"
-          "件数が 10 未満の行は参考程度に。")
+          "評価済件数 が 10 未満の行は参考程度に（件数 には結果が出る前の直近エピソードも入る）。")
 
 
 def print_latest(df: pd.DataFrame, cond: dict[str, pd.Series]) -> None:

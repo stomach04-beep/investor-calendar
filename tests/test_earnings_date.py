@@ -70,7 +70,7 @@ def _hold(**kw):
 def test_event_records_date_source():
     ev = fe.build_event(_hold(), date(2026, 10, 29))
     assert ev["date_source"] == "Nasdaq"
-    assert "Nasdaq公式" in ev["description"]
+    assert "Nasdaq" in ev["description"] and "確定" in ev["description"]
 
 
 def test_jpx_source_is_treated_as_confirmed():

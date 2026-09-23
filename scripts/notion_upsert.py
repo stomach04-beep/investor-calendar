@@ -19,7 +19,7 @@ from __future__ import annotations
 
 import argparse
 import sys
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -77,6 +77,36 @@ def allow_confirmed_earnings_update(ev: dict, existing_page: dict, name_map: dic
     return dt < (now_utc or datetime.now(timezone.utc))
 
 
+# 日付履歴に残す最大件数（rich_text は 2000 文字上限。1件 ≈ 40 文字）
+DATE_LOG_MAX_ENTRIES = 30
+
+
+def append_date_log(existing_log: str, ev: dict, today: date | None = None) -> str | None:
+    """決算イベントの「日付履歴」に今日の採用日と出どころを追記した全文を返す。
+
+    形式: 「2026-09-23:2026-10-29|Nasdaq見込み」を「 / 」で連結。
+    直前の記録と日付も出どころも同じなら追記しない（None を返す＝プロパティを触らない）。
+    目的: 何日前にどのソースがどの日付を出していたかを残し、決算通過後に
+    実際の発表日（EDGAR 8-K / J-Quants 開示実績）と突き合わせて
+    「どのソースがどれだけ当たるか」を数えられるようにする（公開JSONには出ない）。
+    """
+    if not str(ev.get("id", "")).startswith(EARNINGS_ID_PREFIXES):
+        return None
+    local = str(ev.get("datetime_local") or "")[:10]
+    src = str(ev.get("date_source") or "不明")
+    if not local:
+        return None
+    entries = [e.strip() for e in (existing_log or "").split(" / ") if e.strip()]
+    if entries:
+        last = entries[-1].split(":", 1)[-1]
+        if last == f"{local}|{src}":
+            return None
+    today = today or datetime.now(timezone.utc).date()
+    entries.append(f"{today.isoformat()}:{local}|{src}")
+    entries = entries[-DATE_LOG_MAX_ENTRIES:]
+    return " / ".join(entries)
+
+
 def find_id_property_name(client: NotionClient, db_id: str) -> tuple[dict, str]:
     """
     DBスキーマを取得して、ID 用プロパティの実名を特定する。
@@ -106,6 +136,15 @@ def find_property_by_type(props: dict, jp_name: str, expected_type: str) -> str:
         if name.strip() == jp_name and meta.get("type") == expected_type:
             return name
     raise RuntimeError(f"プロパティ '{jp_name}' (type={expected_type}) が見つかりません")
+
+
+def _optional_property(props: dict, jp_name: str, expected_type: str) -> str | None:
+    """あれば名前、無ければ None（必須でないプロパティ用）。"""
+    try:
+        return find_property_by_type(props, jp_name, expected_type)
+    except RuntimeError:
+        log(f"  プロパティ '{jp_name}' なし → この項目は書かない")
+        return None
 
 
 def build_properties_for_event(event: dict, name_map: dict[str, str]) -> dict:
@@ -188,6 +227,9 @@ def main() -> int:
         "local_time": find_property_by_type(schema_props, "現地時刻", "rich_text"),
         "timezone": find_property_by_type(schema_props, "タイムゾーン", "rich_text"),
         "description": find_property_by_type(schema_props, "説明", "rich_text"),
+        # 決算イベント専用: 採用した日付と出どころの履歴（後から出所別の的中率を採点する）。
+        # 無いDB（別環境・古いスキーマ）では None にして黙って通す
+        "date_log": _optional_property(schema_props, "日付履歴", "rich_text"),
         "source_url": find_property_by_type(schema_props, "ソースURL", "url"),
     }
 
@@ -213,6 +255,13 @@ def main() -> int:
         target_props = build_properties_for_event(ev, name_map)
 
         if existing_page:
+            # 決算イベントは「日付履歴」に今日の採用日と出どころを追記する
+            # （日付か出どころが変わったときだけ。プロパティが無いDBでは何もしない）
+            if name_map.get("date_log") and name_map["date_log"] in existing_page.get("properties", {}):
+                old_log = read_rich_text(existing_page["properties"].get(name_map["date_log"], {}))
+                new_log = append_date_log(old_log, ev)
+                if new_log is not None:
+                    target_props[name_map["date_log"]] = prop_rich_text(new_log)
             # 既存ページが確定値(is_estimated=false)なら、incoming の種別を問わず保護して触らない。
             # 提案書の受け入れ条件「翌朝の自動実行後も is_estimated=false 行が上書きされない」に対応。
             # 運用イメージ:
@@ -239,6 +288,10 @@ def main() -> int:
                     log(f"  update 失敗 {ev_id}: {type(e).__name__}: {e}")
                     skipped += 1
         else:
+            if name_map.get("date_log"):
+                first_log = append_date_log("", ev)
+                if first_log is not None:
+                    target_props[name_map["date_log"]] = prop_rich_text(first_log)
             if args.dry_run:
                 created += 1
             else:

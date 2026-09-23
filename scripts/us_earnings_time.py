@@ -182,9 +182,9 @@ def earnings_facts_for(cik: str) -> dict | None:
     elif intraday >= MIN_SAMPLES:
         # 分単位は分からないが「朝に発表している」ことは分かる（PEP 等）。
         # 時刻は呼び出し側の寄り前デフォルトに任せる。
-        out = {"time": None, "session": "AM", "n": intraday, "spread": None}
+        out = {"time": None, "earliest": None, "session": "AM", "n": intraday, "spread": None}
     else:
-        out = {"time": None, "session": None, "n": 0, "spread": None}
+        out = {"time": None, "earliest": None, "session": None, "n": 0, "spread": None}
     out["dates"] = [r["date"] for r in rows if r["date"]]
     return out
 
@@ -220,6 +220,10 @@ def summarize_times(times: list[str]) -> dict | None:
     med = mins[len(mins) // 2] if len(mins) % 2 else (mins[len(mins) // 2 - 1] + mins[len(mins) // 2]) // 2
     return {
         "time": f"{med // 60:02d}:{med % 60:02d}",
+        # 同セッションの受理時刻の最小値。8-K はプレスリリースの「後」に提出されるので
+        # （実測: JNJ 6:45発表→受理7:46、ITW 8:00→9:14、VLO 6:30→8:09、BR 7:00→7:59）
+        # 中央値は発表より遅い側に偏る。発表時刻の上限としては最小値がいちばん近い。
+        "earliest": f"{mins[0] // 60:02d}:{mins[0] % 60:02d}",
         "session": "AM" if session_am else "PM",
         "n": len(kept),
         # 代表時刻からのブレ幅（分）。大きいほど時刻が安定していない銘柄

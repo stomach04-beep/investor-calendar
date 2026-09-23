@@ -15,8 +15,8 @@ name: Investor Calendar Sync
 #                           米GDP(BEA)/米小売売上高(Census)/ISM(ルール計算) を取得（ベストエフォート）
 #   4b. fetch_anomalies.py: 相場アノマリー（節分天井・セルインメイ等）を暦計算で生成（AI呼び出しなし）
 #   4c. fetch_earnings.py : 保有株/ウォッチ銘柄の決算日時を取得
-#                           （日付=JPX公式/Nasdaq公式/yfinance/J-Quants予測、
-#                             時刻=J-Quants開示実績・SEC EDGARの8-K受理実績）
+#                           （日付=JPX公式/Nasdaq(時間帯あり=確定・なし=見込み)/yfinance/予測、
+#                             曜日のクセで補正。時刻=J-Quants開示実績・Yahooと8-K受理の早い方）
 #   4d. fetch_eia.py      : EIA週次石油在庫（毎週水曜10:30 ET＋EIA公式の祝日繰り下げ）
 #   5. notion_upsert.py   : Notion DB に upsert（is_estimated=false 行は保護）
 #   6. notion_to_json.py  : Notion → data/investor_events.json 再生成

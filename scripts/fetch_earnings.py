@@ -8,9 +8,12 @@
 データ源（日付）:
   - JPX 決算発表予定Excel（日本株の第一候補）: 取引所公式の発表予定＝確定扱い(is_estimated=false)。
     ただし直近約1ヶ月分しか掲載されない
-  - Nasdaq 公式決算カレンダー（米国株の第一候補・scripts/nasdaq_earnings.py）:
-    約5週間先まで掲載。寄り前/引け後の別も分かる
-  - yfinance（上記の圏外フォールバック）: Ticker.calendar["Earnings Date"]（日付のみ採用）
+  - Nasdaq 決算カレンダー（米国株の第一候補・scripts/nasdaq_earnings.py）:
+    約5週間先まで掲載。寄り前/引け後の時間帯が付いた行＝会社確認済み＝確定。
+    時間帯の無い行は「昨年+364日」の機械予測が大半なので「Nasdaq見込み」（推定扱い）
+  - yfinance（上記の圏外フォールバック）: get_earnings_dates の直近未来行
+  - 曜日のクセ（直近8回すべて同じ曜日）: 確定以外の日付がその曜日から外れていたら
+    ±3日以内で寄せる（米国株92%・日本株82%が次回もその曜日）
   - J-Quants 予測日 data/jq_earnings_jp.json（日本株の最終フォールバック）:
     jquants-bulk/build_earnings_estimates.py が10年開示履歴から生成した
     「昨年同四半期の実開示日+364日」の予測。JPX予定Excelは直近約1ヶ月分しか
@@ -21,7 +24,9 @@
   「その銘柄が過去いつも何時に出しているか」から埋める。何ヶ月先の予定にも使える。
   - 日本株: J-Quants の開示時刻実績 data/jq_earnings_jp.json の disc_times
     （実績では 15:30 が45%・16:00 が15%で、従来の決め打ち 15:00 は7%しかなかった）
-  - 米国株: SEC EDGAR の 8-K(Item 2.02) 受理時刻の実績（scripts/us_earnings_time.py）
+  - 米国株: SEC EDGAR の 8-K(Item 2.02) 受理時刻の最小値（発表より遅い側の上限）と
+    Yahoo の過去実績の時刻（時の位で切り捨て＝早い側）の早い方（_pick_us_time）。
+    通知が発表の後に鳴らないよう早い側に外す。
     取れない銘柄は寄り前=07:00 ET / 引け後・不明=16:00 ET の既定値
 
 役割分担（既存パイプラインの思想を踏襲）:
@@ -88,6 +93,23 @@ ANCHOR_GRACE_DAYS = 15
 
 # J-Quants 予測ファイルがこの日数より古くなったら警告する（約1年ぶんの予測しかない）
 JQ_ESTIMATES_MAX_AGE_DAYS = 300
+
+# 「確定」と言ってよい日付の出どころ。
+#   JPX    … 東証に会社が登録した発表予定日
+#   Nasdaq … Nasdaq 決算カレンダーのうち「寄り前/引け後」の時間帯が付いている行
+#            （＝会社が確認した日程）。時間帯の無い行は 2,889 行中 2,058 行が
+#            「昨年の発表日 +364日」ちょうど＝機械予測なので「Nasdaq見込み」として区別する
+#            （2026-09-23 実測。AAPL/MA/ICE/HSY/KMB など主力株も時間帯なし＝見込みだった）
+CONFIRMED_SOURCES = ("JPX", "Nasdaq")
+
+# 曜日のクセの判定に使う直近の発表回数。この回数すべて同じ曜日なら「クセあり」とみなす。
+# 実測（2026-09-23）: 直前8回が全部同じ曜日のとき、次回もその曜日だった率は
+#   米国株 92%（EDGAR 8-K 実績・43銘柄）／日本株 82%（J-Quants 10年開示履歴）。
+#   7/8 だと 80%／68%、6/8 だと 63%／55% に落ちるので「8回全部」だけを使う。
+# Yahoo の予定日はこのクセを無視することがある（NVDA: 水曜8/8 なのに火曜を返した）。
+HABIT_SAMPLES = 8
+# クセの曜日へ寄せるのは、採用日から何日以内にその曜日があるときだけ
+HABIT_MAX_SHIFT_DAYS = 3
 
 # ⚠️ このリポジトリは公開。GitHub Actions の実行ログも誰でも読める。
 # 銘柄名・ティッカー入りの行をそのまま出すと保有銘柄が丸見えになるため
@@ -282,6 +304,63 @@ def _yf_next_row(tk) -> tuple[date | None, str | None]:
         return ix.date(), session
     except Exception:
         return None, None
+
+
+def _yf_past_times(df, today_et: date) -> dict[str, str | None]:
+    """get_earnings_dates の過去行から、セッション別の「Yahoo が示す発表時刻」を返す。
+
+    返り値 {"AM": "HH:MM"|None, "PM": "HH:MM"|None}（直近4件の最頻値）。
+    Yahoo の時刻は「時の位で切り捨て」た粗い値（実測: JNJ 6:45発表→06:00、
+    AAPL 16:30→16:00、ITW 8:00→08:00、MA 8:00→08:00）で、発表より遅くはならない。
+    8-K 受理時刻（発表より遅い側）と組み合わせて「早い方」を採るための材料。
+    00:00 は時刻不明のプレースホルダなので使わない。"""
+    out: dict[str, str | None] = {"AM": None, "PM": None}
+    try:
+        past = sorted((ix for ix in df.index if ix.date() < today_et), reverse=True)
+        for sess in ("AM", "PM"):
+            counts: dict[str, int] = {}
+            n = 0
+            for ix in past:
+                if ix.hour == 0 and ix.minute == 0:
+                    continue
+                if ("AM" if ix.hour < 12 else "PM") != sess:
+                    continue
+                t = f"{ix.hour:02d}:{ix.minute:02d}"
+                counts[t] = counts.get(t, 0) + 1
+                n += 1
+                if n >= 4:
+                    break
+            if counts:
+                out[sess] = max(counts, key=lambda t: counts[t])
+    except Exception:
+        pass
+    return out
+
+
+def yf_earnings_info(symbol: str) -> dict:
+    """米国株向け: yfinance から次回決算の (日付, セッション) と過去の発表時刻をまとめて返す。
+
+    返り値 {"date": date|None, "session": "AM"/"PM"/None, "times": {"AM":..,"PM":..}}
+    get_earnings_dates は1回しか呼ばない（日付と時刻で2回呼ばない）。"""
+    info: dict = {"date": None, "session": None, "times": {"AM": None, "PM": None}}
+    if not symbol:
+        return info
+    try:
+        import yfinance as yf
+        tk = yf.Ticker(symbol)
+        df = tk.get_earnings_dates(limit=16)
+        if df is None or len(df) == 0:
+            return info
+        today_et = datetime.now(TZ_ET).date()
+        info["times"] = _yf_past_times(df, today_et)
+        future = sorted(ix for ix in df.index if ix.date() >= today_et)
+        if future:
+            ix = future[0]
+            info["date"] = ix.date()
+            info["session"] = None if (ix.hour == 0 and ix.minute == 0) else ("AM" if ix.hour < 12 else "PM")
+    except Exception as e:
+        log(f"  yfinance {symbol} 取得失敗: {type(e).__name__}: {e}")
+    return info
 
 
 def yf_next_earnings(symbol: str, want_session: bool = False) -> tuple[date | None, str | None]:
@@ -542,6 +621,72 @@ def jp_closed_days() -> set[date]:
     return _jp_closed
 
 
+def closed_days(market: str, years: tuple[int, ...]) -> set[date]:
+    """市場の休場日（祝日）の集合。土日は含まない（呼び出し側で weekday を見る）。"""
+    if market == "日本":
+        return jp_closed_days()
+    try:
+        from fetch_schedules import us_federal_holidays  # 遅延import（重いので必要時だけ）
+        out: set[date] = set()
+        for y in years:
+            out |= us_federal_holidays(y)
+        return out
+    except Exception:
+        return set()
+
+
+def is_open_day(d: date, market: str) -> bool:
+    """その日に市場が開いているか（土日・祝日でない）。"""
+    return d.weekday() < 5 and d not in closed_days(market, (d.year,))
+
+
+WEEKDAY_JA = "月火水木金土日"
+
+
+def weekday_habit(past_dates) -> int | None:
+    """直近 HABIT_SAMPLES 回の実発表日が全部同じ曜日ならその曜日（0=月）を返す。
+
+    実測（2026-09-23）: 8回全部同じ曜日なら次回もその曜日だった率は
+    米国株 92%・日本株 82%。7/8 以下は当たらないので「全部」だけを使う。
+    past_dates は "YYYY-MM-DD" か date の列（順不同でよい。新しい順に8件使う）。"""
+    days: list[date] = []
+    for d in past_dates or []:
+        try:
+            days.append(d if isinstance(d, date) else date.fromisoformat(str(d)[:10]))
+        except (ValueError, TypeError):
+            continue
+    days = sorted(set(days), reverse=True)[:HABIT_SAMPLES]
+    if len(days) < HABIT_SAMPLES:
+        return None
+    wds = {d.weekday() for d in days}
+    return wds.pop() if len(wds) == 1 else None
+
+
+def adjust_to_habit_weekday(ed: date, past_dates, market: str, name: str) -> tuple[date, str | None]:
+    """未確定の予定日を、その銘柄の「曜日のクセ」に合わせて寄せる。
+
+    寄せるのは (1) 直近8回が全部同じ曜日 (2) 採用日がその曜日でない
+    (3) ±HABIT_MAX_SHIFT_DAYS 日以内にその曜日の営業日がある、の3つが揃ったときだけ。
+    確定ソース（JPX / Nasdaq会社確認済み）の日付には使わない（呼び出し側で制御）。
+    例: NVDA は直近8回すべて水曜なのに Yahoo が火曜 2026-11-17 を返した → 11-18(水) へ。
+    返り値は (日付, 説明欄に出す注記|None)。"""
+    wd = weekday_habit(past_dates)
+    if wd is None or ed.weekday() == wd:
+        return ed, None
+    cands = [ed + timedelta(days=k) for k in range(-HABIT_MAX_SHIFT_DAYS, HABIT_MAX_SHIFT_DAYS + 1)
+             if k != 0 and (ed + timedelta(days=k)).weekday() == wd]
+    if not cands:
+        return ed, None
+    moved = cands[0]
+    if not is_open_day(moved, market):
+        return ed, None  # クセの曜日が休場日なら会社も別の日にするはず。触らない
+    note = (f"曜日のクセ（直近{HABIT_SAMPLES}回すべて{WEEKDAY_JA[wd]}曜）に合わせて"
+            f" {ed.strftime('%m/%d')}({WEEKDAY_JA[ed.weekday()]}) → "
+            f"{moved.strftime('%m/%d')}({WEEKDAY_JA[wd]}) に寄せた")
+    detail_log(f"    {name}: {note}")
+    return moved, note
+
+
 def snap_to_open_day(ed: date, market: str, name: str) -> date:
     """決算日が市場の休場日なら翌営業日へずらす。
 
@@ -550,15 +695,7 @@ def snap_to_open_day(ed: date, market: str, name: str) -> date:
     +364日で 2026-11-03 になるが、これは文化の日で東証は休場）。
     土日も同じ理屈でずらす。ずらす先は「次に開く日」。
     """
-    closed = jp_closed_days() if market == "日本" else set()
-    us_holidays: set[date] = set()
-    if market != "日本":
-        try:
-            from fetch_schedules import us_federal_holidays  # 遅延import（重いので必要時だけ）
-            us_holidays = us_federal_holidays(ed.year) | us_federal_holidays(ed.year + 1)
-        except Exception:
-            us_holidays = set()
-    closed = closed | us_holidays
+    closed = closed_days(market, (ed.year, ed.year + 1))
     moved = ed
     for _ in range(10):
         if moved.weekday() < 5 and moved not in closed:
@@ -586,6 +723,23 @@ def _future_only(ed: date | None, today: date, label: str, name: str) -> date | 
         detail_log(f"    {name}: {label} が土日 {ed} を返したため不採用（次の候補へ）")
         return None
     return ed
+
+
+def jq_recent_map() -> dict[str, list[str]]:
+    """data/jq_earnings_jp.json の recent_disc（銘柄ごとの直近8回の実開示日）を読む。
+    曜日のクセ補正（adjust_to_habit_weekday）の材料。無ければ空 dict（＝補正しない）。"""
+    try:
+        payload = json.loads(JQ_ESTIMATES_PATH.read_text(encoding="utf-8"))
+        out = {c: v for c, v in (payload.get("recent_disc") or {}).items() if isinstance(v, list)}
+        if not out:
+            log("  J-Quants 直近開示日(recent_disc)なし → 曜日のクセ補正は日本株では効かない"
+                "（jquants-bulk/build_earnings_estimates.py を実行して更新すること）")
+        return out
+    except FileNotFoundError:
+        return {}
+    except Exception as e:
+        log(f"  J-Quants 直近開示日の読込失敗: {type(e).__name__}: {e}")
+        return {}
 
 
 def jq_disc_time_map() -> dict[str, str]:
@@ -628,7 +782,7 @@ def build_event(h: dict, edate: date) -> dict:
     ticker = h["ticker"]
     # JPX（取引所公式の発表予定）由来の日付は確定扱い＝is_estimated=false にする。
     # yfinance / J-Quants予測 由来は従来どおり推定扱い（毎朝の自動更新で追従させる）。
-    confirmed = h.get("src") == "JPX"
+    confirmed = h.get("src") in CONFIRMED_SOURCES
     # ウォッチ銘柄（保有外）は id を watch_earnings_* にして保有株と区別する
     prefix = "watch_earnings" if h.get("is_watch") else "hold_earnings"
     kind = "ウォッチ銘柄" if h.get("is_watch") else "保有株"
@@ -657,9 +811,13 @@ def build_event(h: dict, edate: date) -> dict:
         local = f"{edate.isoformat()}T{hh:02d}:{mm:02d}:00{off}"
         tz = "America/New_York"
         src = f"https://finance.yahoo.com/quote/{sym}"
+    sess = session_label(market, hh, mm)
+    h = dict(h)
+    h["session_label"] = sess
     return {
         "id": ev_id,
-        "title": f"{name} 決算",
+        # 件名に時間帯を入れる（通知の一覧でも「引け後＝日本では翌朝」が一目で分かる）
+        "title": f"{name} 決算（{sess}）",
         "category": "EARNINGS",
         "country": country,
         "datetime_utc": to_utc_z(local),
@@ -674,7 +832,7 @@ def build_event(h: dict, edate: date) -> dict:
         # 後から「どのソースが何日ズレたか」を数えられるようにするための記録で、
         # 説明欄にも出す（Notion DB は非公開なのでここは伏せない）。
         "date_source": h.get("src") or "不明",
-        "description": _describe(kind, name, h),
+        "description": _describe(kind, name, h, local, tz),
         "source_url": src,
         "result": None,
     }
@@ -682,25 +840,70 @@ def build_event(h: dict, edate: date) -> dict:
 
 # 日付ソースの説明（Notion の説明欄・アプリの詳細画面に出る）
 SOURCE_LABELS = {
-    "JPX": "JPX（東証）公式の発表予定日",
-    "Nasdaq": "Nasdaq公式決算カレンダーの予定日",
-    "yfinance": "Yahoo Finance の予定日（推定を含む）",
-    "JQ予測": "過去の開示実績からの予測日（昨年同四半期+364日）",
-    "EDGAR予測": "SEC 8-K の発表実績からの予測日（昨年同四半期+364日）",
+    "JPX": "確定＝JPX（東証）に会社が登録した発表予定日",
+    "Nasdaq": "確定＝Nasdaq決算カレンダーで会社確認済み（時間帯あり）",
+    "Nasdaq見込み": "見込み＝Nasdaq決算カレンダーの時間帯なし行（昨年+364日の機械予測が大半）",
+    "yfinance": "見込み＝Yahoo Finance の予定日（推定を含む）",
+    "JQ予測": "予測＝過去の開示実績から（昨年同四半期+364日）",
+    "EDGAR予測": "予測＝SEC 8-K の発表実績から（昨年同四半期+364日）",
 }
 
 
-def _describe(kind: str, name: str, h: dict) -> str:
-    """イベントの説明文。出どころと、他ソースとの食い違いを明記する。"""
+def session_label(market: str, hh: int, mm: int) -> str:
+    """発表時刻から時間帯の呼び名を返す（件名・説明欄に出す）。
+
+    米国: 寄り前(<9:30 ET) / 場中 / 引け後(>=16:00 ET)
+    日本: 寄り前(<9:00) / 場中 / 昼休み(11:30-12:30) / 引け後(>=15:30。東証は 2024-11 から
+          15:30 引けなので、従来の既定 15:00 は「場中」になる点に注意)"""
+    m = hh * 60 + mm
+    if market == "日本":
+        if m < 9 * 60:
+            return "寄り前"
+        if m >= 15 * 60 + 30:
+            return "引け後"
+        if 11 * 60 + 30 <= m <= 12 * 60 + 30:
+            return "昼休み"
+        return "場中"
+    if m < 9 * 60 + 30:
+        return "寄り前"
+    if m >= 16 * 60:
+        return "引け後"
+    return "場中"
+
+
+def _jst_str(local_iso: str) -> str:
+    """現地日時ISO文字列を「10/30(金) 05:30」形式の日本時間にする。"""
+    dt = datetime.fromisoformat(local_iso).astimezone(TZ_JST)
+    return f"{dt.month}/{dt.day}({WEEKDAY_JA[dt.weekday()]}) {dt:%H:%M}"
+
+
+def _describe(kind: str, name: str, h: dict, local_iso: str, tz: str) -> str:
+    """イベントの説明文。時間帯・日本時間・出どころ（確度）・時刻の根拠・補正の有無を明記する。
+
+    例: 保有株の決算発表予定（アップル）。米国 10/29(木) 引け後 16:00 ET ＝ 日本時間 10/30(金) 05:00。
+        見込み＝Nasdaq決算カレンダーの時間帯なし行（…）。予定日は変更される場合があります。
+        時刻は実績から（Yahoo 16:00／8-K受理 16:30〜16:30。発表はこの間）。"""
     src = h.get("src") or "不明"
     label = SOURCE_LABELS.get(src, f"出典 {src}")
-    tail = "" if src == "JPX" else "。予定日は変更される場合があります"
+    dt = datetime.fromisoformat(local_iso)
+    where = "日本" if tz == "Asia/Tokyo" else "米国"
+    unit = "" if tz == "Asia/Tokyo" else " ET"
+    when = (f"{where} {dt.month}/{dt.day}({WEEKDAY_JA[dt.weekday()]}) "
+            f"{h.get('session_label', '')} {dt:%H:%M}{unit}")
+    if tz != "Asia/Tokyo":
+        when += f" ＝ 日本時間 {_jst_str(local_iso)}"
+    parts = [f"{kind}の決算発表予定（{name}）", when, label]
+    if src not in CONFIRMED_SOURCES:
+        parts[-1] += "。予定日は変更される場合があります"
+    if h.get("time_note"):
+        parts.append(f"時刻は実績から（{h['time_note']}）")
+    if h.get("habit_note"):
+        parts.append(h["habit_note"])
     gap = h.get("cross_gap")
-    warn = ""
     if gap:
-        warn = (f"。⚠️ 過去実績からの予測とは{abs(gap)}日ズレています"
-                f"（{'後ろ' if gap > 0 else '前'}倒し方向）")
-    return f"{kind}の決算発表予定（{name}）。{label}{tail}{warn}。"
+        parts.append(f"⚠️ 過去実績からの予測とは{abs(gap)}日ズレています"
+                     f"（{'後ろ' if gap > 0 else '前'}倒し方向）")
+    return "。".join(parts) + "。"
 
 
 # ----------------------------------------------------------------------
@@ -804,6 +1007,29 @@ def archive_stale(client: NotionClient, cal_db_id: str, current_ids: set[str], d
 # ----------------------------------------------------------------------
 # メイン
 # ----------------------------------------------------------------------
+def _pick_us_time(erow: dict, yinfo: dict, session: str | None) -> tuple[str | None, str, str | None]:
+    """米国株の発表時刻を「早い側の上限」で決める。返り値 (HH:MM|None, 出どころ, 説明欄の根拠)。
+
+    材料は2つで、どちらも実際の発表時刻を挟む:
+      ・8-K 受理時刻（EDGAR）… 発表より必ず遅い（提出は発表の後）。同セッションの最小値が上限。
+        中央値だと JNJ +61分・ITW +74分・VLO +99分・BR +59分 遅い（2026-09-23 実測）
+      ・Yahoo の過去実績の時刻 … 「時の位で切り捨て」た粗い値で、発表より遅くはならない
+        （JNJ 6:45→06:00、AAPL 16:30→16:00、ITW 8:00→08:00）
+    通知は「発表の後に鳴る」のがいちばん困るので、両方あるときは早い方を採る。
+    実測5銘柄（JNJ/ITW/VLO/BR/LMT）で遅れゼロ・最大45分早いだけになった。"""
+    earliest = erow.get("earliest") or erow.get("time")
+    yt = (yinfo.get("times") or {}).get(session) if session else None
+    if earliest and yt:
+        chosen = min(earliest, yt)
+        med = erow.get("time") or earliest
+        return chosen, "Yahoo+EDGAR", f"Yahoo {yt}／8-K受理 {earliest}〜{med}。発表はこの間"
+    if earliest:
+        return earliest, "EDGAR実績", f"8-K受理 {earliest}（発表はこれより前のことがある）"
+    if yt:
+        return yt, "Yahoo実績", f"Yahoo実績 {yt}"
+    return None, "既定", None
+
+
 def _resolve_dates(holds: list[dict]) -> tuple[list[dict], list[dict]]:
     """各保有株の決算「日」と「時刻」を解決する。
 
@@ -821,10 +1047,12 @@ def _resolve_dates(holds: list[dict]) -> tuple[list[dict], list[dict]]:
     jpx: dict[str, date] = {}
     jq: dict[str, date] = {}
     jq_times: dict[str, str] = {}
+    jq_recent: dict[str, list[str]] = {}
     if any(h["market"] == "日本" for h in holds):
         jpx = jpx_earnings_map()
         jq = jq_estimates_map()
         jq_times = jq_disc_time_map()
+        jq_recent = jq_recent_map()
     us_syms = sorted({(h["ticker"] or "").strip().upper()
                       for h in holds if h["market"] != "日本"})
     nas: dict[str, dict] = {}
@@ -847,6 +1075,9 @@ def _resolve_dates(holds: list[dict]) -> tuple[list[dict], list[dict]]:
         alt: date | None = None      # 別ソースの独立予測（クロスチェック用）
         src = ""
         time_src = "既定"
+        time_note: str | None = None   # 説明欄に出す時刻の根拠
+        habit_note: str | None = None  # 曜日のクセで寄せたときの注記
+        past_dates: list[str] = []     # 曜日のクセ判定に使う実発表日
         if is_jp:
             code = to_jp_code(h["ticker"])
             alt = jq.get(code)  # J-Quants 開示履歴からの予測（今日以降で絞り込み済み）
@@ -863,22 +1094,30 @@ def _resolve_dates(holds: list[dict]) -> tuple[list[dict], list[dict]]:
                 # 最終フォールバック: J-Quants 開示履歴からの予測日（±数日ズレうる）
                 ed, src = alt, "JQ予測"
             # 時刻は日付の出どころに関係なく、その銘柄の開示実績を使う
+            # （J-Quants の DiscTime は TDnet の開示時刻そのもの＝分単位で正確）
             if jq_times.get(code):
                 time_hhmm, time_src = jq_times[code], "JQ実績"
+                time_note = f"TDnet開示実績 {time_hhmm}"
+            past_dates = jq_recent.get(code, [])
         else:
             usym = (h["ticker"] or "").strip().upper()
             erow = edgar.get(usym)
             # EDGAR の 8-K(2.02) 実績から作る独立予測（昨年同四半期+364日）
             alt = next_from_history((erow or {}).get("dates") or [], today_et)
+            past_dates = (erow or {}).get("dates") or []
             nrow = nas.get(usym)
             if nrow and nrow["date"] >= today_et:
-                # Nasdaq 公式カレンダー（掲載範囲内＝約5週間先まで）を優先
-                ed, session, src = nrow["date"], nrow["session"], "Nasdaq"
+                # Nasdaq カレンダー（掲載範囲内＝約5週間先まで）を優先。
+                # 時間帯（寄り前/引け後）が付いていれば会社確認済み＝確定、
+                # 無ければ昨年+364日の機械予測が大半なので「見込み」として区別する
+                ed, session = nrow["date"], nrow["session"]
+                src = "Nasdaq" if session else "Nasdaq見込み"
+            # yfinance は日付が要らなくても呼ぶ（過去の発表時刻＝時刻の下限に使う）
+            yinfo = yf_earnings_info(sym)
             if ed is None:
-                yd, ysess = yf_next_earnings(sym, want_session=True)
-                yd = _future_only(yd, today_et, "yfinance", name)
+                yd = _future_only(yinfo["date"], today_et, "yfinance", name)
                 if yd is not None:
-                    ed, session, src = yd, ysess, "yfinance"
+                    ed, session, src = yd, yinfo["session"], "yfinance"
             if ed is None and alt is not None:
                 # 公式カレンダーの圏外（約5週より先）で yfinance も駄目なときの受け皿。
                 # 銘柄自身の過去の発表日から作るので何ヶ月先でも埋まる。
@@ -891,15 +1130,21 @@ def _resolve_dates(holds: list[dict]) -> tuple[list[dict], list[dict]]:
                                f"カレンダー({session})が不一致 → 時刻は既定値を使用")
                 else:
                     session = session or erow.get("session")
-                    if erow.get("time"):
-                        time_hhmm, time_src = erow["time"], "EDGAR実績"
+                    time_hhmm, time_src, time_note = _pick_us_time(erow, yinfo, session)
+            elif session:
+                yt = (yinfo.get("times") or {}).get(session)
+                if yt:
+                    time_hhmm, time_src, time_note = yt, "Yahoo実績", f"Yahoo実績 {yt}"
         if ed is None:
             missing.append(h)
             detail_log(f"  {name}({h['ticker']}): 決算日が取得できず（スキップ）")
             continue
-        # 公式以外（推定・予測）の日付は、休場日に当たっていたら翌営業日へずらす。
-        # 公式（JPX/Nasdaq）は取引所が出した日程そのものなので触らない。
-        if src not in ("JPX", "Nasdaq"):
+        # 確定（JPX / Nasdaq会社確認済み）以外の日付は、
+        #   (1) 銘柄の曜日のクセ（直近8回すべて同じ曜日）に合わせて寄せ、
+        #   (2) 休場日に当たっていたら翌営業日へずらす。
+        # 確定は会社が出した日程そのものなので触らない。
+        if src not in CONFIRMED_SOURCES:
+            ed, habit_note = adjust_to_habit_weekday(ed, past_dates, h["market"], name)
             ed = snap_to_open_day(ed, h["market"], name)
         # クロスチェック: 採用した日付と、独立に作った実績予測を突き合わせる。
         # ズレていても落とさない（どちらが正しいかは決められない）。
@@ -921,6 +1166,8 @@ def _resolve_dates(holds: list[dict]) -> tuple[list[dict], list[dict]]:
         h2["cross_gap"] = gap        # None か、実績予測との日数差
         h2["session"] = session      # 'AM'/'PM'/None（時刻の既定値の出し分けに使う）
         h2["time_hhmm"] = time_hhmm  # "HH:MM"/None（build_event が使う）
+        h2["time_note"] = time_note  # 説明欄に出す時刻の根拠
+        h2["habit_note"] = habit_note
         resolved.append(h2)
         sess_label = f" [{session}]" if session else ""
         detail_log(f"  {name}({h['ticker']}) -> {ed} [{src}]{sess_label} "
@@ -941,9 +1188,9 @@ def _log_source_mix(resolved: list[dict]) -> None:
     mix: dict[str, int] = {}
     for h in resolved:
         mix[h.get("src") or "不明"] = mix.get(h.get("src") or "不明", 0) + 1
-    official = sum(v for k, v in mix.items() if k in ("JPX", "Nasdaq"))
+    official = sum(v for k, v in mix.items() if k in CONFIRMED_SOURCES)
     detail = " / ".join(f"{k} {v}" for k, v in sorted(mix.items(), key=lambda kv: -kv[1]))
-    log(f"  日付ソース内訳: {detail} （公式 {official}/{len(resolved)}件 "
+    log(f"  日付ソース内訳: {detail} （確定 {official}/{len(resolved)}件 "
         f"= {official * 100 // len(resolved)}%）")
     warn = sum(1 for h in resolved if h.get("cross_gap"))
     if warn:

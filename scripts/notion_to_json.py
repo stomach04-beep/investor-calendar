@@ -163,9 +163,11 @@ def apply_date_stable_days(events: list[dict], prev: dict, today_utc_str: str) -
 #: fetch_earnings.py が銘柄ごとに作る決算イベントが該当する。
 #:   hold_earnings_*  … 保有株（例: hold_earnings_us_AAPL）
 #:   watch_earnings_* … 監視銘柄（例: watch_earnings_us_MA）
-#: どちらも「どの会社に関心があるか」そのものなので公開しない。
+#:   private_*        … Notion に手で入れる自分用の予定（例: private_yutai_cross_2026-11）
+#: どれも「どの会社に関心があるか」そのものなので公開しない。
+#: private_* は JSON に出ないので、build_events の年シフトで翌年へ複製されることもない。
 #: 変えるときは fetch_earnings.py の prefix 生成側（is_watch 分岐）と必ず揃えること。
-PRIVATE_ID_PREFIXES = ("hold_earnings_", "watch_earnings_")
+PRIVATE_ID_PREFIXES = ("hold_earnings_", "watch_earnings_", "private_")
 
 
 def main() -> int:
@@ -196,7 +198,7 @@ def main() -> int:
         events.append(ev)
 
     if private_count:
-        log(f"  非公開のため除外: {private_count} 件（銘柄ごとの個別決算）")
+        log(f"  非公開のため除外: {private_count} 件（銘柄ごとの個別決算・自分用の予定）")
 
     events.sort(key=lambda e: e["datetime_utc"])
 

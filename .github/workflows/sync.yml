@@ -92,6 +92,9 @@ jobs:
 
       - name: fetch_schedules.py 実行（米PCE・米CPI・全国CPI・米雇用統計・米PPI・米GDP・米小売・ISM - ベストエフォート）
         continue-on-error: true
+        env:
+          # BLS は名乗りに連絡先メールが無いと 403（2026-10-06 判明）。公開リポなので Secret で渡す
+          BLS_CONTACT_EMAIL: ${{ secrets.BLS_CONTACT_EMAIL }}
         run: python scripts/fetch_schedules.py
 
       - name: fetch_anomalies.py 実行（相場アノマリーを暦計算で生成・AI呼び出しなし）

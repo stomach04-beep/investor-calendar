@@ -220,3 +220,54 @@ def test_truth_runway_runs_on_real_tables():
     実運用では sync の ::warning:: → health-watchdog の注釈監視 → LINE で届く）"""
     for name in ("US_CPI_TRUTH", "US_PPI_TRUTH", "US_PCE_TRUTH", "US_RETAIL_TRUTH", "US_GDP_TRUTH"):
         assert fs.warn_truth_runway(f"test[{name}]", getattr(fs, name), today=date(2026, 8, 22)) in (True, False)
+
+
+# ----------------------------------------------------------------------
+# BLS 公式ページの解析（2026-10-06 追加）
+#   BLS は名乗りに連絡先メールを入れれば 200 で読める（403 は海外IP遮断ではなかった）。
+#   ところが解析部は本物のページで一度も動いておらず、2つのバグがあった:
+#     ① 表は 対象月|公表日|公表時刻 の3列なのに最後の列（時刻）を公表日として読み、0件
+#     ② 左メニュー（"FEBRUARY 2026" 等）を含む外枠の行を拾い、ゴミ行が1件できる
+#   実ページの構造を縮めた HTML で両方を固定する。
+# ----------------------------------------------------------------------
+_BLS_PAGE = """
+<table><tr>
+<td id="secondary-nav-td"><ul><li><a>FEBRUARY 2026</a></li></ul></td>
+<td><table>
+<tr><th>Reference Month</th><th>Release Date</th><th>Release Time</th></tr>
+<tr class="release-list-even-row"><td>November 2026</td><td>Dec. 10, 2026</td><td>08:30 AM</td></tr>
+<tr class="release-list-odd-row"><td>December 2026</td><td>Jan. 13, 2027</td><td>08:30 AM</td></tr>
+</table></td>
+</tr></table>
+"""
+
+
+class _FakeResp:
+    status_code = 200
+    text = _BLS_PAGE
+
+
+@pytest.mark.parametrize("fn,cat", [("fetch_bls_cpi", "CPI"), ("fetch_bls_ppi", "PPI")])
+def test_bls_official_page_parse(monkeypatch, fn, cat):
+    monkeypatch.setattr(fs.requests, "get", lambda *a, **k: _FakeResp())
+    events = getattr(fs, fn)()
+    got = sorted(e["datetime_local"][:10] for e in events)
+    # 公表日の列（2列目）を読み、メニュー行のゴミが混ざらないこと
+    assert got == ["2026-12-10", "2027-01-13"]
+    assert all(e["category"] == cat and e["is_estimated"] is False for e in events)
+    # 年をまたぐ対象月（2026年12月分 → 2027年1月公表）は年付きの題になる
+    assert any("2026年12月分" in e["title"] for e in events)
+
+
+def test_bls_user_agent_has_no_url():
+    # URL を含む名乗りは BLS に 403 で弾かれる（2026-10-06 実測）。
+    # 連絡先が設定されているときの名乗りに URL を混ぜないこと。
+    import importlib, os
+    os.environ["BLS_CONTACT_EMAIL"] = "test@example.com"
+    try:
+        m = importlib.reload(fs)
+        assert m.BLS_USER_AGENT == "investor-calendar-bot/1.0 (test@example.com)"
+        assert "http" not in m.BLS_USER_AGENT
+    finally:
+        del os.environ["BLS_CONTACT_EMAIL"]
+        importlib.reload(fs)

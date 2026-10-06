@@ -1,6 +1,6 @@
 {
   "schema_version": "2.0",
-  "generated_at": "2026-10-06T01:55:22Z",
+  "generated_at": "2026-10-06T11:02:34Z",
   "covered_years": [
     2021,
     2022,
@@ -6502,6 +6502,21 @@
       "date_stable_days": 23
     },
     {
+      "id": "us_cpi_2025-12-18",
+      "title": "米CPI (11月分)",
+      "category": "CPI",
+      "country": "US",
+      "datetime_utc": "2025-12-18T13:30:00Z",
+      "datetime_local": "2025-12-18T08:30:00-05:00",
+      "timezone": "America/New_York",
+      "importance": 3,
+      "is_estimated": false,
+      "description": "消費者物価指数。FRB利下げ織り込みに直結。",
+      "source_url": "https://www.bls.gov/cpi/",
+      "result": "CPI 前年比+2.7% / コア+2.6%（2025年11月分）",
+      "date_stable_days": 0
+    },
+    {
       "id": "jp_cpi_2025-12-19",
       "title": "全国CPI (11月分)",
       "category": "CPI",
@@ -6682,21 +6697,6 @@
       "date_stable_days": 68
     },
     {
-      "id": "us_ppi_2026-01-14",
-      "title": "米PPI (2025年12月分)",
-      "category": "PPI",
-      "country": "US",
-      "datetime_utc": "2026-01-14T13:30:00Z",
-      "datetime_local": "2026-01-14T08:30:00-05:00",
-      "timezone": "America/New_York",
-      "importance": 2,
-      "is_estimated": true,
-      "description": "生産者物価指数。卸売段階のインフレ先行指標。",
-      "source_url": "https://www.bls.gov/ppi/",
-      "result": null,
-      "date_stable_days": 68
-    },
-    {
       "id": "us_beige_2026-01-14",
       "title": "ベージュブック (1月FOMC前)",
       "category": "BEIGE",
@@ -6785,6 +6785,21 @@
       "source_url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "result": "政策金利 3.50–3.75%（据え置き）",
       "date_stable_days": 68
+    },
+    {
+      "id": "us_ppi_2026-01-14",
+      "title": "米PPI (2025年12月分)",
+      "category": "PPI",
+      "country": "US",
+      "datetime_utc": "2026-01-30T13:30:00Z",
+      "datetime_local": "2026-01-30T08:30:00-05:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": false,
+      "description": "生産者物価指数。卸売段階のインフレ先行指標。",
+      "source_url": "https://www.bls.gov/ppi/",
+      "result": null,
+      "date_stable_days": 0
     },
     {
       "id": "us_ism_mfg_2026-01",
@@ -7072,21 +7087,6 @@
       "date_stable_days": 68
     },
     {
-      "id": "us_ppi_2026-03-12",
-      "title": "米PPI (2月分)",
-      "category": "PPI",
-      "country": "US",
-      "datetime_utc": "2026-03-12T12:30:00Z",
-      "datetime_local": "2026-03-12T08:30:00-04:00",
-      "timezone": "America/New_York",
-      "importance": 2,
-      "is_estimated": true,
-      "description": "生産者物価指数。卸売段階のインフレ先行指標。",
-      "source_url": "https://www.bls.gov/ppi/",
-      "result": null,
-      "date_stable_days": 68
-    },
-    {
       "id": "jp_majorsq_2026-03-13",
       "title": "日メジャーSQ (3月)",
       "category": "MARKET",
@@ -7115,6 +7115,21 @@
       "source_url": null,
       "result": null,
       "date_stable_days": 68
+    },
+    {
+      "id": "us_ppi_2026-03-12",
+      "title": "米PPI (2月分)",
+      "category": "PPI",
+      "country": "US",
+      "datetime_utc": "2026-03-18T12:30:00Z",
+      "datetime_local": "2026-03-18T08:30:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": false,
+      "description": "生産者物価指数。卸売段階のインフレ先行指標。",
+      "source_url": "https://www.bls.gov/ppi/",
+      "result": null,
+      "date_stable_days": 0
     },
     {
       "id": "us_fomc_2026-03-18",
@@ -9920,6 +9935,21 @@
       "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
       "result": null,
       "date_stable_days": 68
+    },
+    {
+      "id": "us_eia_2027-01-29",
+      "title": "EIA週次原油在庫",
+      "category": "EIA",
+      "country": "US",
+      "datetime_utc": "2027-02-03T15:30:00Z",
+      "datetime_local": "2027-02-03T10:30:00-05:00",
+      "timezone": "America/New_York",
+      "importance": 1,
+      "is_estimated": true,
+      "description": "米エネルギー情報局(EIA)の週次石油在庫統計（対象週: 2027-01-29 まで）。原油・ガソリン・留出油の在庫増減が発表され、原油(WTI)価格が最も素直に反応する定例イベント。",
+      "source_url": "https://www.eia.gov/petroleum/supply/weekly/",
+      "result": null,
+      "date_stable_days": 0
     },
     {
       "id": "us_nfp_2027-02-05",

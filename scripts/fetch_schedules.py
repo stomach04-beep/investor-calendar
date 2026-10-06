@@ -49,6 +49,7 @@ fetch_fomc.py / fetch_boj.py と同じベストエフォート方式:
 from __future__ import annotations
 
 import argparse
+import os
 import re
 import sys
 from datetime import date, datetime, timedelta, timezone
@@ -66,6 +67,16 @@ from common import write_tmp, log, load_canonical_events, record_fetch_warning  
 # 定数
 # ----------------------------------------------------------------------
 USER_AGENT = "investor-calendar-bot/1.0 (+https://github.com/stomach04-beep/investor-calendar)"
+
+# BLS 専用の名乗り（2026-10-06）。
+#   BLS は「自動取得は名乗りに連絡先メールを入れること」を求めており、メールが無いと
+#   手元からでも 403 になる（＝海外IP遮断だと思い込んで真値表に頼っていたのは誤診）。
+#   実測: 「investor-calendar-bot/1.0 (メール)」→200、URL を含む名乗り →403。
+#   公開リポなのでメールはコードに書かず Secret BLS_CONTACT_EMAIL から読む。
+#   未設定なら従来の名乗りのまま（→403→真値表フォールバック。挙動は今までと同じ）。
+_BLS_CONTACT = os.environ.get("BLS_CONTACT_EMAIL", "").lstrip("\ufeff").strip()
+BLS_USER_AGENT = (f"investor-calendar-bot/1.0 ({_BLS_CONTACT})"
+                  if _BLS_CONTACT else USER_AGENT)
 
 BEA_URL = "https://www.bea.gov/news/schedule"
 BLS_CPI_URL = "https://www.bls.gov/schedule/news_release/cpi.htm"
@@ -470,7 +481,7 @@ def fetch_bls_cpi() -> list[dict]:
     """BLS公式スケジュールから CPI 公表日を抽出する。403が多いので失敗時は真値表。"""
     try:
         r = requests.get(BLS_CPI_URL, timeout=30, headers={
-            "User-Agent": USER_AGENT,
+            "User-Agent": BLS_USER_AGENT,
             "Accept": "text/html,application/xhtml+xml",
         })
         if r.status_code != 200:
@@ -480,13 +491,23 @@ def fetch_bls_cpi() -> list[dict]:
         soup = BeautifulSoup(r.text, "html.parser")
         events: list[dict] = []
         for tr in soup.find_all("tr"):
+            # 中に別の行を抱えた外枠の行（ページ全体のレイアウト表）は飛ばす。
+            # 入れ子の td まで全部拾うと、メニューの月名と日程表の日付が組み合わさってゴミ行になる。
+            if tr.find("tr"):
+                continue
             cells = [td.get_text(" ", strip=True) for td in tr.find_all(["td", "th"])]
             if len(cells) < 2:
                 continue
             # 対象月セルと公表日セルを推定（"December 2025" / "Jan. 13, 2026" 等）
             ref_text = cells[0]
-            rel_text = cells[-1]
-            m_ref = re.search(r"([A-Za-z]+)\.?\s+(\d{4})", ref_text)
+            # 公表日は「日付の形をした最初のセル」。表は 対象月|公表日|公表時刻 の3列で、
+            # 以前は cells[-1]（＝時刻 08:30 AM）を読んでいたため1行も拾えなかった（2026-10-06修正）。
+            rel_text = next((c for c in cells[1:]
+                             if re.search(r"[A-Za-z]+\.?\s+\d{1,2},?\s+\d{4}", c)), "")
+            # 対象月セルは「November 2026」だけの短いセルに限る（fullmatch）。
+            # search だと、ページ左のメニュー（"FEBRUARY 2026" 等）を含む外枠の行まで
+            # 拾い、「2026年2月分＝2025-12-18」のようなゴミ行ができる（2026-10-06 実測）。
+            m_ref = re.fullmatch(r"([A-Za-z]+)\.?\s+(\d{4})", ref_text.strip())
             m_rel = re.search(r"([A-Za-z]+)\.?\s+(\d{1,2}),?\s+(\d{4})", rel_text)
             if not m_ref or not m_rel:
                 continue
@@ -762,7 +783,7 @@ def fetch_bls_ppi() -> list[dict]:
     """BLS公式スケジュールから PPI 公表日を抽出する。403が多いので失敗時は真値表＋近似。"""
     try:
         r = requests.get(BLS_PPI_URL, timeout=30, headers={
-            "User-Agent": USER_AGENT,
+            "User-Agent": BLS_USER_AGENT,
             "Accept": "text/html,application/xhtml+xml",
         })
         if r.status_code != 200:
@@ -771,12 +792,22 @@ def fetch_bls_ppi() -> list[dict]:
         soup = BeautifulSoup(r.text, "html.parser")
         events: list[dict] = []
         for tr in soup.find_all("tr"):
+            # 中に別の行を抱えた外枠の行（ページ全体のレイアウト表）は飛ばす。
+            # 入れ子の td まで全部拾うと、メニューの月名と日程表の日付が組み合わさってゴミ行になる。
+            if tr.find("tr"):
+                continue
             cells = [td.get_text(" ", strip=True) for td in tr.find_all(["td", "th"])]
             if len(cells) < 2:
                 continue
             ref_text = cells[0]
-            rel_text = cells[-1]
-            m_ref = re.search(r"([A-Za-z]+)\.?\s+(\d{4})", ref_text)
+            # 公表日は「日付の形をした最初のセル」。表は 対象月|公表日|公表時刻 の3列で、
+            # 以前は cells[-1]（＝時刻 08:30 AM）を読んでいたため1行も拾えなかった（2026-10-06修正）。
+            rel_text = next((c for c in cells[1:]
+                             if re.search(r"[A-Za-z]+\.?\s+\d{1,2},?\s+\d{4}", c)), "")
+            # 対象月セルは「November 2026」だけの短いセルに限る（fullmatch）。
+            # search だと、ページ左のメニュー（"FEBRUARY 2026" 等）を含む外枠の行まで
+            # 拾い、「2026年2月分＝2025-12-18」のようなゴミ行ができる（2026-10-06 実測）。
+            m_ref = re.fullmatch(r"([A-Za-z]+)\.?\s+(\d{4})", ref_text.strip())
             m_rel = re.search(r"([A-Za-z]+)\.?\s+(\d{1,2}),?\s+(\d{4})", rel_text)
             if not m_ref or not m_rel:
                 continue

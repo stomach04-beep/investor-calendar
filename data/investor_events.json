@@ -1,6 +1,6 @@
 {
   "schema_version": "2.0",
-  "generated_at": "2026-10-15T00:06:11Z",
+  "generated_at": "2026-10-15T23:50:16Z",
   "covered_years": [
     2021,
     2022,
@@ -8928,7 +8928,7 @@
       "is_estimated": false,
       "description": "米国の小売・飲食サービス売上高（前月比）。米経済の約7割を占める個人消費の強さを測る速報。CPI級に相場が動く月もある。",
       "source_url": "https://www.census.gov/retail/",
-      "result": null,
+      "result": "小売売上高 前月比+0.8%（2026年9月分）",
       "date_stable_days": 77
     },
     {

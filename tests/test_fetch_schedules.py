@@ -171,14 +171,30 @@ def test_warns_when_truth_table_runs_short(capsys):
     assert "2026-07" in err and "2026-11" in err
 
 
+def _trim_cpi_seed_to_truth():
+    """
+    シードの CPI 対象月を、真値表の最終月までに絞る。
+    2026-10 から CPI は BLS 公式を直接取得しており、シードは真値表より先の月
+    （2026-12〜）まで自動で伸びる。CPI 真値表は年次追記をやめたので、絞らないと
+    「網羅しているはず」の前提がデータの伸びだけで崩れてテストが落ちる。
+    """
+    last = max(fs.US_CPI_TRUTH)
+    fs._SEED_ID_ALIAS = {
+        k: v for k, v in fs._SEED_ID_ALIAS.items()
+        if not (k[0] == "CPI" and k[1] == "US" and (k[2], k[3]) > last)
+    }
+
+
 def test_no_warning_when_truth_table_is_current(capsys):
     """真値表が将来分を網羅していれば警告は出ないこと（オオカミ少年にしない）。"""
+    _trim_cpi_seed_to_truth()
     fs.warn_uncovered_targets("test[CPI]", "CPI", "US", fs.US_CPI_TRUTH, today=date(2026, 7, 15))
     assert "::warning::" not in capsys.readouterr().err
 
 
 def test_no_warning_for_already_published_months(capsys):
     """公表済みの過去月は今さら直せないので警告しないこと。"""
+    _trim_cpi_seed_to_truth()
     truncated = {k: v for k, v in fs.US_CPI_TRUTH.items() if k != (2026, 1)}
     fs.warn_uncovered_targets("test[CPI]", "CPI", "US", truncated, today=date(2026, 7, 15))
     assert "::warning::" not in capsys.readouterr().err

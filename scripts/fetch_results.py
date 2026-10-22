@@ -129,6 +129,21 @@ def target_ym_from_id(ev_id: str) -> tuple[int, int] | None:
     return int(m.group(1)), int(m.group(2))
 
 
+def load_target_month_by_id() -> dict[str, tuple[int, int]]:
+    """
+    CPI/PCE/雇用統計/PPI の id → 対象(年, 月)。これらの id は公表日ベース（us_cpi_2026-05-12）で
+    対象月を持たないため、fetch_schedules がシードの題名「(◯月分)」から作る対応表を逆引きする
+    （読み方を二重に定義しない）。2025-10 の政府閉鎖で雇用統計 9月分が 11/20 公表になるなど、
+    「発表日の前月」では別の月になる回があった（2026-10-23）。読めなければ空（従来の推測に戻る）。
+    """
+    try:
+        from fetch_schedules import load_seed_id_alias
+        return {ev_id: (y, m) for (_cat, _ctry, y, m), ev_id in load_seed_id_alias().items()}
+    except Exception as e:  # noqa: BLE001 - 対応表は補助。読めなくても結果記入は続ける
+        log(f"  対象月の対応表を読めず（{type(e).__name__}: {e}）→ 発表日の前月で計算")
+        return {}
+
+
 def month_value(series: list[tuple[date, float]], year: int, month: int):
     """series から指定年月（月初 observation）の (date, value) を返す。無ければ None。"""
     for dt, v in series:
@@ -144,7 +159,8 @@ def build_result(category: str, event_date: date, cache: dict,
                  target_ym: tuple[int, int] | None = None) -> str | None:
     """
     カテゴリとイベント日から、FRED 実績値で結果文字列を作る。取得不能なら None。
-    target_ym（行の対象月）が分かるときは、小売売上高はそれを使う（発表日の前月で推測しない）。
+    target_ym（行の対象月）が分かるときは、雇用統計・CPI・PCE・小売売上高はそれを使う
+    （発表日の前月で推測しない）。
     """
     def s(sid: str) -> list[tuple[date, float]]:
         if sid not in cache:
@@ -167,7 +183,8 @@ def build_result(category: str, event_date: date, cache: dict,
         return f"政策金利 {lo[1]:.2f}–{hi[1]:.2f}%（{change}）"
 
     if category == "JOBS":
-        ty, tm = prev_month(event_date)  # 対象月＝発表日の前月（前月分を翌月頭に発表）
+        # 対象月＝行の対象月。分からないときだけ発表日の前月（前月分を翌月頭に発表）で推測する
+        ty, tm = target_ym or prev_month(event_date)
         pay = s("PAYEMS")
         cur = month_value(pay, ty, tm)
         if not cur:
@@ -186,7 +203,7 @@ def build_result(category: str, event_date: date, cache: dict,
         return " / ".join(parts) + f"（{ty}年{tm}月分）"
 
     if category in ("CPI", "PCE"):
-        ty, tm = prev_month(event_date)  # 対象月＝発表日の前月
+        ty, tm = target_ym or prev_month(event_date)  # 対象月＝行の対象月（不明なら発表日の前月）
         head_id, core_id = CATEGORY_SERIES[category]
         head = s(head_id)
         core = s(core_id)
@@ -301,6 +318,7 @@ def main() -> int:
 
     now = datetime.now(timezone.utc)
     cache: dict = {}
+    month_by_id = load_target_month_by_id()   # id → 対象月（雇用統計・CPI・PCE・PPI）
     targets = 0
     written = 0
     skipped_future = 0
@@ -342,7 +360,8 @@ def main() -> int:
             continue
 
         targets += 1
-        res = build_result(category, ev_dt.date(), cache, target_ym_from_id(ev_id))
+        target_ym = month_by_id.get(ev_id) or target_ym_from_id(ev_id)
+        res = build_result(category, ev_dt.date(), cache, target_ym)
         if not res:
             log(f"  結果生成できず（FRED未取得?）: {category} {ev_dt.date()}")
             continue

@@ -1,6 +1,6 @@
 {
   "schema_version": "2.0",
-  "generated_at": "2026-10-22T17:38:17Z",
+  "generated_at": "2026-10-22T17:54:12Z",
   "covered_years": [
     2021,
     2022,
@@ -6232,21 +6232,6 @@
       "date_stable_days": 38
     },
     {
-      "id": "us_nfp_2025-10-03",
-      "title": "米雇用統計 (9月分)",
-      "category": "JOBS",
-      "country": "US",
-      "datetime_utc": "2025-10-03T12:30:00Z",
-      "datetime_local": "2025-10-03T08:30:00-04:00",
-      "timezone": "America/New_York",
-      "importance": 3,
-      "is_estimated": false,
-      "description": "非農業部門雇用者数(NFP)、失業率、平均時給。FRB政策の最重要指標。",
-      "source_url": "https://www.bls.gov/schedule/news_release/empsit.htm",
-      "result": "非農業部門雇用者数 前月比+7.6万人 / 失業率 4.4%（2025年9月分）",
-      "date_stable_days": 38
-    },
-    {
       "id": "us_ism_svc_2025-09",
       "title": "ISM非製造業景況指数 (9月分)",
       "category": "ISM",
@@ -6367,21 +6352,6 @@
       "date_stable_days": 38
     },
     {
-      "id": "us_nfp_2025-11-07",
-      "title": "米雇用統計 (10月分)",
-      "category": "JOBS",
-      "country": "US",
-      "datetime_utc": "2025-11-07T13:30:00Z",
-      "datetime_local": "2025-11-07T08:30:00-05:00",
-      "timezone": "America/New_York",
-      "importance": 3,
-      "is_estimated": false,
-      "description": "非農業部門雇用者数(NFP)、失業率、平均時給。FRB政策の最重要指標。",
-      "source_url": "https://www.bls.gov/schedule/news_release/empsit.htm",
-      "result": "非農業部門雇用者数 前月比-14.0万人（2025年10月分）",
-      "date_stable_days": 38
-    },
-    {
       "id": "us_fomc_minutes_2025-11-19",
       "title": "FOMC議事要旨 (10月会合分)",
       "category": "FOMC",
@@ -6395,6 +6365,21 @@
       "source_url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "result": null,
       "date_stable_days": 38
+    },
+    {
+      "id": "us_nfp_2025-10-03",
+      "title": "米雇用統計 (9月分)",
+      "category": "JOBS",
+      "country": "US",
+      "datetime_utc": "2025-11-20T13:30:00Z",
+      "datetime_local": "2025-11-20T13:30:00+00:00",
+      "timezone": "America/New_York",
+      "importance": 3,
+      "is_estimated": false,
+      "description": "非農業部門雇用者数(NFP)、失業率、平均時給。FRB政策の最重要指標。",
+      "source_url": "https://www.bls.gov/schedule/news_release/empsit.htm",
+      "result": "非農業部門雇用者数 前月比+7.6万人 / 失業率 4.4%（2025年9月分）",
+      "date_stable_days": 0
     },
     {
       "id": "jp_cpi_2025-11-21",
@@ -6472,21 +6457,6 @@
       "date_stable_days": 38
     },
     {
-      "id": "us_nfp_2025-12-05",
-      "title": "米雇用統計 (11月分)",
-      "category": "JOBS",
-      "country": "US",
-      "datetime_utc": "2025-12-05T13:30:00Z",
-      "datetime_local": "2025-12-05T08:30:00-05:00",
-      "timezone": "America/New_York",
-      "importance": 3,
-      "is_estimated": false,
-      "description": "非農業部門雇用者数(NFP)、失業率、平均時給。FRB政策の最重要指標。",
-      "source_url": "https://www.bls.gov/schedule/news_release/empsit.htm",
-      "result": "非農業部門雇用者数 前月比+4.1万人 / 失業率 4.5%（2025年11月分）",
-      "date_stable_days": 38
-    },
-    {
       "id": "us_fomc_2025-12-10",
       "title": "FOMC声明発表 (12月会合)",
       "category": "FOMC",
@@ -6500,6 +6470,36 @@
       "source_url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "result": "政策金利 3.75–4.00%（据え置き）",
       "date_stable_days": 38
+    },
+    {
+      "id": "us_nfp_2025-12-05",
+      "title": "米雇用統計 (11月分)",
+      "category": "JOBS",
+      "country": "US",
+      "datetime_utc": "2025-12-16T13:30:00Z",
+      "datetime_local": "2025-12-16T13:30:00+00:00",
+      "timezone": "America/New_York",
+      "importance": 3,
+      "is_estimated": false,
+      "description": "非農業部門雇用者数(NFP)、失業率、平均時給。FRB政策の最重要指標。",
+      "source_url": "https://www.bls.gov/schedule/news_release/empsit.htm",
+      "result": "非農業部門雇用者数 前月比+4.1万人 / 失業率 4.5%（2025年11月分）",
+      "date_stable_days": 0
+    },
+    {
+      "id": "us_nfp_2025-11-07",
+      "title": "米雇用統計 (10月分)",
+      "category": "JOBS",
+      "country": "US",
+      "datetime_utc": "2025-12-16T13:30:00Z",
+      "datetime_local": "2025-12-16T13:30:00+00:00",
+      "timezone": "America/New_York",
+      "importance": 3,
+      "is_estimated": false,
+      "description": "非農業部門雇用者数(NFP)、失業率、平均時給。FRB政策の最重要指標。",
+      "source_url": "https://www.bls.gov/schedule/news_release/empsit.htm",
+      "result": "非農業部門雇用者数 前月比-14.0万人（2025年10月分）",
+      "date_stable_days": 0
     },
     {
       "id": "us_retail_2025-10",
@@ -6592,21 +6592,6 @@
       "date_stable_days": 38
     },
     {
-      "id": "us_nfp_2026-01-02",
-      "title": "米雇用統計 (2025年12月分)",
-      "category": "JOBS",
-      "country": "US",
-      "datetime_utc": "2026-01-02T13:30:00Z",
-      "datetime_local": "2026-01-02T08:30:00-05:00",
-      "timezone": "America/New_York",
-      "importance": 3,
-      "is_estimated": false,
-      "description": "非農業部門雇用者数(NFP)、失業率、平均時給。FRB政策の最重要指標。",
-      "source_url": "https://www.bls.gov/schedule/news_release/empsit.htm",
-      "result": "非農業部門雇用者数 前月比-1.7万人 / 失業率 4.4%（2025年12月分）",
-      "date_stable_days": 83
-    },
-    {
       "id": "anomaly_us_january_barometer_2026",
       "title": "1月のバロメーター",
       "category": "ANOMALY",
@@ -6680,6 +6665,21 @@
       "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
       "result": null,
       "date_stable_days": 83
+    },
+    {
+      "id": "us_nfp_2026-01-02",
+      "title": "米雇用統計 (2025年12月分)",
+      "category": "JOBS",
+      "country": "US",
+      "datetime_utc": "2026-01-09T13:30:00Z",
+      "datetime_local": "2026-01-09T13:30:00+00:00",
+      "timezone": "America/New_York",
+      "importance": 3,
+      "is_estimated": false,
+      "description": "非農業部門雇用者数(NFP)、失業率、平均時給。FRB政策の最重要指標。",
+      "source_url": "https://www.bls.gov/schedule/news_release/empsit.htm",
+      "result": "非農業部門雇用者数 前月比-1.7万人 / 失業率 4.4%（2025年12月分）",
+      "date_stable_days": 0
     },
     {
       "id": "us_cpi_2026-01-12",
@@ -6772,21 +6772,6 @@
       "date_stable_days": 83
     },
     {
-      "id": "us_pce_2026-01-26",
-      "title": "米PCEデフレーター (2025年12月分)",
-      "category": "PCE",
-      "country": "US",
-      "datetime_utc": "2026-01-26T13:30:00Z",
-      "datetime_local": "2026-01-26T08:30:00-05:00",
-      "timezone": "America/New_York",
-      "importance": 2,
-      "is_estimated": true,
-      "description": "個人消費支出物価指数。FRBが最重視するインフレ指標。",
-      "source_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index",
-      "result": "PCE 前年比+2.9% / コア+3.0%（2025年12月分）",
-      "date_stable_days": 83
-    },
-    {
       "id": "us_fomc_2026-01-28",
       "title": "FOMC声明発表 (1月会合)",
       "category": "FOMC",
@@ -6862,21 +6847,6 @@
       "date_stable_days": 83
     },
     {
-      "id": "us_nfp_2026-02-06",
-      "title": "米雇用統計 (1月分)",
-      "category": "JOBS",
-      "country": "US",
-      "datetime_utc": "2026-02-06T13:30:00Z",
-      "datetime_local": "2026-02-06T08:30:00-05:00",
-      "timezone": "America/New_York",
-      "importance": 3,
-      "is_estimated": false,
-      "description": "非農業部門雇用者数(NFP)、失業率、平均時給。FRB政策の最重要指標。",
-      "source_url": "https://www.bls.gov/schedule/news_release/empsit.htm",
-      "result": "非農業部門雇用者数 前月比+16.0万人 / 失業率 4.3%（2026年1月分）",
-      "date_stable_days": 83
-    },
-    {
       "id": "us_retail_2025-12",
       "title": "米小売売上高 (2025年12月分)",
       "category": "RETAIL",
@@ -6889,6 +6859,21 @@
       "description": "米国の小売・飲食サービス売上高（前月比）。米経済の約7割を占める個人消費の強さを測る速報。CPI級に相場が動く月もある。",
       "source_url": "https://www.census.gov/retail/",
       "result": "小売売上高 前月比+0.1%（2025年12月分）",
+      "date_stable_days": 0
+    },
+    {
+      "id": "us_nfp_2026-02-06",
+      "title": "米雇用統計 (1月分)",
+      "category": "JOBS",
+      "country": "US",
+      "datetime_utc": "2026-02-11T13:30:00Z",
+      "datetime_local": "2026-02-11T13:30:00+00:00",
+      "timezone": "America/New_York",
+      "importance": 3,
+      "is_estimated": false,
+      "description": "非農業部門雇用者数(NFP)、失業率、平均時給。FRB政策の最重要指標。",
+      "source_url": "https://www.bls.gov/schedule/news_release/empsit.htm",
+      "result": "非農業部門雇用者数 前月比+16.0万人 / 失業率 4.3%（2026年1月分）",
       "date_stable_days": 0
     },
     {
@@ -6952,19 +6937,19 @@
       "date_stable_days": 83
     },
     {
-      "id": "us_pce_2026-02-26",
-      "title": "米PCEデフレーター (1月分)",
+      "id": "us_pce_2026-01-26",
+      "title": "米PCEデフレーター (2025年12月分)",
       "category": "PCE",
       "country": "US",
-      "datetime_utc": "2026-02-26T13:30:00Z",
-      "datetime_local": "2026-02-26T08:30:00-05:00",
+      "datetime_utc": "2026-02-20T13:30:00Z",
+      "datetime_local": "2026-02-20T13:30:00+00:00",
       "timezone": "America/New_York",
       "importance": 2,
-      "is_estimated": true,
+      "is_estimated": false,
       "description": "個人消費支出物価指数。FRBが最重視するインフレ指標。",
       "source_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index",
-      "result": "PCE 前年比+2.9% / コア+3.1%（2026年1月分）",
-      "date_stable_days": 83
+      "result": "PCE 前年比+2.9% / コア+3.0%（2025年12月分）",
+      "date_stable_days": 0
     },
     {
       "id": "us_ppi_2026-02-27",
@@ -7117,6 +7102,21 @@
       "date_stable_days": 83
     },
     {
+      "id": "us_pce_2026-02-26",
+      "title": "米PCEデフレーター (1月分)",
+      "category": "PCE",
+      "country": "US",
+      "datetime_utc": "2026-03-13T12:30:00Z",
+      "datetime_local": "2026-03-13T12:30:00+00:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": false,
+      "description": "個人消費支出物価指数。FRBが最重視するインフレ指標。",
+      "source_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index",
+      "result": "PCE 前年比+2.9% / コア+3.1%（2026年1月分）",
+      "date_stable_days": 0
+    },
+    {
       "id": "anomaly_jp_higan_zoko_2026",
       "title": "彼岸底",
       "category": "ANOMALY",
@@ -7204,21 +7204,6 @@
       "description": "米国株価指数先物・指数オプション・個別株先物・個別株オプションが同時満期（第3金曜日）。引け前後のボラティリティ上昇と出来高急増に注意。",
       "source_url": null,
       "result": null,
-      "date_stable_days": 83
-    },
-    {
-      "id": "us_pce_2026-03-26",
-      "title": "米PCEデフレーター (2月分)",
-      "category": "PCE",
-      "country": "US",
-      "datetime_utc": "2026-03-26T12:30:00Z",
-      "datetime_local": "2026-03-26T08:30:00-04:00",
-      "timezone": "America/New_York",
-      "importance": 2,
-      "is_estimated": true,
-      "description": "個人消費支出物価指数。FRBが最重視するインフレ指標。",
-      "source_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index",
-      "result": "PCE 前年比+2.9% / コア+3.0%（2026年2月分）",
       "date_stable_days": 83
     },
     {
@@ -7327,6 +7312,21 @@
       "date_stable_days": 83
     },
     {
+      "id": "us_pce_2026-03-26",
+      "title": "米PCEデフレーター (2月分)",
+      "category": "PCE",
+      "country": "US",
+      "datetime_utc": "2026-04-09T12:30:00Z",
+      "datetime_local": "2026-04-09T12:30:00+00:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": false,
+      "description": "個人消費支出物価指数。FRBが最重視するインフレ指標。",
+      "source_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index",
+      "result": "PCE 前年比+2.9% / コア+3.0%（2026年2月分）",
+      "date_stable_days": 0
+    },
+    {
       "id": "us_cpi_2026-04-13",
       "title": "米CPI (3月分)",
       "category": "CPI",
@@ -7417,21 +7417,6 @@
       "date_stable_days": 0
     },
     {
-      "id": "us_pce_2026-04-24",
-      "title": "米PCEデフレーター (3月分)",
-      "category": "PCE",
-      "country": "US",
-      "datetime_utc": "2026-04-24T12:30:00Z",
-      "datetime_local": "2026-04-24T08:30:00-04:00",
-      "timezone": "America/New_York",
-      "importance": 2,
-      "is_estimated": true,
-      "description": "個人消費支出物価指数。FRBが最重視するインフレ指標。",
-      "source_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index",
-      "result": "PCE 前年比+3.5% / コア+3.2%（2026年3月分）",
-      "date_stable_days": 83
-    },
-    {
       "id": "jp_boj_2026-04-28",
       "title": "日銀金融政策決定会合 (4月会合)",
       "category": "BOJ",
@@ -7462,6 +7447,21 @@
       "date_stable_days": 83
     },
     {
+      "id": "us_pce_2026-04-24",
+      "title": "米PCEデフレーター (3月分)",
+      "category": "PCE",
+      "country": "US",
+      "datetime_utc": "2026-04-30T12:30:00Z",
+      "datetime_local": "2026-04-30T12:30:00+00:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": false,
+      "description": "個人消費支出物価指数。FRBが最重視するインフレ指標。",
+      "source_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index",
+      "result": "PCE 前年比+3.5% / コア+3.2%（2026年3月分）",
+      "date_stable_days": 0
+    },
+    {
       "id": "anomaly_jp_sell_in_may_2026",
       "title": "セルインメイ",
       "category": "ANOMALY",
@@ -7474,21 +7474,6 @@
       "description": "「Sell in May（5月に売れ）」。5月〜夏にかけて株価が軟調になりやすいという経験則。原文は『Sell in May and go away, come back on St. Leger's day（9月中旬）』。",
       "source_url": null,
       "result": null,
-      "date_stable_days": 83
-    },
-    {
-      "id": "us_nfp_2026-05-01",
-      "title": "米雇用統計 (4月分)",
-      "category": "JOBS",
-      "country": "US",
-      "datetime_utc": "2026-05-01T12:30:00Z",
-      "datetime_local": "2026-05-01T08:30:00-04:00",
-      "timezone": "America/New_York",
-      "importance": 3,
-      "is_estimated": false,
-      "description": "非農業部門雇用者数(NFP)、失業率、平均時給。FRB政策の最重要指標。",
-      "source_url": "https://www.bls.gov/schedule/news_release/empsit.htm",
-      "result": "非農業部門雇用者数 前月比+14.8万人 / 失業率 4.3%（2026年4月分）",
       "date_stable_days": 83
     },
     {
@@ -7520,6 +7505,21 @@
       "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
       "result": null,
       "date_stable_days": 83
+    },
+    {
+      "id": "us_nfp_2026-05-01",
+      "title": "米雇用統計 (4月分)",
+      "category": "JOBS",
+      "country": "US",
+      "datetime_utc": "2026-05-08T12:30:00Z",
+      "datetime_local": "2026-05-08T12:30:00+00:00",
+      "timezone": "America/New_York",
+      "importance": 3,
+      "is_estimated": false,
+      "description": "非農業部門雇用者数(NFP)、失業率、平均時給。FRB政策の最重要指標。",
+      "source_url": "https://www.bls.gov/schedule/news_release/empsit.htm",
+      "result": "非農業部門雇用者数 前月比+14.8万人 / 失業率 4.3%（2026年4月分）",
+      "date_stable_days": 0
     },
     {
       "id": "us_cpi_2026-05-11",
@@ -7616,15 +7616,15 @@
       "title": "米PCEデフレーター (4月分)",
       "category": "PCE",
       "country": "US",
-      "datetime_utc": "2026-05-26T12:30:00Z",
-      "datetime_local": "2026-05-26T08:30:00-04:00",
+      "datetime_utc": "2026-05-28T12:30:00Z",
+      "datetime_local": "2026-05-28T12:30:00+00:00",
       "timezone": "America/New_York",
       "importance": 2,
-      "is_estimated": true,
+      "is_estimated": false,
       "description": "個人消費支出物価指数。FRBが最重視するインフレ指標。",
       "source_url": "https://www.bea.gov/data/personal-consumption-expenditures-price-index",
       "result": "PCE 前年比+3.8% / コア+3.3%（2026年4月分）",
-      "date_stable_days": 83
+      "date_stable_days": 0
     },
     {
       "id": "us_ism_mfg_2026-05",

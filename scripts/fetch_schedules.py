@@ -17,8 +17,9 @@ fetch_fomc.py / fetch_boj.py と同じベストエフォート方式:
                 切れると誤日付が黙って残るため warn_uncovered_targets() で警告する。
   3. 全国CPI   : 「対象月の翌月の、19日を含む週(月曜起算)の金曜 8:30 JST」のルールで
                 プログラム計算（公式ページはJS依存で取りにくいためルール計算をプライマリ）。
-  4. 米雇用統計 : 「毎月第1金曜 8:30 ET」をルール計算（例外月＝祝日前倒し等は上書き表）。
-                2026-07は7/3(独立記念日振替)のため7/2(木)に前倒し。
+  4. 米雇用統計 : BLS公式 https://www.bls.gov/schedule/news_release/empsit.htm を読み、控えに貯める
+                （2026-10-23〜）。公式・控えに無い月だけ「毎月第1金曜 8:30 ET」をルール計算
+                （例外月＝祝日前倒し等は上書き表）。2026-07は7/3(独立記念日振替)のため7/2(木)に前倒し。
                 対象年の12月分は翌年1月公表なので、公表月ループは翌年1月まで伸ばす。
   5. 米PPI     : BLS公式 https://www.bls.gov/schedule/news_release/ppi.htm を試す（CPI同様に恒常403）。
                 真値表を優先し、表に無い月のみ「対応CPIの翌営業日」で近似する。
@@ -303,7 +304,8 @@ SCHEDULE_CACHE_FILE = Path(__file__).resolve().parents[1] / "data" / "official_s
 CACHE_KEEP_DAYS = 400   # 公表日がこれより古い控えは捨てる（ファイルが際限なく伸びないように）
 # 対象期間の末日から公表日までの日数の上限（これを超える・期末より前の組は読み違いとみなして保存しない）。
 # 月次は実績で最長 約30日（PPI 1月分=2/27）、GDP 改定値は約60日。余裕を見た値。
-CACHE_MAX_LAG_DAYS = {"PCE": 50, "CPI": 50, "PPI": 50, "RETAIL": 50, "GDP": 100}
+# 雇用統計は政府閉鎖時に 10月分が 12/16（期末から46日）まで遅れた実績があるので 60。
+CACHE_MAX_LAG_DAYS = {"PCE": 50, "CPI": 50, "PPI": 50, "RETAIL": 50, "GDP": 100, "JOBS": 60}
 
 
 # ----------------------------------------------------------------------
@@ -624,6 +626,49 @@ def pce_fallback() -> list[dict]:
 # ----------------------------------------------------------------------
 # 2. 米CPI: BLS公式を試す（フォールバック = 真値表）
 # ----------------------------------------------------------------------
+def parse_bls_schedule(html: str) -> list[tuple[int, int, date]]:
+    """
+    BLS の公表日程ページ（cpi.htm / ppi.htm / empsit.htm）の表を (対象年, 対象月, 公表日) の並びにする。
+    3ページとも「Reference Month | Release Date | Release Time」の同じ形の表（2026-10 実測）。
+    """
+    soup = BeautifulSoup(html, "html.parser")
+    out: list[tuple[int, int, date]] = []
+    for tr in soup.find_all("tr"):
+        # 中に別の行を抱えた外枠の行（ページ全体のレイアウト表）は飛ばす。
+        # 入れ子の td まで全部拾うと、メニューの月名と日程表の日付が組み合わさってゴミ行になる。
+        if tr.find("tr"):
+            continue
+        cells = [td.get_text(" ", strip=True) for td in tr.find_all(["td", "th"])]
+        if len(cells) < 2:
+            continue
+        # 対象月セルと公表日セルを推定（"December 2025" / "Jan. 13, 2026" 等）
+        ref_text = cells[0]
+        # 公表日は「日付の形をした最初のセル」。表は 対象月|公表日|公表時刻 の3列で、
+        # 以前は cells[-1]（＝時刻 08:30 AM）を読んでいたため1行も拾えなかった（2026-10-06修正）。
+        rel_text = next((c for c in cells[1:]
+                         if re.search(r"[A-Za-z]+\.?\s+\d{1,2},?\s+\d{4}", c)), "")
+        # 対象月セルは「November 2026」だけの短いセルに限る（fullmatch）。
+        # search だと、ページ左のメニュー（"FEBRUARY 2026" 等）を含む外枠の行まで
+        # 拾い、「2026年2月分＝2025-12-18」のようなゴミ行ができる（2026-10-06 実測）。
+        m_ref = re.fullmatch(r"([A-Za-z]+)\.?\s+(\d{4})", ref_text.strip())
+        m_rel = re.search(r"([A-Za-z]+)\.?\s+(\d{1,2}),?\s+(\d{4})", rel_text)
+        if not m_ref or not m_rel:
+            continue
+        tgt_month = EN_MONTH_MAP.get(m_ref.group(1).lower())
+        tgt_year = int(m_ref.group(2))
+        rel_month = EN_MONTH_MAP.get(m_rel.group(1).lower())
+        rel_day = int(m_rel.group(2))
+        rel_year = int(m_rel.group(3))
+        if not tgt_month or not rel_month:
+            continue
+        try:
+            pub_date = date(rel_year, rel_month, rel_day)
+        except ValueError:
+            continue
+        out.append((tgt_year, tgt_month, pub_date))
+    return out
+
+
 def fetch_bls_cpi() -> list[dict]:
     """BLS公式スケジュールから CPI 公表日を抽出する。403が多いので失敗時は真値表。"""
     try:
@@ -634,42 +679,9 @@ def fetch_bls_cpi() -> list[dict]:
         if r.status_code != 200:
             log(f"  fetch_schedules[CPI]: BLS HTTP {r.status_code}（botブロックの想定内）→ 真値表フォールバック")
             return cpi_fallback()
-        # BLSのCPIスケジュール表： "Reference Month | Release Date" 形式
-        soup = BeautifulSoup(r.text, "html.parser")
         events: list[dict] = []
         pairs: list[tuple[tuple, date]] = []   # 控えに保存する (対象月, 公表日)
-        for tr in soup.find_all("tr"):
-            # 中に別の行を抱えた外枠の行（ページ全体のレイアウト表）は飛ばす。
-            # 入れ子の td まで全部拾うと、メニューの月名と日程表の日付が組み合わさってゴミ行になる。
-            if tr.find("tr"):
-                continue
-            cells = [td.get_text(" ", strip=True) for td in tr.find_all(["td", "th"])]
-            if len(cells) < 2:
-                continue
-            # 対象月セルと公表日セルを推定（"December 2025" / "Jan. 13, 2026" 等）
-            ref_text = cells[0]
-            # 公表日は「日付の形をした最初のセル」。表は 対象月|公表日|公表時刻 の3列で、
-            # 以前は cells[-1]（＝時刻 08:30 AM）を読んでいたため1行も拾えなかった（2026-10-06修正）。
-            rel_text = next((c for c in cells[1:]
-                             if re.search(r"[A-Za-z]+\.?\s+\d{1,2},?\s+\d{4}", c)), "")
-            # 対象月セルは「November 2026」だけの短いセルに限る（fullmatch）。
-            # search だと、ページ左のメニュー（"FEBRUARY 2026" 等）を含む外枠の行まで
-            # 拾い、「2026年2月分＝2025-12-18」のようなゴミ行ができる（2026-10-06 実測）。
-            m_ref = re.fullmatch(r"([A-Za-z]+)\.?\s+(\d{4})", ref_text.strip())
-            m_rel = re.search(r"([A-Za-z]+)\.?\s+(\d{1,2}),?\s+(\d{4})", rel_text)
-            if not m_ref or not m_rel:
-                continue
-            tgt_month = EN_MONTH_MAP.get(m_ref.group(1).lower())
-            tgt_year = int(m_ref.group(2))
-            rel_month = EN_MONTH_MAP.get(m_rel.group(1).lower())
-            rel_day = int(m_rel.group(2))
-            rel_year = int(m_rel.group(3))
-            if not tgt_month or not rel_month:
-                continue
-            try:
-                pub_date = date(rel_year, rel_month, rel_day)
-            except ValueError:
-                continue
+        for tgt_year, tgt_month, pub_date in parse_bls_schedule(r.text):
             events.append(make_us_event("CPI", "米CPI", tgt_month, pub_date, BLS_SOURCE_URL, tgt_year))
             pairs.append(((tgt_year, tgt_month), pub_date))
         if not events:
@@ -782,7 +794,40 @@ def jobs_publish_date(pub_year: int, pub_month: int) -> date:
     return first_friday(pub_year, pub_month)
 
 
-def make_jobs_event(target_year: int, target_month: int, pub_date: date) -> dict:
+def fetch_bls_jobs_official() -> dict[tuple[int, int], date]:
+    """
+    BLS 公式 empsit.htm から雇用統計の (対象年, 対象月) → 公表日 を取り、控えへ保存する（2026-10-23 追加）。
+
+    以前は「第1金曜」の決まり＋手書きの例外表だけで作っており、政府閉鎖の遅れ（9月分＝2025-11-20）や
+    普通の月の外れ（2026年4月分＝5/8、2027年9月分＝10/8）を拾えなかった。
+    取れなかったときは空を返し、日程は「控え＋決まり」で作る（警告は残す）。
+    """
+    try:
+        r = requests.get(JOBS_SOURCE_URL, timeout=30, headers={
+            "User-Agent": BLS_USER_AGENT,
+            "Accept": "text/html,application/xhtml+xml",
+        })
+        if r.status_code != 200:
+            log(f"  fetch_schedules[JOBS]: BLS HTTP {r.status_code} → 控え＋決まりで作る")
+            record_fetch_warning("fetch_schedules[JOBS]", f"BLS公式から取得できず控え＋第1金曜の決まりで作成（HTTP {r.status_code}）")
+            return {}
+        rows = parse_bls_schedule(r.text)
+        if not rows:
+            log("  fetch_schedules[JOBS]: BLSから抽出ゼロ → 控え＋決まりで作る")
+            record_fetch_warning("fetch_schedules[JOBS]", "BLS公式の日程表を読めず控え＋第1金曜の決まりで作成")
+            return {}
+        pairs = [((y, m), d) for y, m, d in rows]
+        log(f"  fetch_schedules[JOBS]: BLS公式から {len(pairs)} 件取得")
+        remember_official("JOBS", pairs)
+        return dict(pairs)
+    except Exception as e:  # noqa: BLE001 - 公式は取れれば使う。取れなくても決まりで作る
+        log(f"  fetch_schedules[JOBS]: BLS取得失敗 ({type(e).__name__}: {e}) → 控え＋決まりで作る")
+        record_fetch_warning("fetch_schedules[JOBS]", f"BLS公式から取得できず控え＋第1金曜の決まりで作成（{type(e).__name__}）")
+        return {}
+
+
+def make_jobs_event(target_year: int, target_month: int, pub_date: date,
+                    is_estimated: bool | None = None) -> dict:
     """米雇用統計（8:30 ET）の event dict を作る。id はシードの us_nfp_* を再利用。"""
     offset = et_offset_str(pub_date, 8, 30)
     datetime_local = f"{pub_date.strftime('%Y-%m-%d')}T08:30:00{offset}"
@@ -806,17 +851,21 @@ def make_jobs_event(target_year: int, target_month: int, pub_date: date) -> dict
         "datetime_local": datetime_local,
         "timezone": "America/New_York",
         "importance": 3,
-        # BLS公表済み範囲内なら確定、それ以降（2027年分など）は推定として追従を残す
-        "is_estimated": pub_date > US_JOBS_CONFIRMED_THROUGH,
+        # 公式（控え）由来なら確定。決まりで作った日は、手で裏取りした範囲内なら確定、それ以降は推定
+        "is_estimated": (pub_date > US_JOBS_CONFIRMED_THROUGH) if is_estimated is None else is_estimated,
         "description": "非農業部門雇用者数(NFP)、失業率、平均時給。FRB政策の最重要指標。",
         "source_url": JOBS_SOURCE_URL,
         "result": None,
     }
 
 
-def build_us_jobs(target_years: set[int]) -> list[dict]:
+def build_us_jobs(target_years: set[int],
+                  official: dict[tuple[int, int], date] | None = None) -> list[dict]:
     """
-    対象年の米雇用統計（各月分）をルール計算で生成する。
+    対象年の米雇用統計（各月分）を生成する。
+
+    公表日は「今回取れた BLS 公式 → 公式の控え → 第1金曜の決まり」の順で決める（2026-10-23〜）。
+    公式・控え由来は確定、決まりで作った日は従来どおり（US_JOBS_CONFIRMED_THROUGH まで確定）。
 
     公表年でループし、各月の第1金曜（例外月は上書き）を公表日とする。
     雇用統計の「X月分」は翌月公表なので、対象月 = 公表月の前月。
@@ -825,20 +874,27 @@ def build_us_jobs(target_years: set[int]) -> list[dict]:
     ここを 1〜12月で閉じていたため 12月分が一度も生成されず、シードJSONに残った
     幽霊行（us_nfp_2026-12-31・ソースURLがBEA）が誰にも上書きされず固着していた。
     """
+    table = cached_dates("JOBS")
+    table.update(official or {})
     events: list[dict] = []
+    from_official = 0
     for pub_year in sorted(target_years):
         # 翌年1月＝対象年12月分の公表月。target_years に翌年が入っていれば
         # 重複するが、呼び出し元で id 一意化されるので無害。
         pub_months = [(pub_year, m) for m in range(1, 13)] + [(pub_year + 1, 1)]
         for py, pub_month in pub_months:
-            pub_date = jobs_publish_date(py, pub_month)
             # 公表月の前月が対象月（1月公表 → 前年12月分）
             if pub_month == 1:
                 tgt_year, tgt_month = py - 1, 12
             else:
                 tgt_year, tgt_month = py, pub_month - 1
-            events.append(make_jobs_event(tgt_year, tgt_month, pub_date))
-    log(f"  fetch_schedules[JOBS]: ルール計算で {len(events)} 件生成")
+            if (tgt_year, tgt_month) in table:
+                events.append(make_jobs_event(tgt_year, tgt_month, table[(tgt_year, tgt_month)],
+                                              is_estimated=False))
+                from_official += 1
+            else:
+                events.append(make_jobs_event(tgt_year, tgt_month, jobs_publish_date(py, pub_month)))
+    log(f"  fetch_schedules[JOBS]: {len(events)} 件生成（公式・控え {from_official} 件／決まり {len(events) - from_official} 件）")
     return events
 
 
@@ -942,40 +998,9 @@ def fetch_bls_ppi() -> list[dict]:
         if r.status_code != 200:
             log(f"  fetch_schedules[PPI]: BLS HTTP {r.status_code}（botブロックの想定内）→ フォールバック")
             return ppi_fallback()
-        soup = BeautifulSoup(r.text, "html.parser")
         events: list[dict] = []
         pairs: list[tuple[tuple, date]] = []   # 控えに保存する (対象月, 公表日)
-        for tr in soup.find_all("tr"):
-            # 中に別の行を抱えた外枠の行（ページ全体のレイアウト表）は飛ばす。
-            # 入れ子の td まで全部拾うと、メニューの月名と日程表の日付が組み合わさってゴミ行になる。
-            if tr.find("tr"):
-                continue
-            cells = [td.get_text(" ", strip=True) for td in tr.find_all(["td", "th"])]
-            if len(cells) < 2:
-                continue
-            ref_text = cells[0]
-            # 公表日は「日付の形をした最初のセル」。表は 対象月|公表日|公表時刻 の3列で、
-            # 以前は cells[-1]（＝時刻 08:30 AM）を読んでいたため1行も拾えなかった（2026-10-06修正）。
-            rel_text = next((c for c in cells[1:]
-                             if re.search(r"[A-Za-z]+\.?\s+\d{1,2},?\s+\d{4}", c)), "")
-            # 対象月セルは「November 2026」だけの短いセルに限る（fullmatch）。
-            # search だと、ページ左のメニュー（"FEBRUARY 2026" 等）を含む外枠の行まで
-            # 拾い、「2026年2月分＝2025-12-18」のようなゴミ行ができる（2026-10-06 実測）。
-            m_ref = re.fullmatch(r"([A-Za-z]+)\.?\s+(\d{4})", ref_text.strip())
-            m_rel = re.search(r"([A-Za-z]+)\.?\s+(\d{1,2}),?\s+(\d{4})", rel_text)
-            if not m_ref or not m_rel:
-                continue
-            tgt_month = EN_MONTH_MAP.get(m_ref.group(1).lower())
-            tgt_year = int(m_ref.group(2))
-            rel_month = EN_MONTH_MAP.get(m_rel.group(1).lower())
-            rel_day = int(m_rel.group(2))
-            rel_year = int(m_rel.group(3))
-            if not tgt_month or not rel_month:
-                continue
-            try:
-                pub_date = date(rel_year, rel_month, rel_day)
-            except ValueError:
-                continue
+        for tgt_year, tgt_month, pub_date in parse_bls_schedule(r.text):
             # 公式から取れたものは確定扱い
             events.append(make_ppi_event(tgt_year, tgt_month, pub_date, is_estimated=False))
             pairs.append(((tgt_year, tgt_month), pub_date))
@@ -1367,7 +1392,7 @@ def collect_schedule_events() -> list[dict]:
         record_fetch_warning("fetch_schedules[JP CPI]", f"想定外の失敗 ({type(e).__name__}) → イベント生成なし")
     # 4. 米雇用統計（独立try/except、ルール計算＝第1金曜）
     try:
-        all_events.extend(build_us_jobs(target_years))
+        all_events.extend(build_us_jobs(target_years, fetch_bls_jobs_official()))
     except Exception as e:
         log(f"  fetch_schedules[JOBS]: 想定外の失敗 ({type(e).__name__}: {e}) → スキップ")
         record_fetch_warning("fetch_schedules[JOBS]", f"想定外の失敗 ({type(e).__name__}) → イベント生成なし")

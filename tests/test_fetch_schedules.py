@@ -415,3 +415,61 @@ def test_ppi_fallback_months_follow_cache():
     fs.save_official_dates("PPI", [((2027, 3), date(2027, 4, 14))], today=date(2027, 1, 1))
     ids = by_id(fs.ppi_fallback())
     assert any(local_date(e) == date(2027, 4, 14) and e["is_estimated"] is False for e in ids.values())
+
+
+# ----------------------------------------------------------------------
+# BLS の公表日程ページ（cpi.htm / ppi.htm / empsit.htm）の読み取り（2026-10-23 共通化）
+#   固定データはウェブアーカイブの保存版（BLS は連絡先メールの無い名乗りだと 403 のため）
+# ----------------------------------------------------------------------
+FIXTURES = Path(__file__).resolve().parent / "fixtures"
+
+
+def _bls_rows(name: str) -> list[tuple[int, int, date]]:
+    return fs.parse_bls_schedule((FIXTURES / name).read_text(encoding="utf-8", errors="replace"))
+
+
+def test_parse_bls_cpi_schedule_page():
+    rows = _bls_rows("bls_cpi_2026-10-14.html")
+    assert len(rows) == 14
+    assert rows[0] == (2026, 10, date(2026, 11, 10))
+    assert (2026, 12, date(2027, 1, 13)) in rows
+    assert rows[-1] == (2027, 11, date(2027, 12, 10))
+
+
+# ----------------------------------------------------------------------
+# 米雇用統計: BLS 公式（empsit.htm）→ 控え → 第1金曜の決まり の順で公表日を決める（2026-10-23）
+#   2027年9月分は公式 10/8 で、第1金曜（10/1）とずれる。決まりだけでは拾えなかった。
+# ----------------------------------------------------------------------
+def _empsit_html() -> str:
+    return (FIXTURES / "bls_empsit_2026-10-12.html").read_text(encoding="utf-8", errors="replace")
+
+
+def _jobs_by_title(events: list[dict]) -> dict[str, dict]:
+    return {e["title"]: e for e in events}
+
+
+def test_jobs_uses_official_schedule_over_first_friday(monkeypatch):
+    monkeypatch.setattr(fs.requests, "get", lambda *a, **k: _FakeResponse(_empsit_html()))
+    official = fs.fetch_bls_jobs_official()
+    assert official[(2027, 9)] == date(2027, 10, 8)
+    ev = _jobs_by_title(fs.build_us_jobs({2027}, official))["米雇用統計 (9月分)"]
+    assert local_date(ev) == date(2027, 10, 8)        # 決まりなら 2027-10-01
+    assert ev["is_estimated"] is False
+
+
+def test_jobs_official_dates_are_kept_in_cache_for_failed_days(monkeypatch):
+    """公式が取れた日に控えへ貯め、翌日 BLS が 403 でも控えから公式の日付で作ること。"""
+    monkeypatch.setattr(fs.requests, "get", lambda *a, **k: _FakeResponse(_empsit_html()))
+    fs.fetch_bls_jobs_official()
+    monkeypatch.setattr(fs.requests, "get", lambda *a, **k: _FakeResponse("", status_code=403))
+    assert fs.fetch_bls_jobs_official() == {}
+    ev = _jobs_by_title(fs.build_us_jobs({2027}))["米雇用統計 (9月分)"]
+    assert local_date(ev) == date(2027, 10, 8)
+    assert ev["is_estimated"] is False
+
+
+def test_jobs_falls_back_to_first_friday_without_official():
+    """公式も控えも無い月は、従来どおり第1金曜の決まりで作ること（2027年は推定）。"""
+    ev = _jobs_by_title(fs.build_us_jobs({2027}))["米雇用統計 (9月分)"]
+    assert local_date(ev) == date(2027, 10, 1)
+    assert ev["is_estimated"] is True

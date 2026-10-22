@@ -287,3 +287,42 @@ def test_bls_user_agent_has_no_url():
     finally:
         del os.environ["BLS_CONTACT_EMAIL"]
         importlib.reload(fs)
+
+
+# ----------------------------------------------------------------------
+# 米小売売上高: Census の日程ページは速報版の表だけを読む（2026-10-22）
+#   同じページの確報版の表まで読むと、同じ対象月が1か月遅い日付で上書きされ
+#   「◯月分」が1か月ずれる。実ページの抜粋（固定データ）で確かめる。
+# ----------------------------------------------------------------------
+CENSUS_FIXTURE = Path(__file__).resolve().parent / "fixtures" / "census_release_schedule_2026-10-22.html"
+
+
+class _FakeResponse:
+    def __init__(self, text: str, status_code: int = 200):
+        self.text = text
+        self.status_code = status_code
+
+
+def _census_events(monkeypatch) -> dict[str, dict]:
+    html = CENSUS_FIXTURE.read_text(encoding="utf-8")
+    monkeypatch.setattr(fs.requests, "get", lambda *a, **k: _FakeResponse(html))
+    return by_id(fs.fetch_census_retail())
+
+
+def test_census_reads_only_advance_table(monkeypatch):
+    """速報版の表だけを読み、対象月と公表日の組が速報版どおりになること。"""
+    ev = _census_events(monkeypatch)
+    assert local_date(ev["us_retail_2026-09"]) == date(2026, 10, 15)
+    assert local_date(ev["us_retail_2026-10"]) == date(2026, 11, 17)
+    assert local_date(ev["us_retail_2026-12"]) == date(2027, 1, 15)
+    assert local_date(ev["us_retail_2027-11"]) == date(2027, 12, 15)
+    # 確報版にしか無い 2026年8月分（10/15公表）を拾っていないこと
+    assert "us_retail_2026-08" not in ev
+
+
+def test_census_without_advance_table_falls_back(monkeypatch):
+    """速報版の表が見つからなければ、確報版を読まずに真値表へ切り替えること。"""
+    html = CENSUS_FIXTURE.read_text(encoding="utf-8").replace("Advance Monthly Retail", "Something Else")
+    monkeypatch.setattr(fs.requests, "get", lambda *a, **k: _FakeResponse(html))
+    ev = by_id(fs.fetch_census_retail())
+    assert local_date(ev["us_retail_2026-10"]) == fs.US_RETAIL_TRUTH[(2026, 10)]

@@ -993,6 +993,22 @@ def retail_fallback() -> list[dict]:
     return out
 
 
+def find_census_advance_table(soup: BeautifulSoup):
+    """
+    Census の日程ページから「Advance Monthly Retail Trade Report（速報）」の表だけを返す。
+
+    同じページに確報版（Monthly Retail Trade Report）の表もあり、こちらは同じ対象月が
+    1か月遅れて公表される。ページ全体の <tr> を読むと両方が同じ id（対象月）で混ざり、
+    後に出てくる確報版が速報版を上書きして「◯月分」が1か月ずれていた（2026-10-22 発見）。
+    速報版の見出しの直後にある表だけを読む。見つからなければ None（＝取得失敗扱い）。
+    """
+    for table in soup.find_all("table"):
+        heading = table.find_previous(["h1", "h2", "h3", "h4", "strong", "b", "p"])
+        if heading and "Advance Monthly Retail" in heading.get_text(" ", strip=True):
+            return table
+    return None
+
+
 def fetch_census_retail() -> list[dict]:
     """Census公式 release_schedule.html から MARTS（速報）公表日を抽出する。"""
     try:
@@ -1001,8 +1017,12 @@ def fetch_census_retail() -> list[dict]:
             log(f"  fetch_schedules[RETAIL]: Census HTTP {r.status_code} → 真値表フォールバック")
             return retail_fallback()
         soup = BeautifulSoup(r.text, "html.parser")
+        table = find_census_advance_table(soup)
+        if table is None:
+            log("  fetch_schedules[RETAIL]: Censusに速報版の表が見つからない → 真値表フォールバック")
+            return retail_fallback()
         events: list[dict] = []
-        for tr in soup.find_all("tr"):
+        for tr in table.find_all("tr"):
             cells = [td.get_text(" ", strip=True) for td in tr.find_all(["td", "th"])]
             if len(cells) < 2:
                 continue

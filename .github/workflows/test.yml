@@ -8,6 +8,13 @@ on:
   pull_request:
   push:
     branches: [main]
+  # 週1回も走らせる（2026-10-22 追加）。毎朝の同期は github-actions[bot] の push なので
+  # このワークフローを起動しない。データ（シード・控え）の伸びだけでテストが壊れても、
+  # 次に誰かが PR を出すまで気づけなかった（10-06〜10-22 の2件）。
+  # 失敗は health-watchdog の GitHub 監視で LINE に届く。
+  schedule:
+    - cron: "10 22 * * 0"   # 毎週月曜 07:10 JST（朝の同期 06:35 の後）
+  workflow_dispatch:
 
 permissions:
   contents: read   # テストのみ。書き込み不要（最小権限）

@@ -36,6 +36,17 @@ def seed_alias():
     fs._SEED_ID_ALIAS = {}
 
 
+@pytest.fixture(autouse=True)
+def isolated_cache(tmp_path, monkeypatch):
+    """
+    公式日程の控えファイルをテストごとの一時ファイルに差し替える。
+    本物の data/official_schedule_cache.json を読むと結果が日々変わり、書くと汚れるため。
+    """
+    path = tmp_path / "official_schedule_cache.json"
+    monkeypatch.setattr(fs, "SCHEDULE_CACHE_FILE", path)
+    return path
+
+
 def by_id(events: list[dict]) -> dict[str, dict]:
     return {e["id"]: e for e in events}
 
@@ -287,3 +298,120 @@ def test_bls_user_agent_has_no_url():
     finally:
         del os.environ["BLS_CONTACT_EMAIL"]
         importlib.reload(fs)
+
+
+# ----------------------------------------------------------------------
+# 米小売売上高: Census の日程ページは速報版の表だけを読む（2026-10-22）
+#   同じページの確報版の表まで読むと、同じ対象月が1か月遅い日付で上書きされ
+#   「◯月分」が1か月ずれる。実ページの抜粋（固定データ）で確かめる。
+# ----------------------------------------------------------------------
+CENSUS_FIXTURE = Path(__file__).resolve().parent / "fixtures" / "census_release_schedule_2026-10-22.html"
+
+
+class _FakeResponse:
+    def __init__(self, text: str, status_code: int = 200):
+        self.text = text
+        self.status_code = status_code
+
+
+def _census_events(monkeypatch) -> dict[str, dict]:
+    html = CENSUS_FIXTURE.read_text(encoding="utf-8")
+    monkeypatch.setattr(fs.requests, "get", lambda *a, **k: _FakeResponse(html))
+    return by_id(fs.fetch_census_retail())
+
+
+def test_census_reads_only_advance_table(monkeypatch):
+    """速報版の表だけを読み、対象月と公表日の組が速報版どおりになること。"""
+    ev = _census_events(monkeypatch)
+    assert local_date(ev["us_retail_2026-09"]) == date(2026, 10, 15)
+    assert local_date(ev["us_retail_2026-10"]) == date(2026, 11, 17)
+    assert local_date(ev["us_retail_2026-12"]) == date(2027, 1, 15)
+    assert local_date(ev["us_retail_2027-11"]) == date(2027, 12, 15)
+    # 確報版にしか無い 2026年8月分（10/15公表）を拾っていないこと
+    assert "us_retail_2026-08" not in ev
+
+
+def test_census_without_advance_table_falls_back(monkeypatch):
+    """速報版の表が見つからなければ、確報版を読まずに真値表へ切り替えること。"""
+    html = CENSUS_FIXTURE.read_text(encoding="utf-8").replace("Advance Monthly Retail", "Something Else")
+    monkeypatch.setattr(fs.requests, "get", lambda *a, **k: _FakeResponse(html))
+    ev = by_id(fs.fetch_census_retail())
+    assert local_date(ev["us_retail_2026-10"]) == fs.US_RETAIL_TRUTH[(2026, 10)]
+
+
+# ----------------------------------------------------------------------
+# 公式日程の控え（自動保存）: 公式が取れた日に貯め、取れない日のフォールバックに使う（2026-10-22）
+# ----------------------------------------------------------------------
+def test_cache_extends_fallback_beyond_truth_table():
+    """控えに入った先の月が、真値表に無くてもフォールバックに出ること。"""
+    n = fs.save_official_dates("PCE", [((2027, 1), date(2027, 2, 26))], today=date(2026, 12, 1))
+    assert n == 1
+    ev = [e for e in fs.pce_fallback() if e["title"].endswith("(1月分)")]
+    assert [local_date(e) for e in ev] == [date(2027, 2, 26)]
+
+
+def test_cache_overrides_truth_table():
+    """同じ対象月は公式由来の控えを真値表より優先すること。"""
+    fs.save_official_dates("RETAIL", [((2026, 11), date(2026, 12, 17))], today=date(2026, 11, 1))
+    assert fs.fallback_table("RETAIL", fs.US_RETAIL_TRUTH)[(2026, 11)] == date(2026, 12, 17)
+
+
+def test_cache_keeps_keys_missing_from_later_fetch():
+    """次の取得に載っていない月も控えから消さない（BEA は数か月先しか載せない）。"""
+    fs.save_official_dates("GDP", [((2026, 3, "adv"), date(2026, 10, 29))], today=date(2026, 10, 1))
+    fs.save_official_dates("GDP", [((2026, 4, "adv"), date(2027, 1, 28))], today=date(2026, 12, 1))
+    cached = fs.cached_dates("GDP")
+    assert cached[(2026, 3, "adv")] == date(2026, 10, 29)
+    assert cached[(2026, 4, "adv")] == date(2027, 1, 28)
+
+
+def test_cache_rejects_two_dates_for_one_key(isolated_cache):
+    """1回の取得で同じ月に日付が2つ出たら（表の取り違え）何も保存しないこと。"""
+    n = fs.save_official_dates("RETAIL", [((2026, 9), date(2026, 10, 15)),
+                                          ((2026, 9), date(2026, 11, 17))], today=date(2026, 10, 1))
+    assert n == 0
+    assert not isolated_cache.exists()
+
+
+def test_cache_rejects_implausible_lag():
+    """期末より前や、期末から離れすぎた公表日は読み違いとみなして保存しないこと。"""
+    n = fs.save_official_dates("CPI", [((2026, 10), date(2026, 10, 5)),     # 期末より前
+                                       ((2026, 11), date(2027, 3, 1)),      # 離れすぎ
+                                       ((2026, 12), date(2027, 1, 13))],    # 正常
+                               today=date(2026, 10, 1))
+    assert n == 1
+    assert set(fs.cached_dates("CPI")) == {(2026, 12)}
+
+
+def test_cache_prunes_old_entries():
+    """公表日が CACHE_KEEP_DAYS より古い控えは捨てること。"""
+    fs.save_official_dates("CPI", [((2025, 1), date(2025, 2, 12))], today=date(2025, 1, 15))
+    fs.save_official_dates("CPI", [((2026, 12), date(2027, 1, 13))], today=date(2026, 12, 1))
+    assert set(fs.cached_dates("CPI")) == {(2026, 12)}
+
+
+def test_broken_cache_file_does_not_stop_fallback(isolated_cache):
+    """控えが壊れていても、真値表だけでフォールバックは作れること。"""
+    isolated_cache.write_text("{壊れたJSON", encoding="utf-8")
+    assert len(fs.retail_fallback()) == len(fs.US_RETAIL_TRUTH)
+
+
+def test_census_fetch_fills_cache_then_fallback_uses_it(monkeypatch):
+    """
+    実ページ抜粋で公式取得 → 控えに速報版15件 → 翌日 Census が 500 でも
+    控えから 2027年11月分まで出て、残り期間の警告も出ないこと（今日の WARN の再発防止）。
+    """
+    _census_events(monkeypatch)
+    cached = fs.cached_dates("RETAIL")
+    assert len(cached) == 15 and cached[(2026, 10)] == date(2026, 11, 17)
+    monkeypatch.setattr(fs.requests, "get", lambda *a, **k: _FakeResponse("", status_code=500))
+    ev = by_id(fs.fetch_census_retail())
+    assert local_date(ev["us_retail_2027-11"]) == date(2027, 12, 15)
+    assert fs.warn_truth_runway("t", fs.fallback_table("RETAIL", {}), today=date(2026, 10, 22)) is False
+
+
+def test_ppi_fallback_months_follow_cache():
+    """PPI のフォールバックの対象月が、2026年11月分の固定でなく控えに合わせて伸びること。"""
+    fs.save_official_dates("PPI", [((2027, 3), date(2027, 4, 14))], today=date(2027, 1, 1))
+    ids = by_id(fs.ppi_fallback())
+    assert any(local_date(e) == date(2027, 4, 14) and e["is_estimated"] is False for e in ids.values())

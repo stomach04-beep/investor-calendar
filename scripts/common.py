@@ -309,6 +309,18 @@ def load_canonical_events() -> dict:
         return json.load(f)
 
 
+def fill_year_gaps(years) -> list[int]:
+    """
+    対象年（covered_years）を「最小の年〜最大の年の切れ目のない並び」にする（2026-10-23）。
+
+    covered_years は「何か1件でも行がある年」から作っていたため、2029-04 の単発の行
+    （食料品の消費税ゼロ終了）だけで 2029 が入り、行の無い 2028 が抜けた。雇用統計・ISM などの
+    定期イベントはこの対象年ごとに作るので、公開JSONが 2027 の次に 2029 へ飛んでいた。
+    """
+    ys = sorted({int(y) for y in years})
+    return list(range(ys[0], ys[-1] + 1)) if ys else []
+
+
 def write_canonical_events(data: dict) -> None:
     """data/investor_events.json に書き込む。"""
     CANONICAL_JSON.parent.mkdir(parents=True, exist_ok=True)

@@ -20,7 +20,7 @@ from pathlib import Path
 
 # scripts/ を import path に入れる
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from common import load_canonical_events, write_tmp, log  # noqa: E402
+from common import fill_year_gaps, load_canonical_events, write_tmp, log  # noqa: E402
 
 
 def shift_event_to_year(event: dict, baseline_year: int, target_year: int) -> dict | None:
@@ -80,7 +80,8 @@ def build(target_years: list[int]) -> dict:
              "nintendo_direct_")
         )
     ]
-    covered = set(seed.get("covered_years", []))
+    # 途中の年が抜けたシード（[..., 2027, 2029]）でも後続の定期イベントが全年そろうよう埋める
+    covered = set(fill_year_gaps(seed.get("covered_years", [])))
 
     if not seed_events:
         raise RuntimeError("seed JSON に events がありません")

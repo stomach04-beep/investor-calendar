@@ -15,6 +15,7 @@ from common import (  # noqa: E402
     NOTION_TO_CATEGORY,
     SELECT_TO_IMPORTANCE,
     NotionClient,
+    fill_year_gaps,
     get_notion_db_id,
     load_canonical_events,
     log,
@@ -210,7 +211,8 @@ def main() -> int:
 
     out = dict(seed)
     out["events"] = events
-    out["covered_years"] = sorted({int(e["datetime_utc"][:4]) for e in events})
+    # 行がある年の最小〜最大を切れ目なく（単発の遠い年の行で途中の年が抜けないように）
+    out["covered_years"] = fill_year_gaps(int(e["datetime_utc"][:4]) for e in events)
     out["generated_at"] = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
     write_canonical_events(out)

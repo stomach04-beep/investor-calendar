@@ -624,6 +624,49 @@ def pce_fallback() -> list[dict]:
 # ----------------------------------------------------------------------
 # 2. 米CPI: BLS公式を試す（フォールバック = 真値表）
 # ----------------------------------------------------------------------
+def parse_bls_schedule(html: str) -> list[tuple[int, int, date]]:
+    """
+    BLS の公表日程ページ（cpi.htm / ppi.htm / empsit.htm）の表を (対象年, 対象月, 公表日) の並びにする。
+    3ページとも「Reference Month | Release Date | Release Time」の同じ形の表（2026-10 実測）。
+    """
+    soup = BeautifulSoup(html, "html.parser")
+    out: list[tuple[int, int, date]] = []
+    for tr in soup.find_all("tr"):
+        # 中に別の行を抱えた外枠の行（ページ全体のレイアウト表）は飛ばす。
+        # 入れ子の td まで全部拾うと、メニューの月名と日程表の日付が組み合わさってゴミ行になる。
+        if tr.find("tr"):
+            continue
+        cells = [td.get_text(" ", strip=True) for td in tr.find_all(["td", "th"])]
+        if len(cells) < 2:
+            continue
+        # 対象月セルと公表日セルを推定（"December 2025" / "Jan. 13, 2026" 等）
+        ref_text = cells[0]
+        # 公表日は「日付の形をした最初のセル」。表は 対象月|公表日|公表時刻 の3列で、
+        # 以前は cells[-1]（＝時刻 08:30 AM）を読んでいたため1行も拾えなかった（2026-10-06修正）。
+        rel_text = next((c for c in cells[1:]
+                         if re.search(r"[A-Za-z]+\.?\s+\d{1,2},?\s+\d{4}", c)), "")
+        # 対象月セルは「November 2026」だけの短いセルに限る（fullmatch）。
+        # search だと、ページ左のメニュー（"FEBRUARY 2026" 等）を含む外枠の行まで
+        # 拾い、「2026年2月分＝2025-12-18」のようなゴミ行ができる（2026-10-06 実測）。
+        m_ref = re.fullmatch(r"([A-Za-z]+)\.?\s+(\d{4})", ref_text.strip())
+        m_rel = re.search(r"([A-Za-z]+)\.?\s+(\d{1,2}),?\s+(\d{4})", rel_text)
+        if not m_ref or not m_rel:
+            continue
+        tgt_month = EN_MONTH_MAP.get(m_ref.group(1).lower())
+        tgt_year = int(m_ref.group(2))
+        rel_month = EN_MONTH_MAP.get(m_rel.group(1).lower())
+        rel_day = int(m_rel.group(2))
+        rel_year = int(m_rel.group(3))
+        if not tgt_month or not rel_month:
+            continue
+        try:
+            pub_date = date(rel_year, rel_month, rel_day)
+        except ValueError:
+            continue
+        out.append((tgt_year, tgt_month, pub_date))
+    return out
+
+
 def fetch_bls_cpi() -> list[dict]:
     """BLS公式スケジュールから CPI 公表日を抽出する。403が多いので失敗時は真値表。"""
     try:
@@ -634,42 +677,9 @@ def fetch_bls_cpi() -> list[dict]:
         if r.status_code != 200:
             log(f"  fetch_schedules[CPI]: BLS HTTP {r.status_code}（botブロックの想定内）→ 真値表フォールバック")
             return cpi_fallback()
-        # BLSのCPIスケジュール表： "Reference Month | Release Date" 形式
-        soup = BeautifulSoup(r.text, "html.parser")
         events: list[dict] = []
         pairs: list[tuple[tuple, date]] = []   # 控えに保存する (対象月, 公表日)
-        for tr in soup.find_all("tr"):
-            # 中に別の行を抱えた外枠の行（ページ全体のレイアウト表）は飛ばす。
-            # 入れ子の td まで全部拾うと、メニューの月名と日程表の日付が組み合わさってゴミ行になる。
-            if tr.find("tr"):
-                continue
-            cells = [td.get_text(" ", strip=True) for td in tr.find_all(["td", "th"])]
-            if len(cells) < 2:
-                continue
-            # 対象月セルと公表日セルを推定（"December 2025" / "Jan. 13, 2026" 等）
-            ref_text = cells[0]
-            # 公表日は「日付の形をした最初のセル」。表は 対象月|公表日|公表時刻 の3列で、
-            # 以前は cells[-1]（＝時刻 08:30 AM）を読んでいたため1行も拾えなかった（2026-10-06修正）。
-            rel_text = next((c for c in cells[1:]
-                             if re.search(r"[A-Za-z]+\.?\s+\d{1,2},?\s+\d{4}", c)), "")
-            # 対象月セルは「November 2026」だけの短いセルに限る（fullmatch）。
-            # search だと、ページ左のメニュー（"FEBRUARY 2026" 等）を含む外枠の行まで
-            # 拾い、「2026年2月分＝2025-12-18」のようなゴミ行ができる（2026-10-06 実測）。
-            m_ref = re.fullmatch(r"([A-Za-z]+)\.?\s+(\d{4})", ref_text.strip())
-            m_rel = re.search(r"([A-Za-z]+)\.?\s+(\d{1,2}),?\s+(\d{4})", rel_text)
-            if not m_ref or not m_rel:
-                continue
-            tgt_month = EN_MONTH_MAP.get(m_ref.group(1).lower())
-            tgt_year = int(m_ref.group(2))
-            rel_month = EN_MONTH_MAP.get(m_rel.group(1).lower())
-            rel_day = int(m_rel.group(2))
-            rel_year = int(m_rel.group(3))
-            if not tgt_month or not rel_month:
-                continue
-            try:
-                pub_date = date(rel_year, rel_month, rel_day)
-            except ValueError:
-                continue
+        for tgt_year, tgt_month, pub_date in parse_bls_schedule(r.text):
             events.append(make_us_event("CPI", "米CPI", tgt_month, pub_date, BLS_SOURCE_URL, tgt_year))
             pairs.append(((tgt_year, tgt_month), pub_date))
         if not events:
@@ -942,40 +952,9 @@ def fetch_bls_ppi() -> list[dict]:
         if r.status_code != 200:
             log(f"  fetch_schedules[PPI]: BLS HTTP {r.status_code}（botブロックの想定内）→ フォールバック")
             return ppi_fallback()
-        soup = BeautifulSoup(r.text, "html.parser")
         events: list[dict] = []
         pairs: list[tuple[tuple, date]] = []   # 控えに保存する (対象月, 公表日)
-        for tr in soup.find_all("tr"):
-            # 中に別の行を抱えた外枠の行（ページ全体のレイアウト表）は飛ばす。
-            # 入れ子の td まで全部拾うと、メニューの月名と日程表の日付が組み合わさってゴミ行になる。
-            if tr.find("tr"):
-                continue
-            cells = [td.get_text(" ", strip=True) for td in tr.find_all(["td", "th"])]
-            if len(cells) < 2:
-                continue
-            ref_text = cells[0]
-            # 公表日は「日付の形をした最初のセル」。表は 対象月|公表日|公表時刻 の3列で、
-            # 以前は cells[-1]（＝時刻 08:30 AM）を読んでいたため1行も拾えなかった（2026-10-06修正）。
-            rel_text = next((c for c in cells[1:]
-                             if re.search(r"[A-Za-z]+\.?\s+\d{1,2},?\s+\d{4}", c)), "")
-            # 対象月セルは「November 2026」だけの短いセルに限る（fullmatch）。
-            # search だと、ページ左のメニュー（"FEBRUARY 2026" 等）を含む外枠の行まで
-            # 拾い、「2026年2月分＝2025-12-18」のようなゴミ行ができる（2026-10-06 実測）。
-            m_ref = re.fullmatch(r"([A-Za-z]+)\.?\s+(\d{4})", ref_text.strip())
-            m_rel = re.search(r"([A-Za-z]+)\.?\s+(\d{1,2}),?\s+(\d{4})", rel_text)
-            if not m_ref or not m_rel:
-                continue
-            tgt_month = EN_MONTH_MAP.get(m_ref.group(1).lower())
-            tgt_year = int(m_ref.group(2))
-            rel_month = EN_MONTH_MAP.get(m_rel.group(1).lower())
-            rel_day = int(m_rel.group(2))
-            rel_year = int(m_rel.group(3))
-            if not tgt_month or not rel_month:
-                continue
-            try:
-                pub_date = date(rel_year, rel_month, rel_day)
-            except ValueError:
-                continue
+        for tgt_year, tgt_month, pub_date in parse_bls_schedule(r.text):
             # 公式から取れたものは確定扱い
             events.append(make_ppi_event(tgt_year, tgt_month, pub_date, is_estimated=False))
             pairs.append(((tgt_year, tgt_month), pub_date))

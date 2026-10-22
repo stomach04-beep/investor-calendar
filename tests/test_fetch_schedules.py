@@ -415,3 +415,22 @@ def test_ppi_fallback_months_follow_cache():
     fs.save_official_dates("PPI", [((2027, 3), date(2027, 4, 14))], today=date(2027, 1, 1))
     ids = by_id(fs.ppi_fallback())
     assert any(local_date(e) == date(2027, 4, 14) and e["is_estimated"] is False for e in ids.values())
+
+
+# ----------------------------------------------------------------------
+# BLS の公表日程ページ（cpi.htm / ppi.htm / empsit.htm）の読み取り（2026-10-23 共通化）
+#   固定データはウェブアーカイブの保存版（BLS は連絡先メールの無い名乗りだと 403 のため）
+# ----------------------------------------------------------------------
+FIXTURES = Path(__file__).resolve().parent / "fixtures"
+
+
+def _bls_rows(name: str) -> list[tuple[int, int, date]]:
+    return fs.parse_bls_schedule((FIXTURES / name).read_text(encoding="utf-8", errors="replace"))
+
+
+def test_parse_bls_cpi_schedule_page():
+    rows = _bls_rows("bls_cpi_2026-10-14.html")
+    assert len(rows) == 14
+    assert rows[0] == (2026, 10, date(2026, 11, 10))
+    assert (2026, 12, date(2027, 1, 13)) in rows
+    assert rows[-1] == (2027, 11, date(2027, 12, 10))

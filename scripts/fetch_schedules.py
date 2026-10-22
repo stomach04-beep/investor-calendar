@@ -33,6 +33,11 @@ fetch_fomc.py / fetch_boj.py と同じベストエフォート方式:
                 非製造業=毎月第3営業日、いずれも 10:00 ET（ISM公式ルール）。
                 公式カレンダーが取れないため is_estimated=True で近似する。
 
+公式日程の控え（2026-10-22〜）:
+  米PCE・米CPI・米PPI・米GDP・米小売売上高は、公式から取れた日程を
+  data/official_schedule_cache.json に自動で貯め、公式取得に失敗した日は
+  「控え ＋ 真値表」でフォールバックする。真値表の年次追記は原則不要になった。
+
 重要（Notion重複防止）:
   CPI/PCE/JOBS/PPI は、シードJSON の既存 id を (category,country,対象年,対象月) で
   再利用する（ALIAS_CATEGORIES）。公式日付がズレても id は不変識別子として据え置き、
@@ -49,6 +54,7 @@ fetch_fomc.py / fetch_boj.py と同じベストエフォート方式:
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import re
 import sys
@@ -284,6 +290,21 @@ CENSUS_RETAIL_SOURCE_URL = "https://www.census.gov/retail/"
 # ISM 公式レポートページ（日程はルール計算するのでソースURL表示用のみ）
 ISM_SOURCE_URL = "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/"
 
+# ----------------------------------------------------------------------
+# 公式日程の控え（自動保存）  2026-10-22 追加
+#   公式から取れた (対象期間, 公表日) を data/official_schedule_cache.json に貯め、
+#   公式取得に失敗した日のフォールバックは「控え ＋ 真値表」で作る（控えが優先）。
+#   以前は真値表（手書き）だけが頼りで、年次追記を忘れると取得失敗の日に
+#   古い日付のまま黙って残った（2026-10-22 に小売売上高の表が残り1か月で発覚）。
+#   公式が取れている限り控えは毎日自動で先へ伸びるので、手作業の年次追記は要らない。
+#   ファイルは sync.yml の auto-commit で investor_events.json と一緒にコミットされる。
+# ----------------------------------------------------------------------
+SCHEDULE_CACHE_FILE = Path(__file__).resolve().parents[1] / "data" / "official_schedule_cache.json"
+CACHE_KEEP_DAYS = 400   # 公表日がこれより古い控えは捨てる（ファイルが際限なく伸びないように）
+# 対象期間の末日から公表日までの日数の上限（これを超える・期末より前の組は読み違いとみなして保存しない）。
+# 月次は実績で最長 約30日（PPI 1月分=2/27）、GDP 改定値は約60日。余裕を見た値。
+CACHE_MAX_LAG_DAYS = {"PCE": 50, "CPI": 50, "PPI": 50, "RETAIL": 50, "GDP": 100}
+
 
 # ----------------------------------------------------------------------
 # 共通ユーティリティ
@@ -353,12 +374,121 @@ def warn_truth_runway(label: str, truth: dict, today: date | None = None,
     remaining = (last[0] - today.year) * 12 + (last[1] - today.month)
     if remaining < min_months:
         warn(
-            f"{label}: 真値表の残りが {remaining} か月（最終対象月 {last[0]}-{last[1]:02d}）。"
-            f"BLS/BEA の翌年分公表スケジュールを確認して真値表を追記してください"
-            f"（切れると古い日付が残り続けます）。"
+            f"{label}: フォールバック用の日程（公式の控え＋真値表）の残りが {remaining} か月"
+            f"（最終対象月 {last[0]}-{last[1]:02d}）。公式取得が何日も続けて失敗していないか確認し、"
+            f"続いているなら公式の翌年分日程を真値表に追記してください（切れると古い日付が残り続けます）。"
         )
         return True
     return False
+
+
+# ----------------------------------------------------------------------
+# 公式日程の控え（自動保存）の読み書き
+#   キーは真値表と同じタプル（月次 = (年, 月)、GDP = (年, 四半期, 種別)）。
+#   JSON には "2026-10" / "2026-3-adv" の文字列で持つ。
+# ----------------------------------------------------------------------
+def _key_to_str(key: tuple) -> str:
+    return "-".join(str(p) for p in key)
+
+
+def _str_to_key(text: str) -> tuple:
+    return tuple(int(p) if p.isdigit() else p for p in text.split("-"))
+
+
+def _period_end(key: tuple) -> date:
+    """対象期間の末日（月次はその月の末日、GDP はその四半期の末日）。"""
+    year, second = key[0], key[1]
+    month = second * 3 if len(key) >= 3 else second
+    first_of_next = date(year + (month == 12), month % 12 + 1, 1)
+    return first_of_next - timedelta(days=1)
+
+
+def _read_cache_file() -> dict:
+    """控えファイル全体を読む。無ければ空。壊れていたら警告して空（取得自体は止めない）。"""
+    try:
+        data = json.loads(SCHEDULE_CACHE_FILE.read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        return {}
+    except (OSError, ValueError) as e:
+        warn(f"fetch_schedules: 公式日程の控えを読めません（{type(e).__name__}）→ 真値表だけで続行")
+        return {}
+    return data if isinstance(data, dict) else {}
+
+
+def cached_dates(category: str) -> dict[tuple, date]:
+    """控えに入っている、その系統の (キー → 公表日)。"""
+    raw = _read_cache_file().get("categories", {}).get(category, {}).get("dates", {})
+    out: dict[tuple, date] = {}
+    for k, v in raw.items():
+        try:
+            out[_str_to_key(k)] = date.fromisoformat(v)
+        except (TypeError, ValueError):
+            continue
+    return out
+
+
+def fallback_table(category: str, truth: dict) -> dict:
+    """フォールバックに使う日程表 = 真値表 ＋ 控え（同じキーは公式由来の控えを優先）。"""
+    merged = dict(truth)
+    merged.update(cached_dates(category))
+    return merged
+
+
+def save_official_dates(category: str, pairs: list[tuple[tuple, date]],
+                        today: date | None = None) -> int:
+    """
+    公式から取れた (キー, 公表日) を控えへ保存し、保存できた件数を返す。
+
+    - 1回の取得で同じキーに違う日付が出たら、表の読み違いとみなして何も保存しない
+      （2026-10-22 の小売売上高＝速報版と確報版の取り違えがこの形だった）。
+    - 対象期間の末日より前、または末日から CACHE_MAX_LAG_DAYS を超える公表日は保存しない。
+    - 今回の取得に無いキーは消さない（BEA は数か月先しか載せないので、貯めて先を伸ばす）。
+    - 中身が変わったときだけファイルを書く（毎日の無駄なコミットを作らない）。
+    """
+    today = today or datetime.now(TZ_ET).date()
+    seen: dict[tuple, date] = {}
+    for key, pub in pairs:
+        if key in seen and seen[key] != pub:
+            warn(f"fetch_schedules[{category}]: 公式の表で {_key_to_str(key)} に日付が2つ"
+                 f"（{seen[key]} / {pub}）。表の読み違いの疑いがあるため控えに保存しません。")
+            return 0
+        seen[key] = pub
+    max_lag = CACHE_MAX_LAG_DAYS[category]
+    ok: dict[tuple, date] = {}
+    for key, pub in seen.items():
+        lag = (pub - _period_end(key)).days
+        if 1 <= lag <= max_lag:
+            ok[key] = pub
+        else:
+            log(f"  fetch_schedules[{category}]: {_key_to_str(key)}→{pub} は期末から{lag}日で不自然なため控えに入れない")
+    if not ok:
+        return 0
+
+    data = _read_cache_file()
+    cats = data.setdefault("categories", {})
+    old_dates = dict(cats.get(category, {}).get("dates", {}))
+    new_dates = dict(old_dates)
+    new_dates.update({_key_to_str(k): v.isoformat() for k, v in ok.items()})
+    cutoff = today - timedelta(days=CACHE_KEEP_DAYS)
+    new_dates = {k: v for k, v in new_dates.items() if date.fromisoformat(v) >= cutoff}
+    if new_dates != old_dates:
+        cats[category] = {"dates": new_dates}
+        data["note"] = ("fetch_schedules.py が公式から取れた日程を自動で貯める控え。"
+                        "公式取得に失敗した日のフォールバックに使う。手で編集しない。")
+        SCHEDULE_CACHE_FILE.parent.mkdir(parents=True, exist_ok=True)
+        SCHEDULE_CACHE_FILE.write_text(
+            json.dumps(data, ensure_ascii=False, indent=1, sort_keys=True) + "\n",
+            encoding="utf-8", newline="\n")
+    return len(ok)
+
+
+def remember_official(category: str, pairs: list[tuple[tuple, date]]) -> None:
+    """save_official_dates のベストエフォート版。控えの保存に失敗しても取得結果は使う。"""
+    try:
+        n = save_official_dates(category, pairs)
+        log(f"  fetch_schedules[{category}]: 公式日程を控えに保存（{n} 件）")
+    except Exception as e:  # noqa: BLE001 - 控えは保険なので本体を止めない
+        warn(f"fetch_schedules[{category}]: 公式日程の控えの保存に失敗（{type(e).__name__}: {e}）")
 
 
 def et_offset_str(d: date, hour: int = 8, minute: int = 30) -> str:
@@ -424,6 +554,7 @@ def make_us_event(category: str, title_prefix: str, target_month: int,
 def fetch_bea_pce() -> list[dict]:
     """BEA公式スケジュールから Personal Income and Outlays の公表日を抽出する。"""
     events: list[dict] = []
+    pairs: list[tuple[tuple, date]] = []   # 控えに保存する (対象月, 公表日)
     try:
         r = requests.get(BEA_URL, timeout=30, headers={"User-Agent": USER_AGENT})
         if r.status_code != 200:
@@ -465,11 +596,13 @@ def fetch_bea_pce() -> list[dict]:
             except ValueError:
                 continue
             events.append(make_us_event("PCE", "米PCEデフレーター", tgt_month, pub_date, BEA_SOURCE_URL, tgt_year))
+            pairs.append(((tgt_year, tgt_month), pub_date))
 
         if not events:
             log("  fetch_schedules[PCE]: BEAから抽出ゼロ → 真値表フォールバック")
             return pce_fallback()
         log(f"  fetch_schedules[PCE]: BEA公式から {len(events)} 件取得")
+        remember_official("PCE", pairs)
         return events
     except Exception as e:
         log(f"  fetch_schedules[PCE]: BEA取得失敗 ({type(e).__name__}: {e}) → 真値表フォールバック")
@@ -477,12 +610,13 @@ def fetch_bea_pce() -> list[dict]:
 
 
 def pce_fallback() -> list[dict]:
-    """米PCE のフォールバック（BEA真値表からイベント生成）。"""
+    """米PCE のフォールバック（公式の控え＋BEA真値表からイベント生成）。"""
+    table = fallback_table("PCE", US_PCE_TRUTH)
     out: list[dict] = []
-    for (tgt_y, tgt_m), pub_date in US_PCE_TRUTH.items():
+    for (tgt_y, tgt_m), pub_date in table.items():
         out.append(make_us_event("PCE", "米PCEデフレーター", tgt_m, pub_date, BEA_SOURCE_URL, tgt_y))
-    log(f"  fetch_schedules[PCE]: 真値表フォールバックで {len(out)} 件生成")
-    warn_truth_runway("fetch_schedules[PCE]", US_PCE_TRUTH)
+    log(f"  fetch_schedules[PCE]: 真値表フォールバックで {len(out)} 件生成（うち控え {len(cached_dates('PCE'))} 件）")
+    warn_truth_runway("fetch_schedules[PCE]", table)
     record_fetch_warning("fetch_schedules[PCE]", f"BEA公式から取得できず真値表フォールバック使用（{len(out)} 件）")
     return out
 
@@ -503,6 +637,7 @@ def fetch_bls_cpi() -> list[dict]:
         # BLSのCPIスケジュール表： "Reference Month | Release Date" 形式
         soup = BeautifulSoup(r.text, "html.parser")
         events: list[dict] = []
+        pairs: list[tuple[tuple, date]] = []   # 控えに保存する (対象月, 公表日)
         for tr in soup.find_all("tr"):
             # 中に別の行を抱えた外枠の行（ページ全体のレイアウト表）は飛ばす。
             # 入れ子の td まで全部拾うと、メニューの月名と日程表の日付が組み合わさってゴミ行になる。
@@ -536,10 +671,12 @@ def fetch_bls_cpi() -> list[dict]:
             except ValueError:
                 continue
             events.append(make_us_event("CPI", "米CPI", tgt_month, pub_date, BLS_SOURCE_URL, tgt_year))
+            pairs.append(((tgt_year, tgt_month), pub_date))
         if not events:
             log("  fetch_schedules[CPI]: BLSから抽出ゼロ → 真値表フォールバック")
             return cpi_fallback()
         log(f"  fetch_schedules[CPI]: BLS公式から {len(events)} 件取得")
+        remember_official("CPI", pairs)
         return events
     except Exception as e:
         log(f"  fetch_schedules[CPI]: BLS取得失敗 ({type(e).__name__}: {e}) → 真値表フォールバック")
@@ -547,14 +684,15 @@ def fetch_bls_cpi() -> list[dict]:
 
 
 def cpi_fallback() -> list[dict]:
-    """米CPI のフォールバック（BLS真値表からイベント生成）。"""
+    """米CPI のフォールバック（公式の控え＋BLS真値表からイベント生成）。"""
+    table = fallback_table("CPI", US_CPI_TRUTH)
     out: list[dict] = []
-    for (tgt_y, tgt_m), pub_date in US_CPI_TRUTH.items():
+    for (tgt_y, tgt_m), pub_date in table.items():
         out.append(make_us_event("CPI", "米CPI", tgt_m, pub_date, BLS_SOURCE_URL, tgt_y))
-    log(f"  fetch_schedules[CPI]: 真値表フォールバックで {len(out)} 件生成")
+    log(f"  fetch_schedules[CPI]: 真値表フォールバックで {len(out)} 件生成（うち控え {len(cached_dates('CPI'))} 件）")
     record_fetch_warning("fetch_schedules[CPI]", f"BLS公式から取得できず真値表フォールバック使用（{len(out)} 件）")
-    warn_uncovered_targets("fetch_schedules[CPI]", "CPI", "US", US_CPI_TRUTH)
-    warn_truth_runway("fetch_schedules[CPI]", US_CPI_TRUTH)
+    warn_uncovered_targets("fetch_schedules[CPI]", "CPI", "US", table)
+    warn_truth_runway("fetch_schedules[CPI]", table)
     return out
 
 
@@ -748,9 +886,9 @@ def make_ppi_event(target_year: int, target_month: int, pub_date: date,
 def _us_cpi_pubdate_by_target() -> dict[tuple[int, int], date]:
     """
     PPI未確定月の「CPI翌営業日」算出に使う、対象月→米CPI公表日 の辞書。
-    まず US_CPI_TRUTH を採用。足りない分はシードの 米CPI(datetime_local) から補う。
+    まず 控え＋US_CPI_TRUTH を採用。足りない分はシードの 米CPI(datetime_local) から補う。
     """
-    out: dict[tuple[int, int], date] = dict(US_CPI_TRUTH)
+    out: dict[tuple[int, int], date] = fallback_table("CPI", US_CPI_TRUTH)
     try:
         data = load_canonical_events()
     except Exception:
@@ -769,26 +907,28 @@ def _us_cpi_pubdate_by_target() -> dict[tuple[int, int], date]:
 def ppi_fallback() -> list[dict]:
     """
     米PPI のフォールバック。
-      - US_PPI_TRUTH の5件は確定（is_estimated=False）。
+      - 控え＋US_PPI_TRUTH にある月は確定（is_estimated=False）。
       - それ以外（対象月レンジ内）は「対応CPIの公表日の翌営業日」を近似（is_estimated=True）。
-    対象月レンジ = 米CPIと同一（2025年12月分 〜 2026年11月分）。
+    対象月レンジ = PPI の控え＋真値表 と 米CPI の控え＋真値表 にある月の和
+    （以前は 2025年12月分〜2026年11月分の固定で、12月以降は何も作れなくなっていた）。
     """
-    target_months: list[tuple[int, int]] = [(2025, 12)] + [(2026, m) for m in range(1, 12)]
+    ppi_table = fallback_table("PPI", US_PPI_TRUTH)
+    target_months = sorted(set(ppi_table) | set(fallback_table("CPI", US_CPI_TRUTH)))
     cpi_map = _us_cpi_pubdate_by_target()
     out: list[dict] = []
     for (tgt_y, tgt_m) in target_months:
-        if (tgt_y, tgt_m) in US_PPI_TRUTH:
-            out.append(make_ppi_event(tgt_y, tgt_m, US_PPI_TRUTH[(tgt_y, tgt_m)], is_estimated=False))
+        if (tgt_y, tgt_m) in ppi_table:
+            out.append(make_ppi_event(tgt_y, tgt_m, ppi_table[(tgt_y, tgt_m)], is_estimated=False))
         else:
             cpi_d = cpi_map.get((tgt_y, tgt_m))
             if cpi_d is None:
                 log(f"  fetch_schedules[PPI]: 対象 {tgt_y}-{tgt_m} のCPI公表日不明 → スキップ")
                 continue
             out.append(make_ppi_event(tgt_y, tgt_m, next_business_day(cpi_d), is_estimated=True))
-    log(f"  fetch_schedules[PPI]: フォールバックで {len(out)} 件生成（確定 {len(US_PPI_TRUTH)} 件）")
+    log(f"  fetch_schedules[PPI]: フォールバックで {len(out)} 件生成（確定 {len(ppi_table)} 件・うち控え {len(cached_dates('PPI'))} 件）")
     record_fetch_warning("fetch_schedules[PPI]", f"BLS公式から取得できず真値表＋CPI翌営業日近似フォールバック使用（{len(out)} 件）")
-    warn_uncovered_targets("fetch_schedules[PPI]", "PPI", "US", US_PPI_TRUTH)
-    warn_truth_runway("fetch_schedules[PPI]", US_PPI_TRUTH)
+    warn_uncovered_targets("fetch_schedules[PPI]", "PPI", "US", ppi_table)
+    warn_truth_runway("fetch_schedules[PPI]", ppi_table)
     return out
 
 
@@ -804,6 +944,7 @@ def fetch_bls_ppi() -> list[dict]:
             return ppi_fallback()
         soup = BeautifulSoup(r.text, "html.parser")
         events: list[dict] = []
+        pairs: list[tuple[tuple, date]] = []   # 控えに保存する (対象月, 公表日)
         for tr in soup.find_all("tr"):
             # 中に別の行を抱えた外枠の行（ページ全体のレイアウト表）は飛ばす。
             # 入れ子の td まで全部拾うと、メニューの月名と日程表の日付が組み合わさってゴミ行になる。
@@ -837,10 +978,12 @@ def fetch_bls_ppi() -> list[dict]:
                 continue
             # 公式から取れたものは確定扱い
             events.append(make_ppi_event(tgt_year, tgt_month, pub_date, is_estimated=False))
+            pairs.append(((tgt_year, tgt_month), pub_date))
         if not events:
             log("  fetch_schedules[PPI]: BLSから抽出ゼロ → フォールバック")
             return ppi_fallback()
         log(f"  fetch_schedules[PPI]: BLS公式から {len(events)} 件取得")
+        remember_official("PPI", pairs)
         return events
     except Exception as e:
         log(f"  fetch_schedules[PPI]: BLS取得失敗 ({type(e).__name__}: {e}) → フォールバック")
@@ -882,10 +1025,11 @@ def make_gdp_event(tgt_year: int, quarter: int, kind: str, pub_date: date,
 
 
 def gdp_fallback() -> list[dict]:
-    """米GDP のフォールバック（BEA真値表からイベント生成）。"""
-    out = [make_gdp_event(y, q, kind, d) for (y, q, kind), d in US_GDP_TRUTH.items()]
-    log(f"  fetch_schedules[GDP]: 真値表フォールバックで {len(out)} 件生成")
-    warn_truth_runway("fetch_schedules[GDP]", US_GDP_TRUTH)
+    """米GDP のフォールバック（公式の控え＋BEA真値表からイベント生成）。"""
+    table = fallback_table("GDP", US_GDP_TRUTH)
+    out = [make_gdp_event(y, q, kind, d) for (y, q, kind), d in table.items()]
+    log(f"  fetch_schedules[GDP]: 真値表フォールバックで {len(out)} 件生成（うち控え {len(cached_dates('GDP'))} 件）")
+    warn_truth_runway("fetch_schedules[GDP]", table)
     record_fetch_warning("fetch_schedules[GDP]", f"BEA公式から取得できず真値表フォールバック使用（{len(out)} 件）")
     return out
 
@@ -904,6 +1048,7 @@ def fetch_bea_gdp() -> list[dict]:
             return gdp_fallback()
 
         events: list[dict] = []
+        pairs: list[tuple[tuple, date]] = []   # 控えに保存する ((年, 四半期, 種別), 公表日)
         for tr in table.find_all("tr"):
             cells = [td.get_text(" ", strip=True) for td in tr.find_all(["td", "th"])]
             if len(cells) < 3:
@@ -942,11 +1087,13 @@ def fetch_bea_gdp() -> list[dict]:
             except ValueError:
                 continue
             events.append(make_gdp_event(tgt_year, quarter, kind, pub_date))
+            pairs.append(((tgt_year, quarter, kind), pub_date))
 
         if not events:
             log("  fetch_schedules[GDP]: BEAから抽出ゼロ → 真値表フォールバック")
             return gdp_fallback()
         log(f"  fetch_schedules[GDP]: BEA公式から {len(events)} 件取得")
+        remember_official("GDP", pairs)
         return events
     except Exception as e:
         log(f"  fetch_schedules[GDP]: BEA取得失敗 ({type(e).__name__}: {e}) → 真値表フォールバック")
@@ -985,10 +1132,11 @@ def make_retail_event(tgt_year: int, tgt_month: int, pub_date: date,
 
 
 def retail_fallback() -> list[dict]:
-    """米小売売上高のフォールバック（Census真値表からイベント生成）。"""
-    out = [make_retail_event(y, m, d) for (y, m), d in US_RETAIL_TRUTH.items()]
-    log(f"  fetch_schedules[RETAIL]: 真値表フォールバックで {len(out)} 件生成")
-    warn_truth_runway("fetch_schedules[RETAIL]", US_RETAIL_TRUTH)
+    """米小売売上高のフォールバック（公式の控え＋Census真値表からイベント生成）。"""
+    table = fallback_table("RETAIL", US_RETAIL_TRUTH)
+    out = [make_retail_event(y, m, d) for (y, m), d in table.items()]
+    log(f"  fetch_schedules[RETAIL]: 真値表フォールバックで {len(out)} 件生成（うち控え {len(cached_dates('RETAIL'))} 件）")
+    warn_truth_runway("fetch_schedules[RETAIL]", table)
     record_fetch_warning("fetch_schedules[RETAIL]", f"Census公式から取得できず真値表フォールバック使用（{len(out)} 件）")
     return out
 
@@ -1022,6 +1170,7 @@ def fetch_census_retail() -> list[dict]:
             log("  fetch_schedules[RETAIL]: Censusに速報版の表が見つからない → 真値表フォールバック")
             return retail_fallback()
         events: list[dict] = []
+        pairs: list[tuple[tuple, date]] = []   # 控えに保存する (対象月, 公表日)
         for tr in table.find_all("tr"):
             cells = [td.get_text(" ", strip=True) for td in tr.find_all(["td", "th"])]
             if len(cells) < 2:
@@ -1043,10 +1192,12 @@ def fetch_census_retail() -> list[dict]:
             except ValueError:
                 continue
             events.append(make_retail_event(tgt_year, tgt_month, pub_date))
+            pairs.append(((tgt_year, tgt_month), pub_date))
         if not events:
             log("  fetch_schedules[RETAIL]: Censusから抽出ゼロ → 真値表フォールバック")
             return retail_fallback()
         log(f"  fetch_schedules[RETAIL]: Census公式から {len(events)} 件取得")
+        remember_official("RETAIL", pairs)
         return events
     except Exception as e:
         log(f"  fetch_schedules[RETAIL]: Census取得失敗 ({type(e).__name__}: {e}) → 真値表フォールバック")

@@ -166,11 +166,16 @@ jobs:
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          if git diff --quiet -- data/investor_events.json; then
+          # official_schedule_cache.json = fetch_schedules.py が公式から取れた日程を貯める控え
+          # （公式取得に失敗した日のフォールバック用。ここでコミットしないと翌日に引き継がれない）
+          git add data/investor_events.json
+          if [ -f data/official_schedule_cache.json ]; then
+            git add data/official_schedule_cache.json
+          fi
+          if git diff --cached --quiet; then
             echo "差分なし、コミットなし"
             exit 0
           fi
-          git add data/investor_events.json
           git commit -m "chore: investor_events.json 自動更新 (run #${{ github.run_number }})"
           git push
 

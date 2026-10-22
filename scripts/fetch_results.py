@@ -26,6 +26,7 @@ from __future__ import annotations
 import argparse
 import csv
 import io
+import re
 import sys
 import time
 from datetime import date, datetime, timedelta, timezone
@@ -116,6 +117,18 @@ def prev_month(d: date) -> tuple[int, int]:
     return d.year, d.month - 1
 
 
+def target_ym_from_id(ev_id: str) -> tuple[int, int] | None:
+    """
+    対象月が id に入っている系統（小売売上高 us_retail_2026-03）から (年, 月) を取り出す。
+    「発表日の前月」で決めると、公表が遅れた月（2025-10 の米政府閉鎖で 2025年9月分〜
+    2026年3月分は1〜2か月遅れ）に別の月の値を書いてしまう（2026-10-23 修正）。
+    """
+    m = re.fullmatch(r"us_retail_(\d{4})-(\d{2})", ev_id or "")
+    if not m:
+        return None
+    return int(m.group(1)), int(m.group(2))
+
+
 def month_value(series: list[tuple[date, float]], year: int, month: int):
     """series から指定年月（月初 observation）の (date, value) を返す。無ければ None。"""
     for dt, v in series:
@@ -127,8 +140,12 @@ def month_value(series: list[tuple[date, float]], year: int, month: int):
 # ----------------------------------------------------------------------
 # カテゴリ別の結果文字列生成
 # ----------------------------------------------------------------------
-def build_result(category: str, event_date: date, cache: dict) -> str | None:
-    """カテゴリとイベント日から、FRED 実績値で結果文字列を作る。取得不能なら None。"""
+def build_result(category: str, event_date: date, cache: dict,
+                 target_ym: tuple[int, int] | None = None) -> str | None:
+    """
+    カテゴリとイベント日から、FRED 実績値で結果文字列を作る。取得不能なら None。
+    target_ym（行の対象月）が分かるときは、小売売上高はそれを使う（発表日の前月で推測しない）。
+    """
     def s(sid: str) -> list[tuple[date, float]]:
         if sid not in cache:
             cache[sid] = load_fred(sid)
@@ -195,7 +212,8 @@ def build_result(category: str, event_date: date, cache: dict) -> str | None:
         return f"実質GDP {cur[1]:+.1f}%（{cur[0].year}年Q{quarter}・年率）"
 
     if category == "RETAIL":
-        ty, tm = prev_month(event_date)  # 対象月＝発表日の前月
+        # 対象月＝行の対象月（id から）。分からないときだけ発表日の前月で推測する
+        ty, tm = target_ym or prev_month(event_date)
         r = s("RSAFS")
         cur = month_value(r, ty, tm)
         if not cur:
@@ -324,7 +342,7 @@ def main() -> int:
             continue
 
         targets += 1
-        res = build_result(category, ev_dt.date(), cache)
+        res = build_result(category, ev_dt.date(), cache, target_ym_from_id(ev_id))
         if not res:
             log(f"  結果生成できず（FRED未取得?）: {category} {ev_dt.date()}")
             continue

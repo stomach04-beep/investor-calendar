@@ -59,6 +59,7 @@ import json
 import os
 import re
 import sys
+import time
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -1182,10 +1183,36 @@ def find_census_advance_table(soup: BeautifulSoup):
     return None
 
 
+CENSUS_RETRY_WAITS = (20, 60)   # 再試行までの待ち秒数（＝最大3回取りに行く）
+
+
+def get_census_with_retry(url: str) -> requests.Response:
+    """
+    Census のページを取る。5xx と通信エラーのときだけ待って取り直す（2026-10-25 追加）。
+
+    GitHub Actions からだと Census がときどき HTTP 500 を返す（直近30回中2回・手元からは200）。
+    1回きりの取得だと、その日だけ真値表フォールバックの警告が出て、JOB-32 の
+    「GH警告 投資家カレンダー」が OK↔警告 を往復していた（フラッピング）。
+    4xx は取り直しても変わらないのでそのまま返す。最後の試行の結果・例外はそのまま呼び出し元へ。
+    """
+    for i, wait in enumerate((*CENSUS_RETRY_WAITS, None)):
+        try:
+            r = requests.get(url, timeout=30, headers={"User-Agent": USER_AGENT})
+            if r.status_code < 500 or wait is None:
+                return r
+            log(f"  fetch_schedules[RETAIL]: Census HTTP {r.status_code}（{i + 1}回目）→ {wait}秒後に再試行")
+        except requests.RequestException as e:
+            if wait is None:
+                raise
+            log(f"  fetch_schedules[RETAIL]: Census 通信エラー（{i + 1}回目・{type(e).__name__}）→ {wait}秒後に再試行")
+        time.sleep(wait)
+    raise RuntimeError("到達しない")   # ループは必ず return か raise で抜ける
+
+
 def fetch_census_retail() -> list[dict]:
     """Census公式 release_schedule.html から MARTS（速報）公表日を抽出する。"""
     try:
-        r = requests.get(CENSUS_RETAIL_URL, timeout=30, headers={"User-Agent": USER_AGENT})
+        r = get_census_with_retry(CENSUS_RETAIL_URL)
         if r.status_code != 200:
             log(f"  fetch_schedules[RETAIL]: Census HTTP {r.status_code} → 真値表フォールバック")
             return retail_fallback()

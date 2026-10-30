@@ -6,6 +6,8 @@ tmp/build_events_out.json + tmp/fetch_*_out.json をマージして Notion DB �
 - 既存ページの `推定日(is_estimated)=false` の行は触らない（人が手動で確定値に補正した行を保護）
   ※例外: 決算イベント(hold_earnings_*/watch_earnings_*)のみ「incomingも確定(JPX公式)」
     「既存の発表日時が過去」の場合は更新を許す（allow_confirmed_earnings_update 参照）
+  ※例外: incoming に official_live=True（その日に公式の日程表から読めた値）が付いていれば
+    確定行でも更新する（allow_confirmed_update 参照。2026-10-30〜）
 - fetch_* の出力は build_events の同 id を上書き（公式サイトの確定値を優先）
 - 新規 ID は create_pages
 
@@ -75,6 +77,18 @@ def allow_confirmed_earnings_update(ev: dict, existing_page: dict, name_map: dic
     if dt.tzinfo is None:
         dt = dt.replace(tzinfo=timezone.utc)
     return dt < (now_utc or datetime.now(timezone.utc))
+
+
+def allow_confirmed_update(ev: dict, existing_page: dict, name_map: dict,
+                           now_utc: datetime | None = None) -> bool:
+    """確定行(is_estimated=false)の既存ページを更新してよいか。
+
+    official_live=True（その日に公式の日程表から読めた値）なら更新する。
+    人が Notion で直した値より、今日の公式発表を正とする。
+    """
+    if ev.get("official_live"):
+        return True
+    return allow_confirmed_earnings_update(ev, existing_page, name_map, now_utc)
 
 
 # 日付履歴に残す最大件数（rich_text は 2000 文字上限。1件 ≈ 40 文字）
@@ -187,7 +201,7 @@ def collect_events() -> list[dict]:
         log("  build_events_out.json が見つかりません。build_events.py を先に実行してください")
         return []
 
-    for tmp_name in ("fetch_fomc_out", "fetch_beige_out", "fetch_fomc_minutes_out", "fetch_boj_out", "fetch_schedules_out", "fetch_earnings_out", "fetch_anomalies_out", "fetch_eia_out", "fetch_nintendo_direct_out"):
+    for tmp_name in ("fetch_fomc_out", "fetch_beige_out", "fetch_fomc_minutes_out", "fetch_boj_out", "fetch_schedules_out", "fetch_jp_schedules_out", "fetch_earnings_out", "fetch_anomalies_out", "fetch_eia_out", "fetch_nintendo_direct_out"):
         try:
             data = load_tmp(tmp_name)
             count = 0
@@ -272,9 +286,12 @@ def main() -> int:
                 existing_page.get("properties", {}).get(name_map["is_estimated"], {})
             )
             if not existing_is_estimated:
-                # 決算イベントのみ例外あり（JPX公式の追従・決算通過後の前進）。
-                # 非決算イベントは従来どおり無条件で保護。
-                if not allow_confirmed_earnings_update(ev, existing_page, name_map):
+                # 例外1: その日に公式から取れた値（official_live）は確定行でも上書きする。
+                #   ルール計算を「確定」と名乗った行（全国CPI）や手入力の誤り（日本GDP・短観）が
+                #   保護で凍結され、公式が取れても直らなかったため（2026-10-30）。
+                # 例外2: 決算イベント（JPX公式の追従・決算通過後の前進）。
+                # それ以外（真値表・ルール計算・手入力）は従来どおり保護＝人の手直しを守る。
+                if not allow_confirmed_update(ev, existing_page, name_map):
                     protected += 1
                     continue
 

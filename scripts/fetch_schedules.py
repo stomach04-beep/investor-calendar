@@ -727,12 +727,49 @@ def jp_cpi_publish_date(target_year: int, target_month: int) -> date:
     return monday + timedelta(days=4)  # 金曜
 
 
+def make_jp_cpi_event(tgt_year: int, tgt_month: int, pub_date: date,
+                      alias: dict, is_estimated: bool,
+                      hour: int | None = None, minute: int | None = None) -> dict:
+    """全国CPI 1か月分のイベントを作る（ルール計算と総務省の公表予定XMLの両方から使う）。
+
+    時刻は規則表（release_rules）から取る。公式に時刻があればそれで上書きする。
+    """
+    from release_rules import at_rule_time, rule_by_prefix  # 遅延import（循環を避ける）
+    datetime_local, datetime_utc = at_rule_time(rule_by_prefix("jp_cpi_"), pub_date, hour, minute)
+    # シードに同じ対象年月のエントリーがあれば id を再利用（上書き＝重複防止）
+    ev_id = alias.get(("CPI", "JP", tgt_year, tgt_month),
+                      f"jp_cpi_{pub_date.strftime('%Y-%m-%d')}")
+    # title の対象月ラベル（前年12月分は年号付き）
+    if tgt_year != pub_date.year:
+        month_label = f"{tgt_year}年{JP_MONTH_LABEL[tgt_month]}"
+    else:
+        month_label = JP_MONTH_LABEL[tgt_month]
+    return {
+        "id": ev_id,
+        "title": f"全国CPI ({month_label}分)",
+        "category": "CPI",
+        "country": "JP",
+        "datetime_utc": datetime_utc,
+        "datetime_local": datetime_local,
+        "timezone": "Asia/Tokyo",
+        "importance": 2,
+        "is_estimated": is_estimated,
+        "description": "総務省統計局発表。日銀の利上げ判断材料。",
+        "source_url": JP_CPI_SOURCE_URL,
+        "result": None,
+    }
+
+
 def build_jp_cpi(target_years: set[int]) -> list[dict]:
     """
     対象年の全国CPI（各月分）をルール計算で生成する。
 
     target_years は「公表年」基準でフィルタする（build_events / 既存シードの id が公表日基準のため）。
     対象月は前年12月分〜当年11月分までを候補にし、公表日の年が target_years に入るものを採用。
+
+    ルール計算は推定（is_estimated=True）として出す。2026年は 2月分・3月分・6月分の3回、
+    実際の公表日（総務省の公表予定）と外れた。確定と名乗ると notion_upsert の保護で
+    二度と直らないため。公表予定XMLから取れた月は fetch_jp_schedules.py が確定値で上書きする。
     """
     events: list[dict] = []
     for pub_year in sorted(target_years):
@@ -742,34 +779,9 @@ def build_jp_cpi(target_years: set[int]) -> list[dict]:
             pub_date = jp_cpi_publish_date(tgt_year, tgt_month)
             if pub_date.year not in target_years:
                 continue
-            # 8:30 JST 固定
-            datetime_local = f"{pub_date.strftime('%Y-%m-%d')}T08:30:00+09:00"
-            datetime_utc = to_utc_z(datetime_local)
-            # シードに同じ対象年月のエントリーがあれば id を再利用（上書き＝重複防止）
-            ev_id = _SEED_ID_ALIAS.get(
-                ("CPI", "JP", tgt_year, tgt_month),
-                f"jp_cpi_{pub_date.strftime('%Y-%m-%d')}",
-            )
-            # title の対象月ラベル（前年12月分は年号付き）
-            if tgt_year != pub_year:
-                month_label = f"{tgt_year}年{JP_MONTH_LABEL[tgt_month]}"
-            else:
-                month_label = JP_MONTH_LABEL[tgt_month]
-            events.append({
-                "id": ev_id,
-                "title": f"全国CPI ({month_label}分)",
-                "category": "CPI",
-                "country": "JP",
-                "datetime_utc": datetime_utc,
-                "datetime_local": datetime_local,
-                "timezone": "Asia/Tokyo",
-                "importance": 2,
-                "is_estimated": False,
-                "description": "総務省統計局発表。日銀の利上げ判断材料。",
-                "source_url": JP_CPI_SOURCE_URL,
-                "result": None,
-            })
-    log(f"  fetch_schedules[JP CPI]: ルール計算で {len(events)} 件生成")
+            events.append(make_jp_cpi_event(tgt_year, tgt_month, pub_date,
+                                            _SEED_ID_ALIAS, is_estimated=True))
+    log(f"  fetch_schedules[JP CPI]: ルール計算で {len(events)} 件生成（推定）")
     return events
 
 

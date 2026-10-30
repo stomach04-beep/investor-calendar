@@ -100,7 +100,7 @@ JQ_ESTIMATES_MAX_AGE_DAYS = 300
 #            （＝会社が確認した日程）。時間帯の無い行は 2,889 行中 2,058 行が
 #            「昨年の発表日 +364日」ちょうど＝機械予測なので「Nasdaq見込み」として区別する
 #            （2026-09-23 実測。AAPL/MA/ICE/HSY/KMB など主力株も時間帯なし＝見込みだった）
-CONFIRMED_SOURCES = ("JPX", "Nasdaq")
+CONFIRMED_SOURCES = ("JPX", "Nasdaq", "会社告知")
 
 # 曜日のクセの判定に使う直近の発表回数。この回数すべて同じ曜日なら「クセあり」とみなす。
 # 実測（2026-09-23）: 直前8回が全部同じ曜日のとき、次回もその曜日だった率は
@@ -845,6 +845,7 @@ SOURCE_LABELS = {
     "JPX": "確定＝JPX（東証）に会社が登録した発表予定日",
     "Nasdaq": "確定＝Nasdaq決算カレンダーで会社確認済み（時間帯あり）",
     "Nasdaq見込み": "見込み＝Nasdaq決算カレンダーの時間帯なし行（昨年+364日の機械予測が大半）",
+    "会社告知": "確定＝会社自身の告知（告知のページに日付が書いてあることを照合済み）",
     "yfinance": "見込み＝Yahoo Finance の予定日（推定を含む）",
     "JQ予測": "予測＝過去の開示実績から（昨年同四半期+364日）",
     "EDGAR予測": "予測＝SEC 8-K の発表実績から（昨年同四半期+364日）",
@@ -1058,7 +1059,41 @@ def _pick_us_time(erow: dict, yinfo: dict, session: str | None) -> tuple[str | N
     return None, "既定", None
 
 
-def _resolve_dates(holds: list[dict]) -> tuple[list[dict], list[dict]]:
+# ----------------------------------------------------------------------
+# 会社告知日（claud-code の earnings-announce-watch が週1回 Notion に書く）
+#   会社が「◯月◯日に発表」と告知したページを AI で探し、日付がページに書いてあることを
+#   機械で照合したものだけが入る。ここでは読むだけ（書くのは向こうの専管）。
+# ----------------------------------------------------------------------
+PROP_ANNOUNCED = "会社告知日"
+PROP_ANNOUNCED_URL = "会社告知の出典"
+
+
+def load_company_announced(client: NotionClient, cal_db_id: str) -> dict[str, tuple[date, str | None, str]]:
+    """{イベントid: (告知日, "HH:MM"|None, 出典URL)}。読めなければ空（従来どおりに動く）。"""
+    out: dict[str, tuple[date, str | None, str]] = {}
+    try:
+        pages = client.query_database(cal_db_id, {"property": PROP_ANNOUNCED, "date": {"is_not_empty": True}})
+    except Exception as e:                                       # noqa: BLE001
+        log(f"  会社告知日を読めず（従来どおり）: {type(e).__name__}")
+        return out
+    for pg in pages:
+        props = pg.get("properties", {})
+        ev_id = read_rich_text(props.get("ID", {}))
+        start = ((props.get(PROP_ANNOUNCED) or {}).get("date") or {}).get("start")
+        if not ev_id or not start:
+            continue
+        if "T" in start:
+            local = datetime.fromisoformat(start).astimezone(TZ_ET)
+            out[ev_id] = (local.date(), f"{local:%H:%M}", (props.get(PROP_ANNOUNCED_URL) or {}).get("url") or "")
+        else:
+            out[ev_id] = (date.fromisoformat(start[:10]), None, (props.get(PROP_ANNOUNCED_URL) or {}).get("url") or "")
+    log(f"  会社告知日 {len(out)} 件")
+    return out
+
+
+def _resolve_dates(holds: list[dict],
+                   announced: dict[str, tuple[date, str | None, str]] | None = None
+                   ) -> tuple[list[dict], list[dict]]:
     """各保有株の決算「日」と「時刻」を解決する。
 
     日付（上から順に試し、最初に取れたものを採用）:
@@ -1140,6 +1175,14 @@ def _resolve_dates(holds: list[dict]) -> tuple[list[dict], list[dict]]:
                 # 無ければ昨年+364日の機械予測が大半なので「見込み」として区別する
                 ed, session = nrow["date"], nrow["session"]
                 src = "Nasdaq" if session else "Nasdaq見込み"
+            # 会社自身の告知（照合済み）。Nasdaq の確定（時間帯つき）が無いときだけ使う。
+            # Nasdaq の確定を優先するのは、告知の後に会社が日程を変えたときに追えるようにするため
+            ev_key = f"{'watch' if h.get('is_watch') else 'hold'}_earnings_us_{usym}"
+            ann = (announced or {}).get(ev_key)
+            if ann and ann[0] > today_et and src != "Nasdaq":
+                ed, src = ann[0], "会社告知"
+                if ann[1]:
+                    session = "AM" if int(ann[1][:2]) < 12 else "PM"
             # yfinance は日付が要らなくても呼ぶ（過去の発表時刻＝時刻の下限に使う）
             yinfo = yf_earnings_info(sym)
             if ed is None:
@@ -1163,6 +1206,9 @@ def _resolve_dates(holds: list[dict]) -> tuple[list[dict], list[dict]]:
                 yt = (yinfo.get("times") or {}).get(session)
                 if yt:
                     time_hhmm, time_src, time_note = yt, "Yahoo実績", f"Yahoo実績 {yt}"
+            if src == "会社告知" and ann and ann[1]:
+                # 告知に発表時刻が書いてあればそれがいちばん確か
+                time_hhmm, time_src, time_note = ann[1], "会社告知", f"会社の告知 {ann[1]} ET"
         if ed is None:
             missing.append(h)
             detail_log(f"  {name}({h['ticker']}): 決算日が取得できず（スキップ）")
@@ -1271,7 +1317,8 @@ def main() -> int:
         write_tmp("fetch_earnings_out", {"events": [], "fetched_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")})
         return 0
 
-    resolved, missing = _resolve_dates(holds)
+    announced = load_company_announced(client, get_notion_db_id())
+    resolved, missing = _resolve_dates(holds, announced)
 
     updated = 0
     for h in resolved:

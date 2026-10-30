@@ -222,3 +222,46 @@ def test_date_log_is_capped():
     got = nu.append_date_log(old, _ev(), today=date(2026, 9, 23))
     assert got.count(" / ") == nu.DATE_LOG_MAX_ENTRIES - 1
     assert got.endswith("2026-09-23:2026-10-29|Nasdaq見込み")
+
+
+# ----------------------------------------------------------------------
+# 会社告知日（2026-10-30・earnings-announce-watch が Notion に書く）
+# ----------------------------------------------------------------------
+def _resolve_with(monkeypatch, nasdaq_row, announced):
+    """外部の取得を全部差し替えて _resolve_dates を1銘柄だけ回す。"""
+    from datetime import datetime, timedelta
+    today = datetime.now(fe.TZ_ET).date()
+    monkeypatch.setattr(fe, "nasdaq_earnings_map", lambda: {"TST": nasdaq_row} if nasdaq_row else {})
+    monkeypatch.setattr(fe, "us_earnings_time_map", lambda syms: {})
+    monkeypatch.setattr(fe, "yf_earnings_info", lambda sym: {"date": None, "session": None, "times": {}})
+    h = {"name": "テスト", "ticker": "TST", "market": "米国"}
+    resolved, _ = fe._resolve_dates([h], announced)
+    return resolved[0], today
+
+
+def test_company_announced_beats_nasdaq_projection(monkeypatch):
+    from datetime import datetime, timedelta
+    today = datetime.now(fe.TZ_ET).date()
+    ann_day = today + timedelta(days=20)
+    r, _ = _resolve_with(monkeypatch, {"date": today + timedelta(days=21), "session": None},
+                         {"hold_earnings_us_TST": (ann_day, "16:05", "https://ir.example")})
+    assert r["src"] == "会社告知" and r["time_hhmm"] == "16:05"
+    assert r["edate"] == ann_day   # 告知の日付は曜日のクセ・休場日で寄せない（確定扱い）
+    ev = fe.build_event(r, r["edate"])
+    assert ev["is_estimated"] is False and "日付未定" not in ev["title"]
+
+
+def test_nasdaq_confirmed_beats_company_announced(monkeypatch):
+    from datetime import datetime, timedelta
+    today = datetime.now(fe.TZ_ET).date()
+    r, _ = _resolve_with(monkeypatch, {"date": today + timedelta(days=21), "session": "PM"},
+                         {"hold_earnings_us_TST": (today + timedelta(days=20), None, "https://ir.example")})
+    assert r["src"] == "Nasdaq"
+
+
+def test_past_company_announced_is_ignored(monkeypatch):
+    from datetime import datetime, timedelta
+    today = datetime.now(fe.TZ_ET).date()
+    r, _ = _resolve_with(monkeypatch, {"date": today + timedelta(days=30), "session": None},
+                         {"hold_earnings_us_TST": (today, None, "https://ir.example")})
+    assert r["src"] == "Nasdaq見込み"

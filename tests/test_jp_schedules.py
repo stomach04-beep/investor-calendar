@@ -154,3 +154,29 @@ def test_rule_table_us_dst():
     assert at_rule_time(r, date(2026, 10, 14))[1] == "2026-10-14T12:30:00Z"
     assert at_rule_time(r, date(2026, 11, 10))[1] == "2026-11-10T13:30:00Z"
     assert rule_for({"id": "us_fomc_minutes_2026-11-18"}).key == "us_fomc_minutes"
+
+
+# ---------------------------------------------------------------- 単発の予定（2026-10-30 追加）
+def test_checker_flags_odd_hour_for_events_without_rule():
+    today = date(2026, 10, 30)
+    odd = {"id": "jp_tax_reform_2026", "title": "税制改正大綱", "timezone": "Asia/Tokyo",
+           "datetime_utc": "2026-12-13T16:00:00Z"}   # 12/14 01:00 JST
+    ok = {"id": "us_midterm_2026-11-03", "title": "米中間選挙", "timezone": "America/New_York",
+          "datetime_utc": "2026-11-04T00:00:00Z"}    # 11/3 19:00 ET
+    problems = crr.find_problems([odd, ok], today)
+    assert len(problems) == 1 and "jp_tax_reform_2026" in problems[0]
+
+
+def test_notion_to_json_writes_local_time_in_event_timezone():
+    import notion_to_json as n2j
+    names = {k: k for k in ("id", "title", "datetime", "country", "category", "importance",
+                            "is_estimated", "timezone", "local_time", "description", "source_url")}
+    page = {"properties": {
+        "id": {"rich_text": [{"plain_text": "us_midterm_2026-11-03"}]},
+        "title": {"title": [{"plain_text": "米中間選挙"}]},
+        "datetime": {"date": {"start": "2026-11-04T00:00:00.000+00:00"}},
+        "timezone": {"rich_text": [{"plain_text": "America/New_York"}]},
+    }}
+    ev = n2j.page_to_event(page, names)
+    assert ev["datetime_utc"] == "2026-11-04T00:00:00Z"            # 指す時刻は変えない
+    assert ev["datetime_local"] == "2026-11-03T19:00:00-05:00"     # 表記だけ現地へ

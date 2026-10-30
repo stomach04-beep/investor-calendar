@@ -121,6 +121,16 @@ def page_to_event(page: dict, name_map: dict[str, str]) -> dict | None:
 
     utc_dt = local_dt.astimezone(timezone.utc)
 
+    # Notion は日付を UTC（+00:00）で返すことがある（手で直した行など）。
+    # 指している時刻は同じなので、イベントのタイムゾーンの現地時刻に直して書き出す。
+    # 例: 米中間選挙 "2026-11-04T00:00:00+00:00" → "2026-11-03T19:00:00-05:00"
+    if timezone_str:
+        try:
+            from zoneinfo import ZoneInfo
+            local_dt = utc_dt.astimezone(ZoneInfo(timezone_str))
+        except Exception:
+            pass
+
     category = NOTION_TO_CATEGORY.get(category_notion, category_notion or "EVENT")
     importance = SELECT_TO_IMPORTANCE.get(importance_select or "", 1)
 

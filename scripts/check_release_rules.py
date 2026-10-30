@@ -4,6 +4,7 @@
 見ること（今日〜先 200 日の予定だけ。過去の記録で毎日鳴らさない）:
   1. 公表時刻が規則と違う（例: 日本GDP が 8:50 JST でない＝タイムゾーンの二重がけ）
   2. 土日・休場日・祝日に乗っている（ルール計算や手入力が祝日を踏んだ）
+  3. 規則の無い単発の予定が現地の深夜 1:00〜5:59 にある（終日の予定のタイムゾーン違い）
 
 警告は ::warning:: で出す（health-watchdog が Actions の注釈を読んで LINE へ届ける）。
 ジョブは止めない（終了コード 0）。--strict のときだけ、ずれがあれば終了コード 1。
@@ -28,13 +29,38 @@ DEFAULT_FILE = Path(__file__).resolve().parents[1] / "data" / "investor_events.j
 LOOKAHEAD_DAYS = 200
 
 
+# 規則の無い単発の予定でも、現地の 1:00〜5:59 は発表・開催の時刻としてまず無い。
+# 「終日」の予定を UTC で手書きして時差がずれた形（春闘 1:00・税制改正大綱 1:00 など）を拾う。
+ODD_HOURS = range(1, 6)
+
+
+def odd_hour_problem(ev: dict, today: date, until: date) -> str | None:
+    """規則の無い予定が、そのタイムゾーンの深夜（1:00〜5:59）に置かれていれば説明を返す。"""
+    try:
+        from zoneinfo import ZoneInfo
+        zone = ZoneInfo(ev.get("timezone") or "Asia/Tokyo")
+    except Exception:
+        return None
+    utc = datetime.fromisoformat(str(ev["datetime_utc"]).replace("Z", "+00:00"))
+    local = utc.astimezone(zone)
+    if not (today <= local.date() <= until) or local.hour not in ODD_HOURS:
+        return None
+    return (f"{ev.get('title', '')}（{ev.get('id')}）: 現地時刻 {local:%m/%d %H:%M}（{zone.key}）は"
+            f"深夜で不自然（終日の予定のタイムゾーン違いの疑い）")
+
+
 def find_problems(events: list[dict], today: date) -> list[str]:
     """規則に合わない予定を1件1行の説明にして返す。"""
     problems = []
     until = today + timedelta(days=LOOKAHEAD_DAYS)
     for ev in events:
         rule = rule_for(ev)
-        if rule is None or not ev.get("datetime_utc"):
+        if not ev.get("datetime_utc"):
+            continue
+        if rule is None:
+            problem = odd_hour_problem(ev, today, until)
+            if problem:
+                problems.append(problem)
             continue
         local = local_datetime(ev, rule)
         if not (today <= local.date() <= until):

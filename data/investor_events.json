@@ -6683,6 +6683,21 @@
       "date_stable_days": 7
     },
     {
+      "id": "us_earnings_2026-01-14",
+      "title": "Q4(2025年10-12月期)決算シーズン開始",
+      "category": "EARNINGS",
+      "country": "US",
+      "datetime_utc": "2026-01-13T12:00:00Z",
+      "datetime_local": "2026-01-13T07:00:00-05:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": false,
+      "description": "JPモルガン等の大手金融機関の決算で実質的にシーズン開始。マグニフィセント7決算は2-3週後。JPモルガンは寄り付き前（米東部7時ごろ）に発表。",
+      "source_url": null,
+      "result": null,
+      "date_stable_days": 90
+    },
+    {
       "id": "us_cpi_2026-01-12",
       "title": "米CPI (2025年12月分)",
       "category": "CPI",
@@ -6724,21 +6739,6 @@
       "is_estimated": false,
       "description": "地区連銀経済報告（Beige Book）。FOMC会合の2週間前(水)14:00 ET公表。全12地区の景況感まとめで、利上げ/利下げ判断の地ならし材料。",
       "source_url": "https://www.federalreserve.gov/monetarypolicy/publications/beige-book-default.htm",
-      "result": null,
-      "date_stable_days": 90
-    },
-    {
-      "id": "us_earnings_2026-01-14",
-      "title": "Q4(2025年10-12月期)決算シーズン開始",
-      "category": "EARNINGS",
-      "country": "US",
-      "datetime_utc": "2026-01-14T19:30:00Z",
-      "datetime_local": "2026-01-14T14:30:00-05:00",
-      "timezone": "America/New_York",
-      "importance": 2,
-      "is_estimated": true,
-      "description": "JPモルガン等の大手金融機関の決算で実質的にシーズン開始。マグニフィセント7決算は2-3週後。",
-      "source_url": null,
       "result": null,
       "date_stable_days": 90
     },
@@ -7058,21 +7058,6 @@
       "date_stable_days": 0
     },
     {
-      "id": "jp_shunto_2026",
-      "title": "春闘集中回答日",
-      "category": "EVENT",
-      "country": "JP",
-      "datetime_utc": "2026-03-10T16:00:00Z",
-      "datetime_local": "2026-03-11T01:00:00+09:00",
-      "timezone": "Asia/Tokyo",
-      "importance": 2,
-      "is_estimated": true,
-      "description": "大手企業の賃上げ回答が集中。賃上げ率は日銀の利上げ判断に直結。",
-      "source_url": null,
-      "result": null,
-      "date_stable_days": 90
-    },
-    {
       "id": "us_cpi_2026-03-11",
       "title": "米CPI (2月分)",
       "category": "CPI",
@@ -7128,6 +7113,21 @@
       "importance": 1,
       "is_estimated": true,
       "description": "「節分天井・彼岸底」の底側。春の彼岸（3月中旬〜下旬）に安値をつけやすいとされる。年度末の益出し・損出し売りが一巡し、反発に向かいやすい時期。",
+      "source_url": null,
+      "result": null,
+      "date_stable_days": 90
+    },
+    {
+      "id": "jp_shunto_2026",
+      "title": "春闘集中回答日",
+      "category": "EVENT",
+      "country": "JP",
+      "datetime_utc": "2026-03-18T03:00:00Z",
+      "datetime_local": "2026-03-18T12:00:00+09:00",
+      "timezone": "Asia/Tokyo",
+      "importance": 2,
+      "is_estimated": false,
+      "description": "大手企業の賃上げ回答が集中。賃上げ率は日銀の利上げ判断に直結。",
       "source_url": null,
       "result": null,
       "date_stable_days": 90
@@ -7343,6 +7343,21 @@
       "date_stable_days": 90
     },
     {
+      "id": "us_earnings_2026-04-14",
+      "title": "Q1(1-3月期)決算シーズン開始",
+      "category": "EARNINGS",
+      "country": "US",
+      "datetime_utc": "2026-04-14T11:00:00Z",
+      "datetime_local": "2026-04-14T07:00:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": false,
+      "description": "JPモルガン等の大手金融機関の決算で実質的にシーズン開始。マグニフィセント7決算は2-3週後。JPモルガンは寄り付き前（米東部7時ごろ）に発表。",
+      "source_url": null,
+      "result": null,
+      "date_stable_days": 90
+    },
+    {
       "id": "us_ppi_2026-04-14",
       "title": "米PPI (3月分)",
       "category": "PPI",
@@ -7354,21 +7369,6 @@
       "is_estimated": false,
       "description": "生産者物価指数。卸売段階のインフレ先行指標。",
       "source_url": "https://www.bls.gov/ppi/",
-      "result": null,
-      "date_stable_days": 90
-    },
-    {
-      "id": "us_earnings_2026-04-14",
-      "title": "Q1(1-3月期)決算シーズン開始",
-      "category": "EARNINGS",
-      "country": "US",
-      "datetime_utc": "2026-04-14T17:30:00Z",
-      "datetime_local": "2026-04-14T13:30:00-04:00",
-      "timezone": "America/New_York",
-      "importance": 2,
-      "is_estimated": true,
-      "description": "JPモルガン等の大手金融機関の決算で実質的にシーズン開始。マグニフィセント7決算は2-3週後。",
-      "source_url": null,
       "result": null,
       "date_stable_days": 90
     },
@@ -7958,6 +7958,21 @@
       "date_stable_days": 90
     },
     {
+      "id": "us_earnings_2026-07-14",
+      "title": "Q2(4-6月期)決算シーズン開始",
+      "category": "EARNINGS",
+      "country": "US",
+      "datetime_utc": "2026-07-14T11:00:00Z",
+      "datetime_local": "2026-07-14T07:00:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": false,
+      "description": "JPモルガン等の大手金融機関の決算で実質的にシーズン開始。マグニフィセント7決算は2-3週後。JPモルガンは寄り付き前（米東部7時ごろ）に発表。",
+      "source_url": null,
+      "result": null,
+      "date_stable_days": 90
+    },
+    {
       "id": "us_cpi_2026-07-13",
       "title": "米CPI (6月分)",
       "category": "CPI",
@@ -7970,21 +7985,6 @@
       "description": "消費者物価指数。FRB利下げ織り込みに直結。",
       "source_url": "https://www.bls.gov/cpi/",
       "result": "CPI 前年比+3.5% / コア+2.6%（2026年6月分）",
-      "date_stable_days": 90
-    },
-    {
-      "id": "us_earnings_2026-07-14",
-      "title": "Q2(4-6月期)決算シーズン開始",
-      "category": "EARNINGS",
-      "country": "US",
-      "datetime_utc": "2026-07-14T17:30:00Z",
-      "datetime_local": "2026-07-14T13:30:00-04:00",
-      "timezone": "America/New_York",
-      "importance": 2,
-      "is_estimated": true,
-      "description": "JPモルガン等の大手金融機関の決算で実質的にシーズン開始。マグニフィセント7決算は2-3週後。",
-      "source_url": null,
-      "result": null,
       "date_stable_days": 90
     },
     {
@@ -8888,6 +8888,21 @@
       "date_stable_days": 90
     },
     {
+      "id": "us_earnings_2026-10-14",
+      "title": "Q3(7-9月期)決算シーズン開始",
+      "category": "EARNINGS",
+      "country": "US",
+      "datetime_utc": "2026-10-13T11:00:00Z",
+      "datetime_local": "2026-10-13T07:00:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": false,
+      "description": "JPモルガン等の大手金融機関の決算で実質的にシーズン開始。マグニフィセント7決算は2-3週後。JPモルガンは寄り付き前（米東部7時ごろ）に発表。",
+      "source_url": null,
+      "result": null,
+      "date_stable_days": 90
+    },
+    {
       "id": "us_cpi_2026-10-13",
       "title": "米CPI (9月分)",
       "category": "CPI",
@@ -8900,21 +8915,6 @@
       "description": "消費者物価指数。FRB利下げ織り込みに直結。",
       "source_url": "https://www.bls.gov/cpi/",
       "result": "CPI 前年比+3.7% / コア+2.6%（2026年9月分）",
-      "date_stable_days": 90
-    },
-    {
-      "id": "us_earnings_2026-10-14",
-      "title": "Q3(7-9月期)決算シーズン開始",
-      "category": "EARNINGS",
-      "country": "US",
-      "datetime_utc": "2026-10-14T17:30:00Z",
-      "datetime_local": "2026-10-14T13:30:00-04:00",
-      "timezone": "America/New_York",
-      "importance": 2,
-      "is_estimated": true,
-      "description": "JPモルガン等の大手金融機関の決算で実質的にシーズン開始。マグニフィセント7決算は2-3週後。",
-      "source_url": null,
-      "result": null,
       "date_stable_days": 90
     },
     {
@@ -9503,21 +9503,6 @@
       "date_stable_days": 90
     },
     {
-      "id": "jp_tax_reform_2026",
-      "title": "令和8年度 税制改正大綱",
-      "category": "EVENT",
-      "country": "JP",
-      "datetime_utc": "2026-12-13T16:00:00Z",
-      "datetime_local": "2026-12-14T01:00:00+09:00",
-      "timezone": "Asia/Tokyo",
-      "importance": 2,
-      "is_estimated": true,
-      "description": "与党発表。NISA等の制度改正動向を確認。",
-      "source_url": null,
-      "result": null,
-      "date_stable_days": 90
-    },
-    {
       "id": "jp_tankan_2026-12-11",
       "title": "日銀短観 (12月調査)",
       "category": "TANKAN",
@@ -9589,6 +9574,21 @@
       "is_estimated": false,
       "description": "総務省統計局発表。日銀の利上げ判断材料。",
       "source_url": "https://www.stat.go.jp/data/kouhyou/e-stat_cpi.xml",
+      "result": null,
+      "date_stable_days": 90
+    },
+    {
+      "id": "jp_tax_reform_2026",
+      "title": "令和9年度 税制改正大綱",
+      "category": "EVENT",
+      "country": "JP",
+      "datetime_utc": "2026-12-18T03:00:00Z",
+      "datetime_local": "2026-12-18T12:00:00+09:00",
+      "timezone": "Asia/Tokyo",
+      "importance": 2,
+      "is_estimated": true,
+      "description": "与党発表。NISA等の制度改正動向を確認。日付は例年（令和6年度12/14・7年度12/20・8年度12/19）からの推定で、時刻は未定。",
+      "source_url": null,
       "result": null,
       "date_stable_days": 90
     },
@@ -9891,6 +9891,20 @@
       "source_url": "https://www.federalreserve.gov/monetarypolicy/publications/beige-book-default.htm",
       "result": null,
       "date_stable_days": 90
+    },
+    {
+      "id": "us_earnings_2027-01-14",
+      "title": "Q4(2026年10-12月期)決算シーズン開始",
+      "category": "EARNINGS",
+      "country": "US",
+      "datetime_utc": "2027-01-14T12:00:00Z",
+      "datetime_local": "2027-01-14T07:00:00-05:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": true,
+      "description": "JPモルガン等の大手金融機関の決算で実質的にシーズン開始。マグニフィセント7決算は2-3週後。JPモルガンは寄り付き前（米東部7時ごろ）に発表。日付は見込み（JPモルガンの決算日が公表されたら直す）。",
+      "source_url": null,
+      "result": null
     },
     {
       "id": "us_ppi_2027-01-14",

@@ -816,8 +816,10 @@ def build_event(h: dict, edate: date) -> dict:
     h["session_label"] = sess
     return {
         "id": ev_id,
-        # 件名に時間帯を入れる（通知の一覧でも「引け後＝日本では翌朝」が一目で分かる）
-        "title": f"{name} 決算（{sess}）",
+        # 件名に時間帯を入れる（通知の一覧でも「引け後＝日本では翌朝」が一目で分かる）。
+        # 会社が日付を確定していない行は「日付未定」も付ける（推測の日付が4割外れていたため。
+        # 2026-10-30 実測: Nasdaq の時間帯なし行 31件中13件が後で最大9日動いた）
+        "title": f"{name} 決算（{sess}）" if confirmed else f"{name} 決算（{sess}・日付未定）",
         "category": "EARNINGS",
         "country": country,
         "datetime_utc": to_utc_z(local),
@@ -1007,6 +1009,24 @@ def archive_stale(client: NotionClient, cal_db_id: str, current_ids: set[str], d
 # ----------------------------------------------------------------------
 # メイン
 # ----------------------------------------------------------------------
+def _hhmm_to_min(hhmm: str) -> int:
+    hh, mm = hhmm.split(":")
+    return int(hh) * 60 + int(mm)
+
+
+def _narrow_with_8k(yahoo_hhmm: str, earliest_8k: str) -> str:
+    """Yahoo の時刻（時の位）と 8-K 受理の最小値から、発表時刻の見込みを1つ返す。
+
+    8-K 受理が [Yahoo, Yahoo+60分) にあれば受理時刻を5分単位に切り下げた値、
+    それ以外は早い方（Yahoo が受理より後なら受理、受理が1時間以上遅ければ Yahoo）。"""
+    y = _hhmm_to_min(yahoo_hhmm)
+    e = _hhmm_to_min(earliest_8k)
+    if y <= e < y + 60:
+        e5 = e - e % 5
+        return f"{e5 // 60:02d}:{e5 % 60:02d}"
+    return earliest_8k if e < y else yahoo_hhmm
+
+
 def _pick_us_time(erow: dict, yinfo: dict, session: str | None) -> tuple[str | None, str, str | None]:
     """米国株の発表時刻を「早い側の上限」で決める。返り値 (HH:MM|None, 出どころ, 説明欄の根拠)。
 
@@ -1016,11 +1036,19 @@ def _pick_us_time(erow: dict, yinfo: dict, session: str | None) -> tuple[str | N
       ・Yahoo の過去実績の時刻 … 「時の位で切り捨て」た粗い値で、発表より遅くはならない
         （JNJ 6:45→06:00、AAPL 16:30→16:00、ITW 8:00→08:00）
     通知は「発表の後に鳴る」のがいちばん困るので、両方あるときは早い方を採る。
-    実測5銘柄（JNJ/ITW/VLO/BR/LMT）で遅れゼロ・最大45分早いだけになった。"""
+    実測5銘柄（JNJ/ITW/VLO/BR/LMT）で遅れゼロ・最大45分早いだけになった。
+
+    2026-10-30 見直し: 早い方を採るだけだと、Yahoo の切り捨てた時刻（AAPL 16:00・KO 06:00）が
+    そのまま出て、実際（16:30・6:55）より30〜60分早く見える。Yahoo の時刻は「発表の時の位」なので、
+    発表は [Yahoo, Yahoo+60分) にあり、しかも 8-K 受理より前。8-K 受理がその1時間の中にあれば、
+    受理は発表の数分後とみなせるので、受理時刻を5分単位に切り下げて採る（AAPL 16:30・KO 06:55）。
+    裏取り: ABBV は前年Q3の発表が 7:49 ET・8-K 受理 7:50（従来の表示 7:00 は49分早かった）。
+    数分遅れても30分前の通知は発表前に鳴る。
+    8-K が1時間より遅い銘柄（VLO・ITW など提出が遅い会社）は、従来どおり Yahoo の時刻（早い側）。"""
     earliest = erow.get("earliest") or erow.get("time")
     yt = (yinfo.get("times") or {}).get(session) if session else None
     if earliest and yt:
-        chosen = min(earliest, yt)
+        chosen = _narrow_with_8k(yt, earliest)
         med = erow.get("time") or earliest
         return chosen, "Yahoo+EDGAR", f"Yahoo {yt}／8-K受理 {earliest}〜{med}。発表はこの間"
     if earliest:

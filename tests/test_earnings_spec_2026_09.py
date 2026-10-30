@@ -125,6 +125,27 @@ def test_pick_us_time_ignores_yahoo_of_other_session():
     assert t == "16:30" and src == "EDGAR実績"
 
 
+def test_pick_us_time_narrows_to_8k_within_yahoo_hour():
+    # 2026-10-30 見直し: 8-K 受理が Yahoo の時の位から1時間以内なら受理時刻（5分単位）を採る
+    # AAPL 実際 16:30 → 16:30（従来は 16:00）／KO 実際 6:55ごろ → 06:55（従来 06:00）
+    aapl = fe._pick_us_time({"earliest": "16:30", "time": "16:30"},
+                            {"times": {"AM": None, "PM": "16:00"}}, "PM")[0]
+    ko = fe._pick_us_time({"earliest": "06:58", "time": "06:59"},
+                          {"times": {"AM": "06:00", "PM": None}}, "AM")[0]
+    ma = fe._pick_us_time({"earliest": "08:02", "time": "08:03"},
+                          {"times": {"AM": "08:00", "PM": None}}, "AM")[0]
+    assert (aapl, ko, ma) == ("16:30", "06:55", "08:00")
+
+
+def test_title_says_date_tentative_unless_confirmed():
+    est = fe.build_event(_us(src="yfinance", session="PM", time_hhmm="16:00"), date(2027, 1, 28))
+    nas = fe.build_event(_us(src="Nasdaq見込み", session="PM", time_hhmm="16:00"), date(2026, 11, 18))
+    ok = fe.build_event(_us(src="Nasdaq", session="PM", time_hhmm="16:00"), date(2026, 11, 2))
+    assert est["title"] == "テスト 決算（引け後・日付未定）"
+    assert nas["title"] == "テスト 決算（引け後・日付未定）"
+    assert ok["title"] == "テスト 決算（引け後）"
+
+
 def test_pick_us_time_without_any_source_falls_back():
     t, src, note = fe._pick_us_time({}, {"times": {}}, None)
     assert t is None and src == "既定" and note is None

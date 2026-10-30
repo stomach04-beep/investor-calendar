@@ -97,6 +97,11 @@ jobs:
           BLS_CONTACT_EMAIL: ${{ secrets.BLS_CONTACT_EMAIL }}
         run: python scripts/fetch_schedules.py
 
+      - name: fetch_jp_schedules.py 実行（日本GDP・日銀短観・全国CPI・権利付き最終日・大発会・大納会 - ベストエフォート）
+        # 内閣府・日銀・総務省の公表予定と東証の休場日表から作る。公式から読めた値だけを確定にする
+        continue-on-error: true
+        run: python scripts/fetch_jp_schedules.py
+
       - name: fetch_anomalies.py 実行（相場アノマリーを暦計算で生成・AI呼び出しなし）
         continue-on-error: true
         run: python scripts/fetch_anomalies.py
@@ -161,6 +166,12 @@ jobs:
           NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
           NOTION_DB_ID: ${{ secrets.NOTION_DB_ID }}
         run: python scripts/notion_to_json.py
+
+      - name: 公表時刻と営業日の検査（規則表 release_rules と突き合わせ）
+        # 時刻が規則と違う・土日や休場日に乗った予定を ::warning:: で出す（health-watchdog が LINE へ）。
+        # ジョブは止めない
+        if: always()
+        run: python scripts/check_release_rules.py
 
       - name: 差分を auto-commit
         run: |

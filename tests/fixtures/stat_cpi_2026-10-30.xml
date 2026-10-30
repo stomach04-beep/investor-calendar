@@ -1,0 +1,577 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<?xml-stylesheet type="text/xsl" href="release_info_j.xsl" ?>
+<e-stat>
+        <os_code id="00200573" name="消費者物価指数" count_number="2"> 
+            <outline>全国の世帯が購入する家計に係る財及びサービスの価格等を総合した物価の変動を時系列的に測定するもの。すなわち家計の消費構造を一定のものに固定し、これに要する費用が物価の変動によって、どう変化するかを指数値で示したもの（毎月）</outline>
+            <update_year>2026</update_year>
+            <update_month>10</update_month>
+            <update_day>30</update_day>
+            <class_1 name="全国">
+                <class_2 name="2025年12月分">
+                    <class_3 name="">
+                        <class_4 name="">
+                            <class_5 name="">
+                                <release_year>2026</release_year>
+                                <release_month>1</release_month>
+                                <release_day>23</release_day>
+                                <release_hour>8</release_hour>
+                                <release_minute>30</release_minute>
+                                <internet_url>https://www.e-stat.go.jp/stat-search/files?page=1&amp;toukei=00200573&amp;tstat=000001150147</internet_url>
+                                <internet_year>2026</internet_year>
+                                <internet_month>1</internet_month>
+                                <internet_day>23</internet_day>
+                                <viewing_place>総務省統計図書館</viewing_place>
+                                <viewing_period>2026年1月23日以降</viewing_period>
+                            </class_5>
+                        </class_4>
+                    </class_3>
+                </class_2>
+                <class_2 name="2025年平均">
+                    <class_3 name="">
+                        <class_4 name="">
+                            <class_5 name="">
+                                <release_year>2026</release_year>
+                                <release_month>1</release_month>
+                                <release_day>23</release_day>
+                                <release_hour>8</release_hour>
+                                <release_minute>30</release_minute>
+                                <internet_url>https://www.stat.go.jp/data/cpi/sokuhou/nen/index-z.html</internet_url>
+                                <internet_year>2026</internet_year>
+                                <internet_month>1</internet_month>
+                                <internet_day>23</internet_day>
+                                <viewing_place>総務省統計図書館</viewing_place>
+                                <viewing_period>2026年1月23日以降</viewing_period>
+                            </class_5>
+                        </class_4>
+                    </class_3>
+                </class_2>
+                <class_2 name="2026年1月分">
+                    <class_3 name="">
+                        <class_4 name="">
+                            <class_5 name="">
+                                <release_year>2026</release_year>
+                                <release_month>2</release_month>
+                                <release_day>20</release_day>
+                                <release_hour>8</release_hour>
+                                <release_minute>30</release_minute>
+                                <internet_url>https://www.e-stat.go.jp/stat-search/files?page=1&amp;toukei=00200573&amp;tstat=000001150147</internet_url>
+                                <internet_year>2026</internet_year>
+                                <internet_month>2</internet_month>
+                                <internet_day>20</internet_day>
+                                <viewing_place>総務省統計図書館</viewing_place>
+                                <viewing_period>2026年2月20日以降</viewing_period>
+                            </class_5>
+                        </class_4>
+                    </class_3>
+                </class_2>
+                <class_2 name="2026年2月分">
+                    <class_3 name="">
+                        <class_4 name="">
+                            <class_5 name="">
+                                <release_year>2026</release_year>
+                                <release_month>3</release_month>
+                                <release_day>24</release_day>
+                                <release_hour>8</release_hour>
+                                <release_minute>30</release_minute>
+                                <internet_url>https://www.e-stat.go.jp/stat-search/files?page=1&amp;toukei=00200573&amp;tstat=000001150147</internet_url>
+                                <internet_year>2026</internet_year>
+                                <internet_month>3</internet_month>
+                                <internet_day>24</internet_day>
+                                <viewing_place>総務省統計図書館</viewing_place>
+                                <viewing_period>2026年3月24日以降</viewing_period>
+                            </class_5>
+                        </class_4>
+                    </class_3>
+                </class_2>
+                <class_2 name="2026年3月分">
+                    <class_3 name="">
+                        <class_4 name="">
+                            <class_5 name="">
+                                <release_year>2026</release_year>
+                                <release_month>4</release_month>
+                                <release_day>24</release_day>
+                                <release_hour>8</release_hour>
+                                <release_minute>30</release_minute>
+                                <internet_url>https://www.e-stat.go.jp/stat-search/files?page=1&amp;toukei=00200573&amp;tstat=000001150147</internet_url>
+                                <internet_year>2026</internet_year>
+                                <internet_month>4</internet_month>
+                                <internet_day>24</internet_day>
+                                <viewing_place>総務省統計図書館</viewing_place>
+                                <viewing_period>2026年4月24日以降</viewing_period>
+                            </class_5>
+                        </class_4>
+                    </class_3>
+                </class_2>
+                <class_2 name="2025年度平均">
+                    <class_3 name="">
+                        <class_4 name="">
+                            <class_5 name="">
+                                <release_year>2026</release_year>
+                                <release_month>4</release_month>
+                                <release_day>24</release_day>
+                                <release_hour>8</release_hour>
+                                <release_minute>30</release_minute>
+                                <internet_url>https://www.stat.go.jp/data/cpi/sokuhou/nendo/index-z.html</internet_url>
+                                <internet_year>2026</internet_year>
+                                <internet_month>4</internet_month>
+                                <internet_day>24</internet_day>
+                                <viewing_place>総務省統計図書館</viewing_place>
+                                <viewing_period>2026年4月24日以降</viewing_period>
+                            </class_5>
+                        </class_4>
+                    </class_3>
+                </class_2>
+                <class_2 name="2026年4月分">
+                    <class_3 name="">
+                        <class_4 name="">
+                            <class_5 name="">
+                                <release_year>2026</release_year>
+                                <release_month>5</release_month>
+                                <release_day>22</release_day>
+                                <release_hour>8</release_hour>
+                                <release_minute>30</release_minute>
+                                <internet_url>https://www.e-stat.go.jp/stat-search/files?page=1&amp;toukei=00200573&amp;tstat=000001150147</internet_url>
+                                <internet_year>2026</internet_year>
+                                <internet_month>5</internet_month>
+                                <internet_day>22</internet_day>
+                                <viewing_place>総務省統計図書館</viewing_place>
+                                <viewing_period>2026年5月22日以降</viewing_period>
+                            </class_5>
+                        </class_4>
+                    </class_3>
+                </class_2>
+                <class_2 name="2026年5月分">
+                    <class_3 name="">
+                        <class_4 name="">
+                            <class_5 name="">
+                                <release_year>2026</release_year>
+                                <release_month>6</release_month>
+                                <release_day>19</release_day>
+                                <release_hour>8</release_hour>
+                                <release_minute>30</release_minute>
+                                <internet_url>https://www.e-stat.go.jp/stat-search/files?page=1&amp;toukei=00200573&amp;tstat=000001150147</internet_url>
+                                <internet_year>2026</internet_year>
+                                <internet_month>6</internet_month>
+                                <internet_day>19</internet_day>
+                                <viewing_place>総務省統計図書館</viewing_place>
+                                <viewing_period>2026年6月19日以降</viewing_period>
+                            </class_5>
+                        </class_4>
+                    </class_3>
+                </class_2>
+                <class_2 name="2026年6月分">
+                    <class_3 name="">
+                        <class_4 name="">
+                            <class_5 name="">
+                                <release_year>2026</release_year>
+                                <release_month>7</release_month>
+                                <release_day>24</release_day>
+                                <release_hour>8</release_hour>
+                                <release_minute>30</release_minute>
+                                <internet_url>https://www.e-stat.go.jp/stat-search/files?page=1&amp;toukei=00200573&amp;tstat=000001150147</internet_url>
+                                <internet_year>2026</internet_year>
+                                <internet_month>7</internet_month>
+                                <internet_day>24</internet_day>
+                                <viewing_place>総務省統計図書館</viewing_place>
+                                <viewing_period>2026年7月24日以降</viewing_period>
+                            </class_5>
+                        </class_4>
+                    </class_3>
+                </class_2>
+                <class_2 name="2025年基準による指数　遡及結果（2025年1月分～2026年6月分）及び接続指数">
+                    <class_3 name="">
+                        <class_4 name="">
+                            <class_5 name="">
+                                <release_year>2026</release_year>
+                                <release_month>8</release_month>
+                                <release_day>7</release_day>
+                                <release_hour>16</release_hour>
+                                <release_minute>0</release_minute>
+                                <internet_url>https://www.stat.go.jp/data/cpi/2025/sokyu.html</internet_url>
+                                <internet_year>2026</internet_year>
+                                <internet_month>8</internet_month>
+                                <internet_day>7</internet_day>
+                            </class_5>
+                        </class_4>
+                    </class_3>
+                </class_2>
+                <class_2 name="2026年7月分">
+                    <class_3 name="">
+                        <class_4 name="">
+                            <class_5 name="">
+                                <release_year>2026</release_year>
+                                <release_month>8</release_month>
+                                <release_day>21</release_day>
+                                <release_hour>8</release_hour>
+                                <release_minute>30</release_minute>
+                                <internet_url>https://www.e-stat.go.jp/stat-search/files?page=1&amp;toukei=00200573&amp;tstat=000001243876</internet_url>
+                                <internet_year>2026</internet_year>
+                                <internet_month>8</internet_month>
+                                <internet_day>21</internet_day>
+                                <viewing_place>総務省統計図書館</viewing_place>
+                                <viewing_period>2026年8月21日以降</viewing_period>
+                            </class_5>
+                        </class_4>
+                    </class_3>
+                </class_2>
+                <class_2 name="2026年8月分">
+                    <class_3 name="">
+                        <class_4 name="">
+                            <class_5 name="">
+                                <release_year>2026</release_year>
+                                <release_month>9</release_month>
+                                <release_day>18</release_day>
+                                <release_hour>8</release_hour>
+                                <release_minute>30</release_minute>
+                                <internet_url>https://www.e-stat.go.jp/stat-search/files?page=1&amp;toukei=00200573&amp;tstat=000001243876</internet_url>
+                                <internet_year>2026</internet_year>
+                                <internet_month>9</internet_month>
+                                <internet_day>18</internet_day>
+                                <viewing_place>総務省統計図書館</viewing_place>
+                                <viewing_period>2026年9月18日以降</viewing_period>
+                            </class_5>
+                        </class_4>
+                    </class_3>
+                </class_2>
+                <class_2 name="2026年9月分">
+                    <class_3 name="">
+                        <class_4 name="">
+                            <class_5 name="">
+                                <release_year>2026</release_year>
+                                <release_month>10</release_month>
+                                <release_day>23</release_day>
+                                <release_hour>8</release_hour>
+                                <release_minute>30</release_minute>
+                                <internet_url>https://www.stat.go.jp/data/cpi/sokuhou/tsuki/index-z.html</internet_url>
+                                <internet_year>2026</internet_year>
+                                <internet_month>10</internet_month>
+                                <internet_day>23</internet_day>
+                                <viewing_place>総務省統計図書館</viewing_place>
+                                <viewing_period>2026年10月23日以降</viewing_period>
+                            </class_5>
+                        </class_4>
+                    </class_3>
+                </class_2>
+                <class_2 name="2026年10月分">
+                    <class_3 name="">
+                        <class_4 name="">
+                            <class_5 name="">
+                                <release_year>2026</release_year>
+                                <release_month>11</release_month>
+                                <release_day>20</release_day>
+                                <release_hour>8</release_hour>
+                                <release_minute>30</release_minute>
+                            </class_5>
+                        </class_4>
+                    </class_3>
+                </class_2>
+                <class_2 name="2026年11月分">
+                    <class_3 name="">
+                        <class_4 name="">
+                            <class_5 name="">
+                                <release_year>2026</release_year>
+                                <release_month>12</release_month>
+                                <release_day>18</release_day>
+                                <release_hour>8</release_hour>
+                                <release_minute>30</release_minute>
+                            </class_5>
+                        </class_4>
+                    </class_3>
+                </class_2>
+                <class_2 name="2026年12月分">
+                    <class_3 name="">
+                        <class_4 name="">
+                            <class_5 name="">
+                                <release_year>2027</release_year>
+                                <release_month>1</release_month>
+                                <release_day>22</release_day>
+                                <release_hour>8</release_hour>
+                                <release_minute>30</release_minute>
+                            </class_5>
+                        </class_4>
+                    </class_3>
+                </class_2>
+                <class_2 name="2026年平均">
+                    <class_3 name="">
+                        <class_4 name="">
+                            <class_5 name="">
+                                <release_year>2027</release_year>
+                                <release_month>1</release_month>
+                                <release_day>22</release_day>
+                                <release_hour>8</release_hour>
+                                <release_minute>30</release_minute>
+                            </class_5>
+                        </class_4>
+                    </class_3>
+                </class_2>
+                <class_2 name="2027年1月分">
+                    <class_3 name="">
+                        <class_4 name="">
+                            <class_5 name="">
+                                <release_year>2027</release_year>
+                                <release_month>2</release_month>
+                                <release_day>19</release_day>
+                                <release_hour>8</release_hour>
+                                <release_minute>30</release_minute>
+                            </class_5>
+                        </class_4>
+                    </class_3>
+                </class_2>
+                <class_2 name="2027年2月分">
+                    <class_3 name="">
+                        <class_4 name="">
+                            <class_5 name="">
+                                <release_year>2027</release_year>
+                                <release_month>3</release_month>
+                                <release_day>19</release_day>
+                                <release_hour>8</release_hour>
+                                <release_minute>30</release_minute>
+                            </class_5>
+                        </class_4>
+                    </class_3>
+                </class_2>
+            </class_1>
+            <class_1 name="東京都区部（中旬速報値）">
+                <class_2 name="2026年1月分">
+                    <class_3 name="">
+                        <class_4 name="">
+                            <class_5 name="">
+                                <release_year>2026</release_year>
+                                <release_month>1</release_month>
+                                <release_day>30</release_day>
+                                <release_hour>8</release_hour>
+                                <release_minute>30</release_minute>
+                            </class_5>
+                        </class_4>
+                    </class_3>
+                </class_2>
+                <class_2 name="2026年2月分">
+                    <class_3 name="">
+                        <class_4 name="">
+                            <class_5 name="">
+                                <release_year>2026</release_year>
+                                <release_month>2</release_month>
+                                <release_day>27</release_day>
+                                <release_hour>8</release_hour>
+                                <release_minute>30</release_minute>
+                            </class_5>
+                        </class_4>
+                    </class_3>
+                </class_2>
+                <class_2 name="2026年3月分">
+                    <class_3 name="">
+                        <class_4 name="">
+                            <class_5 name="">
+                                <release_year>2026</release_year>
+                                <release_month>3</release_month>
+                                <release_day>31</release_day>
+                                <release_hour>8</release_hour>
+                                <release_minute>30</release_minute>
+                            </class_5>
+                        </class_4>
+                    </class_3>
+                </class_2>
+                <class_2 name="2025年度平均">
+                    <class_3 name="">
+                        <class_4 name="">
+                            <class_5 name="">
+                                <release_year>2026</release_year>
+                                <release_month>3</release_month>
+                                <release_day>31</release_day>
+                                <release_hour>8</release_hour>
+                                <release_minute>30</release_minute>
+                            </class_5>
+                        </class_4>
+                    </class_3>
+                </class_2>
+                <class_2 name="2026年4月分">
+                    <class_3 name="">
+                        <class_4 name="">
+                            <class_5 name="">
+                                <release_year>2026</release_year>
+                                <release_month>5</release_month>
+                                <release_day>1</release_day>
+                                <release_hour>8</release_hour>
+                                <release_minute>30</release_minute>
+                            </class_5>
+                        </class_4>
+                    </class_3>
+                </class_2>
+                <class_2 name="2026年5月分">
+                    <class_3 name="">
+                        <class_4 name="">
+                            <class_5 name="">
+                                <release_year>2026</release_year>
+                                <release_month>5</release_month>
+                                <release_day>29</release_day>
+                                <release_hour>8</release_hour>
+                                <release_minute>30</release_minute>
+                            </class_5>
+                        </class_4>
+                    </class_3>
+                </class_2>
+                <class_2 name="2026年6月分">
+                    <class_3 name="">
+                        <class_4 name="">
+                            <class_5 name="">
+                                <release_year>2026</release_year>
+                                <release_month>6</release_month>
+                                <release_day>26</release_day>
+                                <release_hour>8</release_hour>
+                                <release_minute>30</release_minute>
+                            </class_5>
+                        </class_4>
+                    </class_3>
+                </class_2>
+                <class_2 name="2026年7月分">
+                    <class_3 name="">
+                        <class_4 name="">
+                            <class_5 name="">
+                                <release_year>2026</release_year>
+                                <release_month>7</release_month>
+                                <release_day>31</release_day>
+                                <release_hour>8</release_hour>
+                                <release_minute>30</release_minute>
+                            </class_5>
+                        </class_4>
+                    </class_3>
+                </class_2>
+                <class_2 name="2026年8月分">
+                    <class_3 name="">
+                        <class_4 name="">
+                            <class_5 name="">
+                                <release_year>2026</release_year>
+                                <release_month>8</release_month>
+                                <release_day>28</release_day>
+                                <release_hour>8</release_hour>
+                                <release_minute>30</release_minute>
+                            </class_5>
+                        </class_4>
+                    </class_3>
+                </class_2>
+                <class_2 name="2026年9月分">
+                    <class_3 name="">
+                        <class_4 name="">
+                            <class_5 name="">
+                                <release_year>2026</release_year>
+                                <release_month>10</release_month>
+                                <release_day>2</release_day>
+                                <release_hour>8</release_hour>
+                                <release_minute>30</release_minute>
+                            </class_5>
+                        </class_4>
+                    </class_3>
+                </class_2>
+                <class_2 name="2026年10月分">
+                    <class_3 name="">
+                        <class_4 name="">
+                            <class_5 name="">
+                                <release_year>2026</release_year>
+                                <release_month>10</release_month>
+                                <release_day>30</release_day>
+                                <release_hour>8</release_hour>
+                                <release_minute>30</release_minute>
+                                <internet_url>https://www.stat.go.jp/data/cpi/sokuhou/tsuki/index-t.html</internet_url>
+                                <internet_year>2026</internet_year>
+                                <internet_month>10</internet_month>
+                                <internet_day>30</internet_day>
+                                <viewing_place>総務省統計図書館</viewing_place>
+                                <viewing_period>2026年10月30日以降</viewing_period>
+                            </class_5>
+                        </class_4>
+                    </class_3>
+                </class_2>
+                <class_2 name="2026年11月分">
+                    <class_3 name="">
+                        <class_4 name="">
+                            <class_5 name="">
+                                <release_year>2026</release_year>
+                                <release_month>11</release_month>
+                                <release_day>27</release_day>
+                                <release_hour>8</release_hour>
+                                <release_minute>30</release_minute>
+                            </class_5>
+                        </class_4>
+                    </class_3>
+                </class_2>
+                <class_2 name="2026年12月分">
+                    <class_3 name="">
+                        <class_4 name="">
+                            <class_5 name="">
+                                <release_year>2026</release_year>
+                                <release_month>12</release_month>
+                                <release_day>25</release_day>
+                                <release_hour>8</release_hour>
+                                <release_minute>30</release_minute>
+                            </class_5>
+                        </class_4>
+                    </class_3>
+                </class_2>
+                <class_2 name="2026年平均">
+                    <class_3 name="">
+                        <class_4 name="">
+                            <class_5 name="">
+                                <release_year>2026</release_year>
+                                <release_month>12</release_month>
+                                <release_day>25</release_day>
+                                <release_hour>8</release_hour>
+                                <release_minute>30</release_minute>
+                            </class_5>
+                        </class_4>
+                    </class_3>
+                </class_2>
+                <class_2 name="2027年1月分">
+                    <class_3 name="">
+                        <class_4 name="">
+                            <class_5 name="">
+                                <release_year>2027</release_year>
+                                <release_month>1</release_month>
+                                <release_day>29</release_day>
+                                <release_hour>8</release_hour>
+                                <release_minute>30</release_minute>
+                            </class_5>
+                        </class_4>
+                    </class_3>
+                </class_2>
+                <class_2 name="2027年2月分">
+                    <class_3 name="">
+                        <class_4 name="">
+                            <class_5 name="">
+                                <release_year>2027</release_year>
+                                <release_month>2</release_month>
+                                <release_day>26</release_day>
+                                <release_hour>8</release_hour>
+                                <release_minute>30</release_minute>
+                            </class_5>
+                        </class_4>
+                    </class_3>
+                </class_2>
+                <class_2 name="2027年3月分">
+                    <class_3 name="">
+                        <class_4 name="">
+                            <class_5 name="">
+                                <release_year>2027</release_year>
+                                <release_month>3</release_month>
+                                <release_day>26</release_day>
+                                <release_hour>8</release_hour>
+                                <release_minute>30</release_minute>
+                            </class_5>
+                        </class_4>
+                    </class_3>
+                </class_2>
+                <class_2 name="2026年度平均">
+                    <class_3 name="">
+                        <class_4 name="">
+                            <class_5 name="">
+                                <release_year>2027</release_year>
+                                <release_month>3</release_month>
+                                <release_day>26</release_day>
+                                <release_hour>8</release_hour>
+                                <release_minute>30</release_minute>
+                            </class_5>
+                        </class_4>
+                    </class_3>
+                </class_2>
+            </class_1>
+        </os_code>
+</e-stat>

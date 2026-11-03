@@ -127,13 +127,16 @@ def test_jobs_december_crosses_into_next_january():
     assert ev["title"] == "米雇用統計 (2026年12月分)"
 
 
-def test_jobs_december_stays_estimated():
+def test_jobs_after_published_range_stays_estimated():
     """
-    BLSが2027年分の公式日程を未公表のうちは推定(True)のまま。
+    BLSの公表済み範囲（2027-12-03 まで）より先は推定(True)のまま。
     確定(False)にすると notion_upsert の保護対象になり、公式公表後も更新されなくなる。
     """
-    ev = by_id(fs.build_us_jobs({2026}))["us_nfp_2026-12-31"]
-    assert ev["is_estimated"] is True
+    events = _jobs_by_title(fs.build_us_jobs({2027}))
+    assert local_date(events["米雇用統計 (11月分)"]) == date(2027, 12, 3)
+    assert events["米雇用統計 (11月分)"]["is_estimated"] is False
+    assert local_date(events["米雇用統計 (2027年12月分)"]) == date(2028, 1, 7)
+    assert events["米雇用統計 (2027年12月分)"]["is_estimated"] is True
 
 
 def test_jobs_source_url_is_bls_empsit():
@@ -469,7 +472,7 @@ def test_jobs_official_dates_are_kept_in_cache_for_failed_days(monkeypatch):
 
 
 def test_jobs_falls_back_to_first_friday_without_official():
-    """公式も控えも無い月は、従来どおり第1金曜の決まりで作ること（2027年は推定）。"""
-    ev = _jobs_by_title(fs.build_us_jobs({2027}))["米雇用統計 (9月分)"]
-    assert local_date(ev) == date(2027, 10, 1)
-    assert ev["is_estimated"] is True
+    """公式も控えも無い月は、第1金曜の決まりと例外表で作ること（2027-10 は第1金曜でなく 10/8）。"""
+    events = _jobs_by_title(fs.build_us_jobs({2027}))
+    assert local_date(events["米雇用統計 (8月分)"]) == date(2027, 9, 3)
+    assert local_date(events["米雇用統計 (9月分)"]) == date(2027, 10, 8)

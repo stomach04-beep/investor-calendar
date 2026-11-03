@@ -38,6 +38,7 @@ fetch_fomc.py / fetch_boj.py と同じベストエフォート方式:
   米PCE・米CPI・米PPI・米GDP・米小売売上高は、公式から取れた日程を
   data/official_schedule_cache.json に自動で貯め、公式取得に失敗した日は
   「控え ＋ 真値表」でフォールバックする。真値表の年次追記は原則不要になった。
+  BEA は当年のページに数か月先までしか載せないので、翌年ページ（next-year）も読む（2026-11-03〜）。
 
 重要（Notion重複防止）:
   CPI/PCE/JOBS/PPI は、シードJSON の既存 id を (category,country,対象年,対象月) で
@@ -87,6 +88,7 @@ BLS_USER_AGENT = (f"investor-calendar-bot/1.0 ({_BLS_CONTACT})"
                   if _BLS_CONTACT else USER_AGENT)
 
 BEA_URL = "https://www.bea.gov/news/schedule"
+BEA_NEXT_YEAR_URL = "https://www.bea.gov/news/schedule/next-year"
 BLS_CPI_URL = "https://www.bls.gov/schedule/news_release/cpi.htm"
 BEA_SOURCE_URL = "https://www.bea.gov/data/personal-consumption-expenditures-price-index"
 BLS_SOURCE_URL = "https://www.bls.gov/cpi/"
@@ -179,7 +181,22 @@ US_PCE_TRUTH: dict[tuple[int, int], date] = {
     (2026, 6): date(2026, 7, 30),    # 6月分 → 2026-07-30(木)
     (2026, 7): date(2026, 8, 26),    # 7月分 → 2026-08-26(水)
     (2026, 8): date(2026, 9, 30),    # 8月分 → 2026-09-30(水)
+    (2026, 9): date(2026, 10, 29),   # 9月分 → 2026-10-29(木)
+    (2026, 10): date(2026, 11, 25),  # 10月分 → 2026-11-25(水)
     (2026, 11): date(2026, 12, 23),  # 11月分 → 2026-12-23(水)
+    # 2026-11-03 追記（BEA公式 news/schedule/next-year で裏取り。2027年12月分は2028年公表で未掲載）
+    (2026, 12): date(2027, 1, 28),   # 12月分 → 2027-01-28(木)
+    (2027, 1): date(2027, 2, 25),    # 1月分 → 2027-02-25(木)
+    (2027, 2): date(2027, 3, 31),    # 2月分 → 2027-03-31(水)
+    (2027, 3): date(2027, 4, 29),    # 3月分 → 2027-04-29(木)
+    (2027, 4): date(2027, 5, 27),    # 4月分 → 2027-05-27(木)
+    (2027, 5): date(2027, 6, 25),    # 5月分 → 2027-06-25(金)
+    (2027, 6): date(2027, 7, 29),    # 6月分 → 2027-07-29(木)
+    (2027, 7): date(2027, 8, 25),    # 7月分 → 2027-08-25(水)
+    (2027, 8): date(2027, 9, 30),    # 8月分 → 2027-09-30(木)
+    (2027, 9): date(2027, 10, 28),   # 9月分 → 2027-10-28(木)
+    (2027, 10): date(2027, 11, 24),  # 10月分 → 2027-11-24(水)
+    (2027, 11): date(2027, 12, 22),  # 11月分 → 2027-12-22(水)
 }
 
 US_CPI_TRUTH: dict[tuple[int, int], date] = {
@@ -198,6 +215,19 @@ US_CPI_TRUTH: dict[tuple[int, int], date] = {
     (2026, 9): date(2026, 10, 14),   # 9月分 → 2026-10-14(水)
     (2026, 10): date(2026, 11, 10),  # 10月分 → 2026-11-10(火)
     (2026, 11): date(2026, 12, 10),  # 11月分 → 2026-12-10(木)
+    # 2026-11-03 追記（BLS公式 cpi.htm で裏取り。2027年12月分は未掲載）
+    (2026, 12): date(2027, 1, 13),   # 12月分 → 2027-01-13(水)
+    (2027, 1): date(2027, 2, 11),    # 1月分 → 2027-02-11(木)
+    (2027, 2): date(2027, 3, 10),    # 2月分 → 2027-03-10(水)
+    (2027, 3): date(2027, 4, 13),    # 3月分 → 2027-04-13(火)
+    (2027, 4): date(2027, 5, 12),    # 4月分 → 2027-05-12(水)
+    (2027, 5): date(2027, 6, 10),    # 5月分 → 2027-06-10(木)
+    (2027, 6): date(2027, 7, 14),    # 6月分 → 2027-07-14(水)
+    (2027, 7): date(2027, 8, 11),    # 7月分 → 2027-08-11(水)
+    (2027, 8): date(2027, 9, 14),    # 8月分 → 2027-09-14(火)
+    (2027, 9): date(2027, 10, 14),   # 9月分 → 2027-10-14(木)
+    (2027, 10): date(2027, 11, 10),  # 10月分 → 2027-11-10(水)
+    (2027, 11): date(2027, 12, 10),  # 11月分 → 2027-12-10(金)
 }
 
 # ----------------------------------------------------------------------
@@ -213,13 +243,15 @@ US_JOBS_PUBLISH_OVERRIDE: dict[tuple[int, int], date] = {
     # ※ 7月の独立記念日は「前倒し」(7/3休→7/2)、元日は「後ろ倒し」で向きが逆。
     #    規則化すると必ず取り違えるので、例外は個別に裏取りして表で持つ。
     (2027, 1): date(2027, 1, 8),
+    # 2027-10: 第1金曜は 10/1 だが、BLS公式 empsit.htm の公表日は 10/8（2026-11-03 裏取り）。
+    (2027, 10): date(2027, 10, 8),
 }
 
-# BLS が公式スケジュールを公表済みの範囲（2026-07-15 時点で empsit.htm は 11月分＝12/4 まで）。
+# BLS が公式スケジュールを公表済みの範囲（2026-11-03 時点で empsit.htm は 2027年11月分＝2027-12-03 まで）。
 # これ以降の公表日はルール計算・慣例による推定なので is_estimated=True にする。
 # 確定扱い(False)にすると notion_upsert の保護対象になり、BLS が2027年分を公表しても
 # 二度と更新されなくなるため（＝間違ったまま固着する）。
-US_JOBS_CONFIRMED_THROUGH = date(2026, 12, 4)
+US_JOBS_CONFIRMED_THROUGH = date(2027, 12, 3)
 
 # ----------------------------------------------------------------------
 # 米PPI 真値表（2026年・裏取り済み。フォールバック用）
@@ -240,6 +272,19 @@ US_PPI_TRUTH: dict[tuple[int, int], date] = {
     (2026, 9): date(2026, 10, 15),   # 9月分 → 2026-10-15(木)
     (2026, 10): date(2026, 11, 13),  # 10月分 → 2026-11-13(金)
     (2026, 11): date(2026, 12, 15),  # 11月分 → 2026-12-15(火)
+    # 2026-11-03 追記（BLS公式 ppi.htm で裏取り。2027年12月分は未掲載）
+    (2026, 12): date(2027, 1, 14),   # 12月分 → 2027-01-14(木)
+    (2027, 1): date(2027, 2, 12),    # 1月分 → 2027-02-12(金)
+    (2027, 2): date(2027, 3, 12),    # 2月分 → 2027-03-12(金)
+    (2027, 3): date(2027, 4, 14),    # 3月分 → 2027-04-14(水)
+    (2027, 4): date(2027, 5, 13),    # 4月分 → 2027-05-13(木)
+    (2027, 5): date(2027, 6, 11),    # 5月分 → 2027-06-11(金)
+    (2027, 6): date(2027, 7, 15),    # 6月分 → 2027-07-15(木)
+    (2027, 7): date(2027, 8, 10),    # 7月分 → 2027-08-10(火)
+    (2027, 8): date(2027, 9, 10),    # 8月分 → 2027-09-10(金)
+    (2027, 9): date(2027, 10, 15),   # 9月分 → 2027-10-15(金)
+    (2027, 10): date(2027, 11, 12),  # 10月分 → 2027-11-12(金)
+    (2027, 11): date(2027, 12, 15),  # 11月分 → 2027-12-15(水)
 }
 
 # 米PPI 公式スケジュールURL（403が多いので失敗時は真値表＋CPI翌営業日近似にフォールバック）
@@ -256,6 +301,15 @@ US_GDP_TRUTH: dict[tuple[int, int, str], date] = {
     (2026, 2, "2nd"): date(2026, 8, 26),    # Q2改定 → 2026-08-26(水)
     (2026, 3, "adv"): date(2026, 10, 29),   # Q3速報 → 2026-10-29(木)
     (2026, 3, "2nd"): date(2026, 11, 25),   # Q3改定 → 2026-11-25(水)
+    # 2026-11-03 追記（BEA公式 news/schedule/next-year で裏取り。2027年Q4は2028年公表で未掲載）
+    (2026, 4, "adv"): date(2027, 1, 28),    # Q4速報 → 2027-01-28(木)
+    (2026, 4, "2nd"): date(2027, 2, 25),    # Q4改定 → 2027-02-25(木)
+    (2027, 1, "adv"): date(2027, 4, 29),    # Q1速報 → 2027-04-29(木)
+    (2027, 1, "2nd"): date(2027, 5, 27),    # Q1改定 → 2027-05-27(木)
+    (2027, 2, "adv"): date(2027, 7, 29),    # Q2速報 → 2027-07-29(木)
+    (2027, 2, "2nd"): date(2027, 8, 25),    # Q2改定 → 2027-08-25(水)
+    (2027, 3, "adv"): date(2027, 10, 28),   # Q3速報 → 2027-10-28(木)
+    (2027, 3, "2nd"): date(2027, 11, 24),   # Q3改定 → 2027-11-24(水)
 }
 BEA_GDP_SOURCE_URL = "https://www.bea.gov/data/gdp/gross-domestic-product"
 
@@ -554,6 +608,26 @@ def make_us_event(category: str, title_prefix: str, target_month: int,
 # ----------------------------------------------------------------------
 # 1. 米PCE: BEA公式から取得（フォールバック = 真値表）
 # ----------------------------------------------------------------------
+def bea_next_year_rows() -> list:
+    """
+    BEA の翌年日程ページの表の行を返す（2026-11-03 追加）。
+
+    当年のページ（BEA_URL）は数か月先までしか載せないため、これを読まないと
+    翌年分は公表済みでもカレンダーに入らない（2027年の PCE・GDP の行が無かった）。
+    翌年分が未掲載の時期は普通にあるので、取れなくても警告せず当年分だけで続ける。
+    """
+    try:
+        r = requests.get(BEA_NEXT_YEAR_URL, timeout=30, headers={"User-Agent": USER_AGENT})
+        if r.status_code != 200:
+            log(f"  fetch_schedules: BEA翌年ページ HTTP {r.status_code} → 当年分だけで続行")
+            return []
+        table = BeautifulSoup(r.text, "html.parser").find("table")
+        return list(table.find_all("tr")) if table is not None else []
+    except Exception as e:  # noqa: BLE001 - 翌年分は取れれば使う。当年分の取得は止めない
+        log(f"  fetch_schedules: BEA翌年ページ取得失敗 ({type(e).__name__}: {e}) → 当年分だけで続行")
+        return []
+
+
 def fetch_bea_pce() -> list[dict]:
     """BEA公式スケジュールから Personal Income and Outlays の公表日を抽出する。"""
     events: list[dict] = []
@@ -569,7 +643,7 @@ def fetch_bea_pce() -> list[dict]:
             log("  fetch_schedules[PCE]: BEAにテーブルなし → 真値表フォールバック")
             return pce_fallback()
 
-        for tr in table.find_all("tr"):
+        for tr in list(table.find_all("tr")) + bea_next_year_rows():
             cells = [td.get_text(" ", strip=True) for td in tr.find_all(["td", "th"])]
             if len(cells) < 3:
                 continue
@@ -1087,7 +1161,7 @@ def fetch_bea_gdp() -> list[dict]:
 
         events: list[dict] = []
         pairs: list[tuple[tuple, date]] = []   # 控えに保存する ((年, 四半期, 種別), 公表日)
-        for tr in table.find_all("tr"):
+        for tr in list(table.find_all("tr")) + bea_next_year_rows():
             cells = [td.get_text(" ", strip=True) for td in tr.find_all(["td", "th"])]
             if len(cells) < 3:
                 continue
@@ -1103,8 +1177,8 @@ def fetch_bea_gdp() -> list[dict]:
                 kind = "2nd"
             else:
                 continue
-            # 対象四半期: "2nd Quarter 2026" 形式
-            m_q = re.search(r"(\d)(?:st|nd|rd|th)\s+Quarter\s+(\d{4})", desc_cell)
+            # 対象四半期: "2nd Quarter 2026" 形式（Q4 は "4th Quarter and Year 2026"）
+            m_q = re.search(r"(\d)(?:st|nd|rd|th)\s+Quarter(?:\s+and\s+Year)?\s+(\d{4})", desc_cell)
             if not m_q:
                 continue
             quarter = int(m_q.group(1))

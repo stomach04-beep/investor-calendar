@@ -38,6 +38,7 @@ fetch_fomc.py / fetch_boj.py と同じベストエフォート方式:
   米PCE・米CPI・米PPI・米GDP・米小売売上高は、公式から取れた日程を
   data/official_schedule_cache.json に自動で貯め、公式取得に失敗した日は
   「控え ＋ 真値表」でフォールバックする。真値表の年次追記は原則不要になった。
+  BEA は当年のページに数か月先までしか載せないので、翌年ページ（next-year）も読む（2026-11-03〜）。
 
 重要（Notion重複防止）:
   CPI/PCE/JOBS/PPI は、シードJSON の既存 id を (category,country,対象年,対象月) で
@@ -87,6 +88,7 @@ BLS_USER_AGENT = (f"investor-calendar-bot/1.0 ({_BLS_CONTACT})"
                   if _BLS_CONTACT else USER_AGENT)
 
 BEA_URL = "https://www.bea.gov/news/schedule"
+BEA_NEXT_YEAR_URL = "https://www.bea.gov/news/schedule/next-year"
 BLS_CPI_URL = "https://www.bls.gov/schedule/news_release/cpi.htm"
 BEA_SOURCE_URL = "https://www.bea.gov/data/personal-consumption-expenditures-price-index"
 BLS_SOURCE_URL = "https://www.bls.gov/cpi/"
@@ -606,6 +608,26 @@ def make_us_event(category: str, title_prefix: str, target_month: int,
 # ----------------------------------------------------------------------
 # 1. 米PCE: BEA公式から取得（フォールバック = 真値表）
 # ----------------------------------------------------------------------
+def bea_next_year_rows() -> list:
+    """
+    BEA の翌年日程ページの表の行を返す（2026-11-03 追加）。
+
+    当年のページ（BEA_URL）は数か月先までしか載せないため、これを読まないと
+    翌年分は公表済みでもカレンダーに入らない（2027年の PCE・GDP の行が無かった）。
+    翌年分が未掲載の時期は普通にあるので、取れなくても警告せず当年分だけで続ける。
+    """
+    try:
+        r = requests.get(BEA_NEXT_YEAR_URL, timeout=30, headers={"User-Agent": USER_AGENT})
+        if r.status_code != 200:
+            log(f"  fetch_schedules: BEA翌年ページ HTTP {r.status_code} → 当年分だけで続行")
+            return []
+        table = BeautifulSoup(r.text, "html.parser").find("table")
+        return list(table.find_all("tr")) if table is not None else []
+    except Exception as e:  # noqa: BLE001 - 翌年分は取れれば使う。当年分の取得は止めない
+        log(f"  fetch_schedules: BEA翌年ページ取得失敗 ({type(e).__name__}: {e}) → 当年分だけで続行")
+        return []
+
+
 def fetch_bea_pce() -> list[dict]:
     """BEA公式スケジュールから Personal Income and Outlays の公表日を抽出する。"""
     events: list[dict] = []
@@ -621,7 +643,7 @@ def fetch_bea_pce() -> list[dict]:
             log("  fetch_schedules[PCE]: BEAにテーブルなし → 真値表フォールバック")
             return pce_fallback()
 
-        for tr in table.find_all("tr"):
+        for tr in list(table.find_all("tr")) + bea_next_year_rows():
             cells = [td.get_text(" ", strip=True) for td in tr.find_all(["td", "th"])]
             if len(cells) < 3:
                 continue
@@ -1139,7 +1161,7 @@ def fetch_bea_gdp() -> list[dict]:
 
         events: list[dict] = []
         pairs: list[tuple[tuple, date]] = []   # 控えに保存する ((年, 四半期, 種別), 公表日)
-        for tr in table.find_all("tr"):
+        for tr in list(table.find_all("tr")) + bea_next_year_rows():
             cells = [td.get_text(" ", strip=True) for td in tr.find_all(["td", "th"])]
             if len(cells) < 3:
                 continue
@@ -1155,8 +1177,8 @@ def fetch_bea_gdp() -> list[dict]:
                 kind = "2nd"
             else:
                 continue
-            # 対象四半期: "2nd Quarter 2026" 形式
-            m_q = re.search(r"(\d)(?:st|nd|rd|th)\s+Quarter\s+(\d{4})", desc_cell)
+            # 対象四半期: "2nd Quarter 2026" 形式（Q4 は "4th Quarter and Year 2026"）
+            m_q = re.search(r"(\d)(?:st|nd|rd|th)\s+Quarter(?:\s+and\s+Year)?\s+(\d{4})", desc_cell)
             if not m_q:
                 continue
             quarter = int(m_q.group(1))

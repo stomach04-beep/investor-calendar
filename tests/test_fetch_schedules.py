@@ -476,3 +476,68 @@ def test_jobs_falls_back_to_first_friday_without_official():
     events = _jobs_by_title(fs.build_us_jobs({2027}))
     assert local_date(events["米雇用統計 (8月分)"]) == date(2027, 9, 3)
     assert local_date(events["米雇用統計 (9月分)"]) == date(2027, 10, 8)
+
+
+# ----------------------------------------------------------------------
+# BEA: 当年ページは数か月先までなので、翌年ページも読む（2026-11-03）
+#   Q4 の行は "4th Quarter and Year 2026" と書かれる点に注意。
+# ----------------------------------------------------------------------
+def _bea_html(*rows: tuple[str, str]) -> str:
+    body = "".join(f"<tr><td>{when}</td><td>News</td><td>{what}</td><td></td></tr>" for when, what in rows)
+    return f"<table>{body}</table>"
+
+
+BEA_THIS_YEAR = _bea_html(
+    ("December 23 8:30 AM", "Personal Income and Outlays, November 2026"),
+    ("November 25 8:30 AM", "GDP (Second Estimate) and Corporate Profits, 3rd Quarter 2026"),
+)
+BEA_NEXT_YEAR = _bea_html(
+    ("January 28 8:30 AM", "GDP (Advance Estimate), 4th Quarter and Year 2026"),
+    ("January 28 8:30 AM", "Personal Income and Outlays, December 2026"),
+    ("February 25 8:30 AM", "GDP (Second Estimate), 4th Quarter and Year 2026"),
+    ("March 31 8:30 AM", "GDP (Third Estimate), Industries, Corporate Profits, 4th Quarter and Year 2026"),
+    ("April 29 8:30 AM", "GDP (Advance Estimate), 1st Quarter 2027"),
+    ("December 1 8:30 AM", "Gross Domestic Product by County and Personal Income by County, 2026"),
+)
+
+
+def _fake_bea(monkeypatch, next_year: _FakeResponse) -> None:
+    def fake_get(url, **_kwargs):
+        return next_year if url == fs.BEA_NEXT_YEAR_URL else _FakeResponse(BEA_THIS_YEAR)
+    monkeypatch.setattr(fs.requests, "get", fake_get)
+
+
+def test_bea_gdp_reads_next_year_page(monkeypatch):
+    """翌年ページの Q4（and Year 表記）が公表年つきで取れ、確報値と年次の行は入らないこと。"""
+    _fake_bea(monkeypatch, _FakeResponse(BEA_NEXT_YEAR))
+    ev = by_id(fs.fetch_bea_gdp())
+    assert local_date(ev["us_gdp_2026q4_adv"]) == date(2027, 1, 28)
+    assert local_date(ev["us_gdp_2026q4_2nd"]) == date(2027, 2, 25)
+    assert local_date(ev["us_gdp_2027q1_adv"]) == date(2027, 4, 29)
+    assert local_date(ev["us_gdp_2026q3_2nd"]) == date(2026, 11, 25)
+    assert len(ev) == 4
+    assert fs.cached_dates("GDP")[(2026, 4, "adv")] == date(2027, 1, 28)
+
+
+def test_bea_pce_reads_next_year_page(monkeypatch):
+    """翌年ページの12月分が翌年1月公表として取れ、控えにも入ること。"""
+    _fake_bea(monkeypatch, _FakeResponse(BEA_NEXT_YEAR))
+    dates = {local_date(e) for e in fs.fetch_bea_pce()}
+    assert dates == {date(2026, 12, 23), date(2027, 1, 28)}
+    assert fs.cached_dates("PCE")[(2026, 12)] == date(2027, 1, 28)
+
+
+@pytest.mark.parametrize("next_year", [_FakeResponse("", status_code=404), _FakeResponse("<p>no table</p>")])
+def test_bea_next_year_missing_keeps_this_year(monkeypatch, next_year):
+    """翌年ページが無くても、当年分は取得でき真値表フォールバックへ落ちないこと。"""
+    _fake_bea(monkeypatch, next_year)
+    assert [local_date(e) for e in fs.fetch_bea_pce()] == [date(2026, 12, 23)]
+    assert [e["id"] for e in fs.fetch_bea_gdp()] == ["us_gdp_2026q3_2nd"]
+
+
+def test_truth_fallback_covers_2027(monkeypatch):
+    """BEAが丸ごと取れない日も、真値表から2027年の PCE・GDP が確定で出ること。"""
+    gdp = by_id(fs.gdp_fallback())
+    assert local_date(gdp["us_gdp_2027q3_2nd"]) == date(2027, 11, 24)
+    assert gdp["us_gdp_2027q3_2nd"]["is_estimated"] is False
+    assert date(2027, 12, 22) in {local_date(e) for e in fs.pce_fallback()}

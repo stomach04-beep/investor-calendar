@@ -4,8 +4,8 @@ fetch_schedules.py の回帰テスト（ネットワーク不要）。
 2026-07 に発生した「米CPI 5件中4件・米PPI 5件中4件が日付誤り」「米雇用統計12月分が
 2026-12-31 に生成される」バグの再発防止。
 
-BLS は Akamai の bot ブロックで恒常的に 403 のため、CPI/PPI は毎回フォールバック
-（真値表）で動く。したがって真値表そのものが正しいかをテストで固定する。
+公式取得は普段は成功し（BLS は連絡先メール入りの名乗りで読める・2026-10-06〜）、
+真値表は取得に失敗した日だけ使う。その日に誤日付を出さないよう、真値表もテストで固定する。
 
 実行:
     pip install -r requirements-dev.txt
@@ -541,3 +541,33 @@ def test_truth_fallback_covers_2027(monkeypatch):
     assert local_date(gdp["us_gdp_2027q3_2nd"]) == date(2027, 11, 24)
     assert gdp["us_gdp_2027q3_2nd"]["is_estimated"] is False
     assert date(2027, 12, 22) in {local_date(e) for e in fs.pce_fallback()}
+
+
+# ----------------------------------------------------------------------
+# BEA の公式行は official_live 付きで、日程変更が確定行にも届く（2026-11-03）
+# ----------------------------------------------------------------------
+def _ev_on(day: str) -> dict:
+    return {"datetime_local": f"{day}T08:30:00-05:00"}
+
+
+def test_official_live_only_on_future_rows():
+    """当日以降の行だけに付けること（過去の行は人が実績に直したことがあるので触らない）。"""
+    past, today, future = _ev_on("2026-11-02"), _ev_on("2026-11-03"), _ev_on("2027-01-28")
+    pairs = [((2026, 9), date(2026, 11, 2)), ((2026, 10), date(2026, 11, 3)), ((2026, 12), date(2027, 1, 28))]
+    fs.mark_official_live([past, today, future], pairs, today=date(2026, 11, 3))
+    assert "official_live" not in past
+    assert today["official_live"] is True and future["official_live"] is True
+
+
+def test_official_live_skipped_when_table_conflicts():
+    """同じ対象期間に日付が2つ出た日は読み違いの疑いがあるので、1件も付けないこと。"""
+    a, b = _ev_on("2027-01-28"), _ev_on("2027-02-25")
+    pairs = [((2026, 12), date(2027, 1, 28)), ((2026, 12), date(2027, 2, 25))]
+    fs.mark_official_live([a, b], pairs, today=date(2026, 11, 3))
+    assert "official_live" not in a and "official_live" not in b
+
+
+def test_bea_fallback_rows_have_no_official_live(monkeypatch):
+    """公式が取れない日の真値表の行は official_live なし（確定行を上書きしない）。"""
+    monkeypatch.setattr(fs.requests, "get", lambda *a, **k: _FakeResponse("", status_code=500))
+    assert all("official_live" not in e for e in fs.fetch_bea_pce() + fs.fetch_bea_gdp())

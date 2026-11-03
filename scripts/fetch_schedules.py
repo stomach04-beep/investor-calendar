@@ -548,6 +548,25 @@ def remember_official(category: str, pairs: list[tuple[tuple, date]]) -> None:
         warn(f"fetch_schedules[{category}]: 公式日程の控えの保存に失敗（{type(e).__name__}: {e}）")
 
 
+def mark_official_live(events: list[dict], pairs: list[tuple[tuple, date]],
+                       today: date | None = None) -> None:
+    """
+    その日に公式の日程表から読めた未来の行に official_live を付ける（2026-11-03 追加）。
+
+    確定行は notion_upsert が保護するので、これが無いと BEA が日程を変えても追従しない。
+    同じ対象期間に日付が2つ出たときは表の読み違いの疑いがあるので、1件も付けない。
+    過去の行は人が公表実績に直したことがあるので触らない。
+    """
+    today = today or datetime.now(TZ_ET).date()
+    seen: dict[tuple, date] = {}
+    for key, pub in pairs:
+        if seen.setdefault(key, pub) != pub:
+            return
+    for ev in events:
+        if date.fromisoformat(ev["datetime_local"][:10]) >= today:
+            ev["official_live"] = True
+
+
 def et_offset_str(d: date, hour: int = 8, minute: int = 30) -> str:
     """指定日の ET(America/New_York) のUTCオフセット文字列（例 '-04:00'）を返す。"""
     aware = datetime(d.year, d.month, d.day, hour, minute, tzinfo=TZ_ET)
@@ -680,6 +699,7 @@ def fetch_bea_pce() -> list[dict]:
             return pce_fallback()
         log(f"  fetch_schedules[PCE]: BEA公式から {len(events)} 件取得")
         remember_official("PCE", pairs)
+        mark_official_live(events, pairs)
         return events
     except Exception as e:
         log(f"  fetch_schedules[PCE]: BEA取得失敗 ({type(e).__name__}: {e}) → 真値表フォールバック")
@@ -1206,6 +1226,7 @@ def fetch_bea_gdp() -> list[dict]:
             return gdp_fallback()
         log(f"  fetch_schedules[GDP]: BEA公式から {len(events)} 件取得")
         remember_official("GDP", pairs)
+        mark_official_live(events, pairs)
         return events
     except Exception as e:
         log(f"  fetch_schedules[GDP]: BEA取得失敗 ({type(e).__name__}: {e}) → 真値表フォールバック")

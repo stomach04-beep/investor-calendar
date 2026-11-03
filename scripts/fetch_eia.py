@@ -69,6 +69,7 @@ WINDOW_FORWARD_DAYS = 120
 #   value : (実際の公表日, 時, 分, 祝日名)
 #   2026-07-26 に公式 schedule.php から転記。**年1回の更新が必要**
 #   （切れたら record_fetch_warning → health-watchdog が LINE 通知する）
+#   2026-11-03 確認: 公式の表は 2026 年分までで 2027 年は未掲載。推測で足さず、載ってから転記する。
 # ----------------------------------------------------------------------
 EIA_HOLIDAY_TRUTH: dict[date, tuple[date, int, int, str]] = {
     date(2026, 1, 21): (date(2026, 1, 22), 12, 0, "Martin Luther King Jr. Day"),

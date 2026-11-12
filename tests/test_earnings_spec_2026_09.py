@@ -231,12 +231,36 @@ def _resolve_with(monkeypatch, nasdaq_row, announced):
     """外部の取得を全部差し替えて _resolve_dates を1銘柄だけ回す。"""
     from datetime import datetime, timedelta
     today = datetime.now(fe.TZ_ET).date()
+    # Nasdaq は 2026-11-13 から止めているが、戻したときの優先順位も守れるよう試験では入れる
+    monkeypatch.setattr(fe, "NASDAQ_ENABLED", True)
     monkeypatch.setattr(fe, "nasdaq_earnings_map", lambda: {"TST": nasdaq_row} if nasdaq_row else {})
     monkeypatch.setattr(fe, "us_earnings_time_map", lambda syms: {})
     monkeypatch.setattr(fe, "yf_earnings_info", lambda sym: {"date": None, "session": None, "times": {}})
     h = {"name": "テスト", "ticker": "TST", "market": "米国"}
     resolved, _ = fe._resolve_dates([h], announced)
     return resolved[0], today
+
+
+def test_nasdaq_disabled_is_not_called(monkeypatch):
+    """止めている間は Nasdaq を呼ばず、yfinance の日付と時間帯で埋まる（2026-11-13）。"""
+    from datetime import datetime, timedelta
+    today = datetime.now(fe.TZ_ET).date()
+    yday = today + timedelta(days=10)
+    while yday.weekday() >= 5:   # 土日は _future_only が捨てるので平日に寄せる
+        yday += timedelta(days=1)
+
+    def _boom():
+        raise AssertionError("NASDAQ_ENABLED=False なのに Nasdaq を呼んだ")
+
+    monkeypatch.setattr(fe, "NASDAQ_ENABLED", False)
+    monkeypatch.setattr(fe, "nasdaq_earnings_map", _boom)
+    monkeypatch.setattr(fe, "us_earnings_time_map", lambda syms: {})
+    monkeypatch.setattr(fe, "yf_earnings_info",
+                        lambda sym: {"date": yday, "session": "PM", "times": {"PM": "16:00"}})
+    h = {"name": "テスト", "ticker": "TST", "market": "米国"}
+    resolved, missing = fe._resolve_dates([h], {})
+    assert not missing
+    assert resolved[0]["src"] == "yfinance" and resolved[0]["session"] == "PM"
 
 
 def test_company_announced_beats_nasdaq_projection(monkeypatch):

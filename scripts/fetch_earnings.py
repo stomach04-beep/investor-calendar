@@ -11,7 +11,8 @@
   - Nasdaq 決算カレンダー（米国株の第一候補・scripts/nasdaq_earnings.py）:
     約5週間先まで掲載。寄り前/引け後の時間帯が付いた行＝会社確認済み＝確定。
     時間帯の無い行は「昨年+364日」の機械予測が大半なので「Nasdaq見込み」（推定扱い）
-  - yfinance（上記の圏外フォールバック）: get_earnings_dates の直近未来行
+    ※ 2026-11-13 から停止中（相手が自動取得を403で断るため）。NASDAQ_ENABLED を参照
+  - yfinance（上記の圏外フォールバック。Nasdaq 停止中は米国株の第一候補）: get_earnings_dates の直近未来行
   - 曜日のクセ（直近8回すべて同じ曜日）: 確定以外の日付がその曜日から外れていたら
     ±3日以内で寄せる（米国株92%・日本株82%が次回もその曜日）
   - J-Quants 予測日 data/jq_earnings_jp.json（日本株の最終フォールバック）:
@@ -101,6 +102,15 @@ JQ_ESTIMATES_MAX_AGE_DAYS = 300
 #            「昨年の発表日 +364日」ちょうど＝機械予測なので「Nasdaq見込み」として区別する
 #            （2026-09-23 実測。AAPL/MA/ICE/HSY/KMB など主力株も時間帯なし＝見込みだった）
 CONFIRMED_SOURCES = ("JPX", "Nasdaq", "会社告知")
+
+# Nasdaq 決算カレンダーを使うか（2026-11-13 に止めた）。
+#   2026-11-11 から api.nasdaq.com がプログラムからの取得を HTTP 403 で断るようになり
+#   （Actions でも手元PCの Python でも同じ）、毎朝「全日取得失敗」の警告が出ていた。
+#   相手が自動の取得を断っているので、すり抜けは試さず呼び出しをやめる。
+#   米国株の日付・寄り前/引け後は yfinance の get_earnings_dates（2026-08-26 に
+#   Nasdaq と150銘柄で照合して日付・時間帯とも100%一致）と会社告知で埋まる。
+#   失うのは近い決算の「確定」の印だけ。Nasdaq が戻ったら True に戻せば元の動きになる。
+NASDAQ_ENABLED = False
 
 # 曜日のクセの判定に使う直近の発表回数。この回数すべて同じ曜日なら「クセあり」とみなす。
 # 実測（2026-09-23）: 直前8回が全部同じ曜日のとき、次回もその曜日だった率は
@@ -1121,7 +1131,8 @@ def _resolve_dates(holds: list[dict],
     nas: dict[str, dict] = {}
     edgar: dict[str, dict] = {}
     if us_syms:
-        nas = nasdaq_earnings_map()
+        # 止めている間は呼ばない（呼ぶと403のたびに警告が出る）。NASDAQ_ENABLED 参照
+        nas = nasdaq_earnings_map() if NASDAQ_ENABLED else {}
         edgar = us_earnings_time_map(us_syms)
     # JPXのExcelには発表直後の過去日が残っていることがあるため「今日以降」だけ採用する
     today_jst = datetime.now(TZ_JST).date()

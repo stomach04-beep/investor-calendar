@@ -1,6 +1,6 @@
 {
   "schema_version": "2.0",
-  "generated_at": "2026-11-12T02:28:00Z",
+  "generated_at": "2026-11-12T22:04:11Z",
   "covered_years": [
     2021,
     2022,
@@ -9942,15 +9942,15 @@
       "title": "EIA週次原油在庫",
       "category": "EIA",
       "country": "US",
-      "datetime_utc": "2027-01-20T15:30:00Z",
-      "datetime_local": "2027-01-20T10:30:00-05:00",
+      "datetime_utc": "2027-01-21T17:00:00Z",
+      "datetime_local": "2027-01-21T12:00:00-05:00",
       "timezone": "America/New_York",
       "importance": 1,
-      "is_estimated": true,
-      "description": "米エネルギー情報局(EIA)の週次石油在庫統計（対象週: 2027-01-15 まで）。原油・ガソリン・留出油の在庫増減が発表され、原油(WTI)価格が最も素直に反応する定例イベント。",
+      "is_estimated": false,
+      "description": "米エネルギー情報局(EIA)の週次石油在庫統計（対象週: 2027-01-15 まで）。原油・ガソリン・留出油の在庫増減が発表され、原油(WTI)価格が最も素直に反応する定例イベント。 ※Martin Luther King Jr. Dayのため通常の水曜から繰り下げ（公式スケジュールによる確定日）。",
       "source_url": "https://www.eia.gov/petroleum/supply/weekly/",
       "result": null,
-      "date_stable_days": 48
+      "date_stable_days": 0
     },
     {
       "id": "jp_cpi_2027-01-22",
@@ -10178,21 +10178,6 @@
       "date_stable_days": 20
     },
     {
-      "id": "us_eia_2027-02-12",
-      "title": "EIA週次原油在庫",
-      "category": "EIA",
-      "country": "US",
-      "datetime_utc": "2027-02-17T15:30:00Z",
-      "datetime_local": "2027-02-17T10:30:00-05:00",
-      "timezone": "America/New_York",
-      "importance": 1,
-      "is_estimated": true,
-      "description": "米エネルギー情報局(EIA)の週次石油在庫統計（対象週: 2027-02-12 まで）。原油・ガソリン・留出油の在庫増減が発表され、原油(WTI)価格が最も素直に反応する定例イベント。",
-      "source_url": "https://www.eia.gov/petroleum/supply/weekly/",
-      "result": null,
-      "date_stable_days": 21
-    },
-    {
       "id": "us_fomc_minutes_2027-02-17",
       "title": "FOMC議事要旨 (1月会合分)",
       "category": "FOMC",
@@ -10206,6 +10191,21 @@
       "source_url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "result": null,
       "date_stable_days": 99
+    },
+    {
+      "id": "us_eia_2027-02-12",
+      "title": "EIA週次原油在庫",
+      "category": "EIA",
+      "country": "US",
+      "datetime_utc": "2027-02-18T17:00:00Z",
+      "datetime_local": "2027-02-18T12:00:00-05:00",
+      "timezone": "America/New_York",
+      "importance": 1,
+      "is_estimated": false,
+      "description": "米エネルギー情報局(EIA)の週次石油在庫統計（対象週: 2027-02-12 まで）。原油・ガソリン・留出油の在庫増減が発表され、原油(WTI)価格が最も素直に反応する定例イベント。 ※President's Dayのため通常の水曜から繰り下げ（公式スケジュールによる確定日）。",
+      "source_url": "https://www.eia.gov/petroleum/supply/weekly/",
+      "result": null,
+      "date_stable_days": 0
     },
     {
       "id": "jp_cpi_2027-02-19",
@@ -11798,6 +11798,21 @@
       "date_stable_days": 99
     },
     {
+      "id": "us_beige_2027-11-03",
+      "title": "ベージュブック (11月FOMC前)",
+      "category": "BEIGE",
+      "country": "US",
+      "datetime_utc": "2027-11-03T18:00:00Z",
+      "datetime_local": "2027-11-03T14:00:00-04:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": false,
+      "description": "地区連銀経済報告（Beige Book）。FOMC会合の2週間前(水)14:00 ET公表。全12地区の景況感まとめで、利上げ/利下げ判断の地ならし材料。",
+      "source_url": "https://www.federalreserve.gov/monetarypolicy/publications/beige-book-default.htm",
+      "result": null,
+      "date_stable_days": 0
+    },
+    {
       "id": "us_nfp_2027-11-05",
       "title": "米雇用統計 (10月分)",
       "category": "JOBS",
@@ -11856,6 +11871,21 @@
       "source_url": "https://www.census.gov/retail/",
       "result": null,
       "date_stable_days": 20
+    },
+    {
+      "id": "us_fomc_2027-11-17",
+      "title": "FOMC声明発表 (11月会合)",
+      "category": "FOMC",
+      "country": "US",
+      "datetime_utc": "2027-11-17T19:00:00Z",
+      "datetime_local": "2027-11-17T14:00:00-05:00",
+      "timezone": "America/New_York",
+      "importance": 3,
+      "is_estimated": false,
+      "description": "2日目14:00 ET発表、議長会見14:30 ET。",
+      "source_url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
+      "result": null,
+      "date_stable_days": 0
     },
     {
       "id": "us_fomc_minutes_2027-11-17",
@@ -11976,6 +12006,21 @@
       "source_url": "https://www.ismworld.org/supply-management-news-and-reports/reports/ism-pmi-reports/",
       "result": null,
       "date_stable_days": 99
+    },
+    {
+      "id": "us_fomc_minutes_2027-12-08",
+      "title": "FOMC議事要旨 (11月会合分)",
+      "category": "FOMC",
+      "country": "US",
+      "datetime_utc": "2027-12-08T19:00:00Z",
+      "datetime_local": "2027-12-08T14:00:00-05:00",
+      "timezone": "America/New_York",
+      "importance": 2,
+      "is_estimated": false,
+      "description": "FOMC議事要旨（Minutes）。会合の3週間後(水)14:00 ET公表。利上げ/利下げ議論の内訳が分かり、タカ派/ハト派サプライズで相場が動くことがある。",
+      "source_url": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
+      "result": null,
+      "date_stable_days": 0
     },
     {
       "id": "us_fomc_2027-12-08",
